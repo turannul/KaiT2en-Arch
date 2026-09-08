@@ -1,0 +1,40 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=t2bce_audio-dsp
+pkgver=r4.7f58f20
+pkgrel=2
+pkgdesc="Model-specific host-side audio DSP for Apple T2 Macs"
+arch=('any')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('t2bce-dkms' 'apple-t2-audio-config' 'pipewire' 'pipewire-audio' 'pipewire-pulse' 'wireplumber' 'lsp-plugins-lv2' 'python')
+optdepends=('bankstown')
+makedepends=('git' 'python' 'make')
+provides=('t2-dsp' "$pkgname-git")
+conflicts=('linux-t2' 't2-dsp' "$pkgname-git")
+replaces=("$pkgname-git")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    printf "r%s.%s" "$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- dsp)" "$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- dsp)"
+}
+
+build() {
+    make -C "$srcdir/KaiT2en-Fedora/dsp" build
+}
+
+check() {
+    make -C "$srcdir/KaiT2en-Fedora/dsp" test
+}
+
+package() {
+    make -C "$srcdir/KaiT2en-Fedora/dsp" install PREFIX=/usr LIBEXECDIR=/usr/lib DESTDIR="$pkgdir"
+    install -d -m0755 "$pkgdir/usr/share/licenses/$pkgname"
+    if [[ -d "$pkgdir/usr/share/licenses/t2-dsp" ]]; then
+        mv "$pkgdir/usr/share/licenses/t2-dsp"/* "$pkgdir/usr/share/licenses/$pkgname/"
+        rmdir "$pkgdir/usr/share/licenses/t2-dsp"
+    fi
+}

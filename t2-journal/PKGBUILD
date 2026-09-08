@@ -1,0 +1,36 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=t2-journal
+pkgver=0.1.0.r15.6cf72ad
+pkgrel=3
+pkgdesc="Bridge utility between Apple T2 bridgeOS logs and systemd-journald"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('gcc-libs' 't2-services' 'systemd')
+makedepends=('cargo' 'git' 'make')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    local src="$srcdir/KaiT2en-Fedora/t2-services/t2-journal"
+    local ver=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$src/Cargo.toml" | head -n1)
+    printf "%s.r%s.%s" "${ver:-0.1.0}" "$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- apps/t2-journal t2-services/t2-journal)" "$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- apps/t2-journal t2-services/t2-journal)"
+}
+
+build() {
+    local src="$srcdir/KaiT2en-Fedora/t2-services/t2-journal"
+    cd "$src"
+    cargo build --release --locked
+}
+
+package() {
+    local src="$srcdir/KaiT2en-Fedora/t2-services/t2-journal"
+    make -C "$src" install PREFIX=/usr DESTDIR="$pkgdir" TARGET_DIR="$src/target"
+    ln -sf t2journal "$pkgdir/usr/bin/t2-journal"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

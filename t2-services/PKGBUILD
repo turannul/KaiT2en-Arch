@@ -1,0 +1,32 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=t2-services
+pkgver=r3.afb6fde
+pkgrel=3
+pkgdesc="Shared Apple T2 network and suspend integration"
+arch=('any')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('networkmanager' 'systemd' 'iproute2' 'iputils' 'coreutils' 'bash' 'python')
+makedepends=('git' 'make')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+backup=('etc/NetworkManager/conf.d/10-t2-services.conf' 'etc/NetworkManager/system-connections/t2-ncm.nmconnection')
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    printf "r%s.%s" "$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- t2-services/shared)" "$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- t2-services/shared)"
+}
+
+check() {
+    bash -n "$srcdir/KaiT2en-Fedora/t2-services/shared/integration/libexec/t2-ncm-sleep"
+}
+
+package() {
+    make -C "$srcdir/KaiT2en-Fedora/t2-services/shared" install PREFIX=/usr LIBEXECDIR=/usr/lib DESTDIR="$pkgdir"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

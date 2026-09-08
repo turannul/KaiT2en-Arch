@@ -1,0 +1,49 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=t2-power-tune
+pkgver=0.02.r8.c23ede9
+pkgrel=3
+pkgdesc="PCIe ASPM and system power optimization utility for Apple T2 Macs"
+arch=('any')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'pciutils' 'polkit' 'systemd' 'kait2en-assets')
+makedepends=('git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-power-tune"
+    local ver=$(sed -n 's/^[[:space:]]*APP_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$src/t2-power-tune.py" | head -n1)
+    printf "%s.r%s.%s" "${ver:-0.02}" "$(git -C "$src" rev-list --count HEAD -- .)" "$(git -C "$src" log -1 --format="%h" -- .)"
+}
+
+prepare() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-power-tune"
+    sed -i 's|/usr/local/libexec|/usr/lib/t2-power-tune|g' \
+        "$src/t2-power-tune.py" \
+        "$src/t2-power-tune-helper" \
+        "$src/org.t2powertune.policy"
+    sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$src/t2-power-tune.py"
+    sed -i 's|/usr/local/bin|/usr/bin|g' "$src/org.t2powertune.gtk.desktop"
+}
+
+package() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-power-tune"
+
+    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/lib/t2-power-tune" "$pkgdir/usr/share/polkit-1/actions" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor/scalable/apps"
+
+    install -m0755 "$src/t2-power-tune.py" "$pkgdir/usr/bin/t2-power-tune"
+    install -m0755 "$src/t2-power-tune-helper" "$pkgdir/usr/lib/t2-power-tune/t2-power-tune-helper"
+    install -m0755 "$src/t2-power-tune-status" "$pkgdir/usr/lib/t2-power-tune/t2-power-tune-status"
+
+    install -m0644 "$src/org.t2powertune.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2powertune.policy"
+    install -m0644 "$src/org.t2powertune.gtk.desktop" "$pkgdir/usr/share/applications/org.t2powertune.gtk.desktop"
+    install -m0644 "$src/org.t2powertune.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2powertune.gtk.svg"
+
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

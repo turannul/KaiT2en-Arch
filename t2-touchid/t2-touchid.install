@@ -1,0 +1,43 @@
+post_install() {
+    if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ] && [ -f /etc/kait2en/t2-touchid.conf ]; then
+        if grep -q '^T2_TOUCHID_BIND_USER=none' /etc/kait2en/t2-touchid.conf; then
+            sed -i "s/^T2_TOUCHID_BIND_USER=none/T2_TOUCHID_BIND_USER=$SUDO_USER/" /etc/kait2en/t2-touchid.conf
+            echo "==> [kait2en] Bound Touch ID to user '$SUDO_USER' in /etc/kait2en/t2-touchid.conf"
+        fi
+    fi
+
+    systemctl enable kait2en-t2-touchid.service
+    [ -d /run/systemd/system ] && systemctl start kait2en-t2-touchid.service
+    [ -d /run/systemd/system ] && systemctl try-restart fprintd.service
+
+    echo "==> [kait2en] T2 Touch ID PAM Configuration Status:"
+    if grep -q 'pam_fprintd.so' /etc/pam.d/sudo 2>/dev/null; then
+        echo "    [✓] sudo: pam_fprintd.so active"
+    else
+        echo "    [ ] sudo: add 'auth sufficient pam_fprintd.so' to /etc/pam.d/sudo"
+    fi
+
+    if grep -q 'pam_fprintd.so' /etc/pam.d/polkit-1 2>/dev/null; then
+        echo "    [✓] polkit-1: pam_fprintd.so active"
+    else
+        echo "    [ ] polkit-1: add 'auth sufficient pam_fprintd.so' to /etc/pam.d/polkit-1"
+    fi
+
+    if grep -q 'pam_fprintd.so' /etc/pam.d/system-auth 2>/dev/null; then
+        echo "    [✓] system-auth: pam_fprintd.so active"
+    else
+        echo "    [ ] system-auth: add 'auth sufficient pam_fprintd.so' to /etc/pam.d/system-auth"
+    fi
+    echo "==> Note: Fingers must be enrolled under macOS first."
+    echo "    The SEP biometric keybag requires one unlock in macOS after power loss/cold boot."
+}
+
+post_upgrade() {
+    [ -d /run/systemd/system ] && systemctl try-restart kait2en-t2-touchid.service fprintd.service
+}
+
+pre_remove() {
+    [ -d /run/systemd/system ] && systemctl stop kait2en-t2-touchid.service
+    [ -d /run/systemd/system ] && systemctl try-restart fprintd.service
+    systemctl disable kait2en-t2-touchid.service
+}

@@ -1,0 +1,58 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=t2-hybrid-gpu-control
+pkgver=0.1.0.r9.1e444a6
+pkgrel=3
+pkgdesc="Hybrid GPU PRIME offload controller for MacBookPro15,1"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('gtk4' 'libadwaita' 'glib2' 'gcc-libs' 'polkit' 'kait2en-assets')
+optdepends=('t2gmux-dkms')
+makedepends=('cargo' 'glib2-devel' 'git')
+provides=("$pkgname-git")
+conflicts=('t2-dgpu-control' "$pkgname-git")
+replaces=("$pkgname-git")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-hybrid-gpu-control"
+    local ver=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$src/Cargo.toml" | head -n1)
+    printf "%s.r%s.%s" "${ver:-0.1.0}" "$(git -C "$src" rev-list --count HEAD -- .)" "$(git -C "$src" log -1 --format="%h" -- .)"
+}
+
+prepare() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-hybrid-gpu-control"
+    sed -i 's|/usr/local/libexec|/usr/lib/t2-hybrid-gpu-control|g' \
+        "$src/src/main.rs" \
+        "$src/contrib/org.t2hybridgpucontrol.policy" \
+        "$src/contrib/org.t2hybridgpucontrol.status.policy"
+}
+
+build() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-hybrid-gpu-control"
+    cd "$src"
+    cargo build --release --locked
+}
+
+package() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-hybrid-gpu-control"
+    install -d -m0755 "$pkgdir/usr/bin" \
+                      "$pkgdir/usr/lib/t2-hybrid-gpu-control" \
+                      "$pkgdir/usr/share/applications" \
+                      "$pkgdir/usr/share/icons/hicolor/scalable/apps" \
+                      "$pkgdir/usr/share/polkit-1/actions"
+
+    install -m0755 "$src/target/release/t2-hybrid-gpu-control" "$pkgdir/usr/bin/t2-hybrid-gpu-control"
+    install -m0755 "$src/contrib/t2-hybrid-gpu-control-helper" "$pkgdir/usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-helper"
+    install -m0755 "$src/contrib/t2-hybrid-gpu-control-status" "$pkgdir/usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-status"
+    install -m0644 "$src/org.t2hybridgpucontrol.gtk.desktop" "$pkgdir/usr/share/applications/org.t2hybridgpucontrol.gtk.desktop"
+    install -m0644 "$src/assets/icons/hicolor/scalable/apps/org.t2hybridgpucontrol.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2hybridgpucontrol.gtk.svg"
+    install -m0644 "$src/contrib/org.t2hybridgpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.policy"
+    install -m0644 "$src/contrib/org.t2hybridgpucontrol.status.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.status.policy"
+
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

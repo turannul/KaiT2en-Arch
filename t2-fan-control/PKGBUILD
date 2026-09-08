@@ -1,0 +1,54 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=t2-fan-control
+pkgver=0.1.0.r16.1e444a6
+pkgrel=3
+pkgdesc="Fan speed controller and monitor for Apple T2 Macs"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('gtk4' 'libadwaita' 'glib2' 'gcc-libs' 'kait2en-assets')
+optdepends=('t2smc-dkms')
+makedepends=('cargo' 'glib2-devel' 'git')
+provides=("$pkgname-git")
+conflicts=('t2fanrd' "$pkgname-git")
+replaces=("$pkgname-git")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-fan-control"
+    local ver=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$src/Cargo.toml" | head -n1)
+    printf "%s.r%s.%s" "${ver:-0.1.0}" "$(git -C "$src" rev-list --count HEAD -- .)" "$(git -C "$src" log -1 --format="%h" -- .)"
+}
+
+prepare() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-fan-control"
+    sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$src/src/main.rs"
+}
+
+build() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-fan-control"
+    cd "$src"
+    cargo build --release
+}
+
+package() {
+    local src="$srcdir/KaiT2en-Fedora/apps/t2-fan-control"
+
+    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor/scalable/apps" "$pkgdir/usr/lib/systemd/system"
+
+    install -m0755 "$src/target/release/t2-fancontrol-gtk" "$pkgdir/usr/bin/t2-fancontrol-gtk"
+
+    install -m0644 "$src/org.t2fancontrol.gtk.desktop" "$pkgdir/usr/share/applications/org.t2fancontrol.gtk.desktop"
+    sed -i 's|/usr/local/bin|/usr/bin|g' "$pkgdir/usr/share/applications/org.t2fancontrol.gtk.desktop"
+
+    install -m0644 "$src/assets/icons/hicolor/scalable/apps/org.t2fancontrol.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2fancontrol.gtk.svg"
+
+    install -m0644 "$src/systemd/t2-fancontrol.service" "$pkgdir/usr/lib/systemd/system/t2-fancontrol.service"
+    sed -i 's|/usr/local/bin|/usr/bin|g' "$pkgdir/usr/lib/systemd/system/t2-fancontrol.service"
+
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

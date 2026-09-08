@@ -1,0 +1,22 @@
+pre_upgrade() {
+    local f
+    for f in /etc/wireplumber/wireplumber.conf.d/51-kait2en-t2-dsp.conf /etc/pipewire/pipewire.conf.d/50-kait2en-quantum.conf; do
+        if [[ -e "$f" ]] && ! pacman -Qqo "$f" >/dev/null 2>&1; then
+            rm -f "$f"
+        fi
+    done
+}
+
+post_install() {
+    [[ -x /usr/lib/t2-dsp/package-actions ]] && bash /usr/lib/t2-dsp/package-actions configure
+    [ -d /run/udev ] && udevadm control --reload-rules
+    [ -d /run/udev ] && udevadm trigger -s sound 2>/dev/null || true
+}
+
+post_upgrade() {
+    post_install
+}
+
+pre_remove() {
+    [[ -x /usr/lib/t2-dsp/package-actions ]] && bash /usr/lib/t2-dsp/package-actions removed
+}

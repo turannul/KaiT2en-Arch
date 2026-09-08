@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Touch Bar Config
+Comment=Edit the touch bar's config.ts
+Exec=/usr/bin/react-drm-config-gui
+Icon=preferences-system
+Terminal=false
+Categories=Settings;

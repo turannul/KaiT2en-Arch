@@ -1,0 +1,96 @@
+# Maintainer: Mohamed Hussien (dev-muhammad-adel) <muhammed.hussien2030@gmail.com>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=react-drm
+pkgver=0.1.0.r228.547be16
+pkgrel=10
+pkgdesc="Touch Bar UI and display server for Apple T2 MacBook Pros"
+arch=('x86_64')
+url="https://github.com/dev-muhammad-adel/react-drm-for-touchbar"
+license=('GPL-3.0-or-later')
+depends=('nodejs' 'systemd' 'libdrm' 'cairo' 'librsvg' 'brightnessctl' 'cava' 'pango')
+optdepends=('t2bdrm-dkms' 't2touchbar-dkms' 'python' 'python-gobject' 'gtk3')
+makedepends=('npm' 'python' 'gcc' 'make' 'pkgconf' 'git')
+provides=("$pkgname-git")
+conflicts=('tiny-dfr' 'mac-touchbar-plus' "$pkgname-git")
+replaces=("$pkgname-git")
+backup=('opt/react-drm/linux-touchbar-control-center/config.ts')
+source=("$pkgname-src::git+$url.git" 'react-drm' 'react-drm-config-gui' 'react-drm.service' 'react-drm-config-gui.desktop')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+pkgver() {
+    cd "$srcdir/$pkgname-src"
+    local ver
+    ver=$(node -p "require('./package.json').version" 2>/dev/null)
+    printf "%s.r%s.%s" "${ver:-0.1.0}" "$(git rev-list --count HEAD)" "$(git log -1 --format="%h")"
+}
+
+prepare() {
+    cd "$srcdir/$pkgname-src"
+    local profile="t2linux"
+    if lsmod | grep -q t2bdrm || pacman -Qq t2bdrm-dkms >/dev/null 2>&1; then
+        profile="kait2en"
+    fi
+    [[ -f .env ]] || install -m0644 ".env.example.$profile" .env
+}
+
+build() {
+    cd "$srcdir/$pkgname-src"
+    npm ci
+    npm --prefix linux-touchbar-control-center run build
+}
+
+package() {
+    local src="$srcdir/$pkgname-src"
+    local dest="$pkgdir/opt/react-drm"
+    install -d -m0755 "$dest"
+    npm --prefix "$src" prune --omit=dev
+    tar -C "$src" --exclude='.git' --exclude='config-gui' --exclude='install-gui' -cf - . | tar -C "$dest" -xf -
+
+    if [[ ! -f "$dest/linux-touchbar-control-center/config.ts" && -f "$dest/linux-touchbar-control-center/config.blueprint.ts" ]]; then
+        install -m0644 "$dest/linux-touchbar-control-center/config.blueprint.ts" "$dest/linux-touchbar-control-center/config.ts"
+    fi
+
+    if [[ -f "$dest/linux-touchbar-control-center/config.ts" ]]; then
+        mkdir -p "$dest/linux-touchbar-control-center/dist"
+        NODE_PATH="$dest/node_modules:$dest/linux-touchbar-control-center/node_modules" node -e "
+            const ts = require('typescript'), fs = require('fs'), p = require('path');
+            const f = '$dest/linux-touchbar-control-center/config.ts';
+            const o = ts.transpileModule(fs.readFileSync(f, 'utf8'), {
+                compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, esModuleInterop: true },
+                fileName: f
+            });
+            fs.writeFileSync(p.join(p.dirname(f), 'dist', 'config.js'), o.outputText);
+        "
+    fi
+
+    rm -rf "$dest"/build/Release/.deps "$dest"/build/Release/obj.target
+    find "$dest" -type f \( -name "*.o" -o -name "*.o.d" \) -delete
+
+    local profile="t2linux"
+    if lsmod | grep -q t2bdrm || pacman -Qq t2bdrm-dkms >/dev/null 2>&1; then
+        profile="kait2en"
+    fi
+
+    install -Dm0644 "$src/.env.example.$profile" "$dest/.env"
+    install -Dm0644 "$src/system/99-react-drm-$profile.rules" "$pkgdir/usr/lib/udev/rules.d/99-react-drm.rules"
+    install -Dm0755 "$srcdir/react-drm" "$pkgdir/usr/bin/react-drm"
+    install -Dm0755 "$srcdir/react-drm-config-gui" "$pkgdir/usr/bin/react-drm-config-gui"
+    install -Dm0755 "$src/system/react-drm-tb-detach" "$pkgdir/usr/bin/react-drm-tb-detach"
+    install -Dm0644 "$srcdir/react-drm-config-gui.desktop" "$pkgdir/usr/share/applications/react-drm-config-gui.desktop"
+    install -Dm0644 "$srcdir/react-drm.service" "$pkgdir/usr/lib/systemd/user/react-drm.service"
+
+    local ext_dir="$pkgdir/usr/share/gnome-shell/extensions/window-monitor-pro@muhammed.hussien2030.gmail.com"
+    install -d -m0755 "$ext_dir"
+    install -m0644 "$src/gnome-extension/window-monitor-pro/extension.js" "$ext_dir/"
+    install -m0644 "$src/gnome-extension/window-monitor-pro/metadata.json" "$ext_dir/"
+
+    find "$dest" -type d -exec chmod 0755 {} +
+    find "$dest" -type f -exec chmod 0644 {} +
+
+    chmod 0755 "$dest/system/react-drm-tb-detach"
+    [[ -d "$dest/node_modules/.bin" ]] && chmod -R 0755 "$dest/node_modules/.bin"
+    find "$dest" -type f \( -name "*.sh" -o -name "*.node" -o -name "*.so*" \) -exec chmod 0755 {} +
+
+    [[ -f "$src/LICENSE" ]] && install -Dm0644 "$src/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

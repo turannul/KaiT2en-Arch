@@ -1,0 +1,20 @@
+[Unit]
+Description=react-drm touch bar UI
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Environment=NODE_ENV=production
+EnvironmentFile=-/opt/react-drm/.env
+WorkingDirectory=/opt/react-drm/linux-touchbar-control-center
+ExecStart=/usr/bin/node /opt/react-drm/linux-touchbar-control-center/dist/index.js
+ExecStopPost=-/opt/react-drm/system/react-drm-tb-detach
+KillSignal=SIGINT
+SuccessExitStatus=130 137 SIGINT SIGKILL
+TimeoutStartSec=180
+TimeoutStopSec=150
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

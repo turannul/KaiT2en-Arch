@@ -1,0 +1,12 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=kait2en-modules-meta
+pkgver=0.1
+pkgrel=2
+pkgdesc="KaiT2en modules metapackage."
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+groups=('kait2en')
+depends=('hid_t2magicmouse-dkms' 't2bce-dkms' 't2bdrm-dkms' 't2gmux-dkms' 't2mfi_fastcharge-dkms' 't2sep-dkms' 't2smc-dkms' 't2smp-dkms' 't2thunderbolt-dkms' 't2touchbar-dkms' 't2_precision_trackpad-dkms' 't2_trackpad_actuator-dkms')

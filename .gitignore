@@ -1,0 +1,7 @@
+.build/
+*.pkg.tar.zst
+install
+src/
+pkg/
+KaiT2en-Fedora/
+react-drm-git/
