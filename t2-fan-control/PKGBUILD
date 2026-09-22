@@ -4,7 +4,7 @@
 pkgname=t2-fan-control
 pkgver=0.1.0.r16.1e444a6
 pkgrel=3
-pkgdesc="Fan speed controller and monitor for Apple T2 Macs"
+pkgdesc="Fan speed controller and monitor"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

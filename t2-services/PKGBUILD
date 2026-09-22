@@ -4,7 +4,7 @@
 pkgname=t2-services
 pkgver=r3.afb6fde
 pkgrel=3
-pkgdesc="Shared Apple T2 network and suspend integration"
+pkgdesc="Shared network and suspend integration"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

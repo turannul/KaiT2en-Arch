@@ -4,7 +4,7 @@
 pkgname=t2-force-click
 pkgver=0.1.0.r1.1e444a6
 pkgrel=1
-pkgdesc="Trackpad click and force-click pressure and action configuration for Apple T2 Macs"
+pkgdesc="Trackpad click and force-click pressure and action configurator"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

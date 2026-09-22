@@ -4,7 +4,7 @@
 pkgname=t2smp-dkms
 pkgver=0.1.r2.72841ef
 pkgrel=1
-pkgdesc="Apple T2 SMP driver (DKMS)"
+pkgdesc="KaiT2en SMP module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

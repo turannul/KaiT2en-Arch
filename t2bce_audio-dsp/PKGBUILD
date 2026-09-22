@@ -4,7 +4,7 @@
 pkgname=t2bce_audio-dsp
 pkgver=r4.7f58f20
 pkgrel=2
-pkgdesc="Model-specific host-side audio DSP for Apple T2 Macs"
+pkgdesc="Model-specific host-side audio DSP"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

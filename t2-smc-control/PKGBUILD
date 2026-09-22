@@ -4,7 +4,7 @@
 pkgname=t2-smc-control
 pkgver=0.1.0.r21.1e444a6
 pkgrel=3
-pkgdesc="Hardware monitor and Apple SMC sensor utility for Apple T2 Macs"
+pkgdesc="Hardware monitor and Apple SMC sensor utility"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

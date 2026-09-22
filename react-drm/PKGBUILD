@@ -4,7 +4,7 @@
 pkgname=react-drm
 pkgver=0.1.0.r228.547be16
 pkgrel=10
-pkgdesc="Touch Bar UI and display server for Apple T2 MacBook Pros"
+pkgdesc="Touch Bar control center"
 arch=('x86_64')
 url="https://github.com/dev-muhammad-adel/react-drm-for-touchbar"
 license=('GPL-3.0-or-later')

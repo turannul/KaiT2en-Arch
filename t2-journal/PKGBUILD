@@ -4,7 +4,7 @@
 pkgname=t2-journal
 pkgver=0.1.0.r15.6cf72ad
 pkgrel=3
-pkgdesc="Bridge utility between Apple T2 bridgeOS logs and systemd-journald"
+pkgdesc="Utility for Apple T2 bridgeOS logs"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

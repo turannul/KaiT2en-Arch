@@ -4,7 +4,7 @@
 pkgname=t2thunderbolt-dkms
 pkgver=0.6.r20.b1855a0
 pkgrel=1
-pkgdesc="Apple T2 Thunderbolt driver (DKMS)"
+pkgdesc="KaiT2en Thunderbolt module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

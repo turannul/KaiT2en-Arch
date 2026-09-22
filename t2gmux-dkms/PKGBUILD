@@ -4,7 +4,7 @@
 pkgname=t2gmux-dkms
 pkgver=0.8.r11.6ea910d
 pkgrel=2
-pkgdesc="Apple T2 GMUX driver (DKMS)"
+pkgdesc="KaiT2en GMUX module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

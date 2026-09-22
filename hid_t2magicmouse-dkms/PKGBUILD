@@ -4,7 +4,7 @@
 pkgname=hid_t2magicmouse-dkms
 pkgver=0.1.r4.5d55656
 pkgrel=2
-pkgdesc="HID driver for Apple T2 Magic Mouse (DKMS)"
+pkgdesc="KaiT2en Apple HID module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

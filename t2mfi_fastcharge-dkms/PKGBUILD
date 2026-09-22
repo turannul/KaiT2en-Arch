@@ -4,7 +4,7 @@
 pkgname=t2mfi_fastcharge-dkms
 pkgver=0.1.r2.ee1dbfe
 pkgrel=2
-pkgdesc="Apple T2 MFI fast charge driver (DKMS)"
+pkgdesc="KaiT2en MFI fast charge module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

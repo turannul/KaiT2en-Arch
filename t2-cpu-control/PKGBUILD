@@ -4,7 +4,7 @@
 pkgname=t2-cpu-control
 pkgver=0.02.r13.c23ede9
 pkgrel=3
-pkgdesc="CPU power limit and thermal telemetry controller for Apple T2 Macs"
+pkgdesc="CPU power limit and thermal telemetry controller"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

@@ -4,7 +4,7 @@
 pkgname=t2smc-dkms
 pkgver=0.1.r11.6715ce6
 pkgrel=2
-pkgdesc="Apple T2 SMC driver (DKMS)"
+pkgdesc="KaiT2en SMC module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

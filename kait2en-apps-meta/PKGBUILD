@@ -12,10 +12,10 @@ groups=('kait2en')
 depends=('t2-ave' 't2-cpu-control' 't2-fan-control' 't2-power-explorer' 't2-power-tune' 't2-smc-control' 't2-touchid')
 optdepends=(
     'apple-t2-audio-config: ALSA UCM audio profiles for T2 Macs'
-    't2bce_audio-dsp: Model-specific PipeWire audio DSP filters'
-    'react-drm: Touch Bar UI and display server (for MacBook Pros with Touch Bar)'
-    't2-hybrid-gpu-control: Dynamic PRIME offload for MacBookPro15,1'
-    't2-dgpu-control: Discrete GPU power control for MacBookPro15,3/16,1/16,4'
-    't2-journal: Developer tool for Apple T2 bridgeOS logs'
-    't2-force-click: Trackpad click and force-click pressure and action configuration'
+    't2bce_audio-dsp: Model-specific host-side audio DSP'
+    'react-drm: Touch Bar control center'
+    't2-hybrid-gpu-control: Configure hybrid graphics on MacBookPro15,1/16,1/16,4'
+    't2-dgpu-control: Discrete GPU power and boot-GPU selector for dual-GPU Macs'
+    't2-journal: Utility for Apple T2 bridgeOS logs'
+    't2-force-click: Trackpad click and force-click pressure and action configurator'
 )

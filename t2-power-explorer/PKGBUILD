@@ -4,7 +4,7 @@
 pkgname=t2-power-explorer
 pkgver=0.1.0.r9.1e444a6
 pkgrel=3
-pkgdesc="Device topology and runtime power state explorer for Apple T2 Macs"
+pkgdesc="Device topology and runtime power state explorer"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

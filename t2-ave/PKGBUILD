@@ -4,7 +4,7 @@
 pkgname=t2-ave
 pkgver=0.1.0.r4.afb6fde
 pkgrel=3
-pkgdesc="Apple T2 AVE service"
+pkgdesc="T2 AVE encoder"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

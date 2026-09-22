@@ -4,7 +4,7 @@
 pkgname=kait2en-assets
 pkgver=r8.d6ce476
 pkgrel=3
-pkgdesc="Shared branding assets and fonts for the KaiT2en application suite"
+pkgdesc="Shared branding assets and fonts"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

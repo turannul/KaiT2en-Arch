@@ -4,7 +4,7 @@
 pkgname=t2-dgpu-control
 pkgver=0.1.0.r13.1e444a6
 pkgrel=3
-pkgdesc="Discrete GPU power and boot-GPU selector for dual-GPU Apple T2 Macs"
+pkgdesc="Discrete GPU power and boot-GPU selector for dual-GPU Macs"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

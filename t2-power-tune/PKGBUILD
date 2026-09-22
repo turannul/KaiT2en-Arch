@@ -4,7 +4,7 @@
 pkgname=t2-power-tune
 pkgver=0.02.r8.c23ede9
 pkgrel=3
-pkgdesc="PCIe ASPM and system power optimization utility for Apple T2 Macs"
+pkgdesc="PCIe ASPM and system power optimization utility"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')

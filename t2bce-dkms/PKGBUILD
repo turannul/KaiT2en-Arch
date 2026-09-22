@@ -4,7 +4,7 @@
 pkgname=t2bce-dkms
 pkgver=0.01.r34.af6c17d
 pkgrel=2
-pkgdesc="Apple T2 BCE driver stack (DKMS: dma, core, vhci, audio, ave)"
+pkgdesc="KaiT2en BCE (dma, core, vhci, audio, ave) module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

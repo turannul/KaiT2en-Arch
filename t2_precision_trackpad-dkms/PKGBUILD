@@ -4,7 +4,7 @@
 pkgname=t2_precision_trackpad-dkms
 pkgver=0.01.r1.ce07b03
 pkgrel=1
-pkgdesc="Apple T2 precision trackpad driver (DKMS)"
+pkgdesc="KaiT2en precision trackpad module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
