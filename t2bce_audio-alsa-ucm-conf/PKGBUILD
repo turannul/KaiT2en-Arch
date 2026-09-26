@@ -1,0 +1,34 @@
+# Maintainer: Noa Himesaka <himesaka@noa.codes>
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ <turanull000@gmail.com>
+
+pkgname=t2bce_audio-alsa-ucm-conf
+pkgver=0.5.r5.a02d231
+pkgrel=2
+pkgdesc="ALSA UCM configuration for the t2bce audio driver on Apple T2 Macs"
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+arch=('any')
+license=('GPL-2.0-only')
+depends=('alsa-ucm-conf')
+optdepends=('t2bce-dkms: for audio kernel module'
+            'pipewire: for sound server'
+            'pulseaudio: for sound server')
+provides=('apple-t2-audio-config' 'apple-t2-audio-config-alt' "$pkgname")
+conflicts=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
+replaces=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
+makedepends=('git')
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local src="$srcdir/KaiT2en-Fedora"
+  local path="modules/t2bce_audio-alsa-ucm-conf"
+  printf "0.5.r%s.%s" "$(git -C "$src" rev-list --count HEAD -- "$path")" "$(git -C "$src" log -1 --format="%h" -- "$path")"
+}
+
+package() {
+  cd "$srcdir/KaiT2en-Fedora/modules/t2bce_audio-alsa-ucm-conf"
+  for conf in ucm2/AppleT2/*.conf ucm2/conf.d/*/*.conf; do
+    install -Dm644 "$conf" "$pkgdir/usr/share/alsa/$conf"
+  done
+}

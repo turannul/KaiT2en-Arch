@@ -11,7 +11,7 @@ license=('GPL-3.0-or-later')
 groups=('kait2en')
 depends=('t2-ave' 't2-cpu-control' 't2-fan-control' 't2-power-explorer' 't2-power-tune' 't2-smc-control' 't2-touchid')
 optdepends=(
-    'apple-t2-audio-config: ALSA UCM audio profiles for T2 Macs'
+    't2bce_audio-alsa-ucm-conf: ALSA UCM audio profiles for T2 Macs'
     't2bce_audio-dsp: Model-specific host-side audio DSP'
     'react-drm: Touch Bar control center'
     't2-hybrid-gpu-control: Configure hybrid graphics on MacBookPro15,1/16,1/16,4'
