@@ -4,10 +4,10 @@
 
 pkgname=t2bce_audio-alsa-ucm-conf
 pkgver=0.5.r5.a02d231
-pkgrel=2
-pkgdesc="ALSA UCM configuration for the t2bce audio driver on Apple T2 Macs"
+pkgrel=3
+pkgdesc="ALSA UCM configuration for the t2bce_audio"
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
-arch=('any')
+arch=('x86_64')
 license=('GPL-2.0-only')
 depends=('alsa-ucm-conf')
 optdepends=('t2bce-dkms: for audio kernel module'
@@ -32,4 +32,5 @@ package() {
   for conf in ucm2/AppleT2/*.conf ucm2/conf.d/*/*.conf; do
     install -Dm644 "$conf" "$pkgdir/usr/share/alsa/$conf"
   done
+  install -Dm644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
