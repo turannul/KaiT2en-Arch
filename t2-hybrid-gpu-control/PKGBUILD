@@ -16,6 +16,7 @@ conflicts=('t2-dgpu-control' "$pkgname-git")
 replaces=("$pkgname-git")
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+[[ -d ../KaiT2en-Fedora/.git ]] && git -C ../KaiT2en-Fedora pull --ff-only && source=("KaiT2en-Fedora::git+file://$(realpath ../KaiT2en-Fedora)")
 sha256sums=('SKIP')
 
 pkgver() {

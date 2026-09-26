@@ -14,6 +14,7 @@ makedepends=('git')
 provides=('t2mfi_fastcharge')
 conflicts=('linux-t2' 't2mfi_fastcharge')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+[[ -d ../KaiT2en-Fedora/.git ]] && git -C ../KaiT2en-Fedora pull --ff-only && source=("KaiT2en-Fedora::git+file://$(realpath ../KaiT2en-Fedora)")
 sha256sums=('SKIP')
 
 pkgver() {

@@ -18,6 +18,7 @@ conflicts=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
 replaces=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
 makedepends=('git')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+[[ -d ../KaiT2en-Fedora/.git ]] && git -C ../KaiT2en-Fedora pull --ff-only && source=("KaiT2en-Fedora::git+file://$(realpath ../KaiT2en-Fedora)")
 sha256sums=('SKIP')
 
 pkgver() {
