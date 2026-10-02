@@ -1,0 +1,81 @@
+# Maintainer: Mohamed Hussien (dev-muhammad-adel) <muhammed.hussien2030@gmail.com>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=react-drm
+pkgver=0.1.0.r245.92f91c4
+pkgrel=1
+pkgdesc="Touch Bar control center"
+arch=('x86_64')
+url="https://github.com/dev-muhammad-adel/react-drm-for-touchbar"
+license=('GPL-3.0-or-later')
+depends=('nodejs' 'libdrm' 'cairo' 'librsvg' 'brightnessctl' 'cava' 'pango')
+optdepends=('t2bdrm-dkms' 't2touchbar-dkms' 'python' 'python-gobject' 'gtk3')
+makedepends=('npm' 'python' 'gcc' 'make' 'pkgconf' 'git')
+provides=("$pkgname-git")
+conflicts=('tiny-dfr' 'mac-touchbar-plus' 't2-touchbar' "$pkgname-git")
+replaces=("$pkgname-git")
+backup=('opt/react-drm/linux-touchbar-control-center/config.ts')
+install="$pkgname.install"
+source=("$pkgname-src::git+$url.git" 'react-drm' 'react-drm-config-gui' 'react-drm.service' 'react-drm-config-gui.desktop')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/$pkgname-src"
+  _version=$(node -p "require('$_p/package.json').version" 2>/dev/null)
+  _revision=$(git -C "$_p" rev-list --count HEAD)
+  _commit=$(git -C "$_p" log -1 --format="%h")
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    npm ci --prefix "$srcdir/$pkgname-src"
+}
+
+build() {
+    npm --prefix "$srcdir/$pkgname-src/linux-touchbar-control-center" run build
+}
+
+package() {
+    local dest="$pkgdir/opt/react-drm"
+    install -d -m0755 "$dest"
+    tar -C "$srcdir/$pkgname-src" --exclude='.git' --exclude='.env' --exclude='config-gui' --exclude='install-gui' -cf - . | tar -C "$dest" -xf -
+
+    if [[ ! -f "$dest/linux-touchbar-control-center/config.ts" && -f "$dest/linux-touchbar-control-center/config.blueprint.ts" ]]; then
+        install -m0644 "$dest/linux-touchbar-control-center/config.blueprint.ts" "$dest/linux-touchbar-control-center/config.ts"
+    fi
+
+    if [[ -f "$dest/linux-touchbar-control-center/config.ts" ]]; then
+        mkdir -p "$dest/linux-touchbar-control-center/dist"
+        NODE_PATH="$dest/node_modules:$dest/linux-touchbar-control-center/node_modules" node -e "
+            const ts = require('typescript'), fs = require('fs'), p = require('path');
+            const f = '$dest/linux-touchbar-control-center/config.ts';
+            const o = ts.transpileModule(fs.readFileSync(f, 'utf8'), {
+                compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, esModuleInterop: true },
+                fileName: f
+            });
+            fs.writeFileSync(p.join(p.dirname(f), 'dist', 'config.js'), o.outputText);
+        "
+    fi
+
+    npm --prefix "$dest" prune --omit=dev
+    rm -rf "$dest"/build/Release/.deps "$dest"/build/Release/obj.target
+    find "$dest" -type f \( -name "*.o" -o -name "*.o.d" \) -delete
+    install -Dm0755 "$srcdir/react-drm" "$pkgdir/usr/bin/react-drm"
+    install -Dm0755 "$srcdir/react-drm-config-gui" "$pkgdir/usr/bin/react-drm-config-gui"
+    install -Dm0755 "$srcdir/$pkgname-src/system/react-drm-tb-detach" "$pkgdir/usr/bin/react-drm-tb-detach"
+    install -Dm0644 "$srcdir/react-drm-config-gui.desktop" "$pkgdir/usr/share/applications/react-drm-config-gui.desktop"
+    install -Dm0644 "$srcdir/react-drm.service" "$pkgdir/usr/lib/systemd/user/react-drm.service"
+    local ext_dir="$pkgdir/usr/share/gnome-shell/extensions/window-monitor-pro@muhammed.hussien2030.gmail.com"
+    install -d -m0755 "$ext_dir"
+    install -m0644 "$srcdir/$pkgname-src/gnome-extension/window-monitor-pro/extension.js" "$ext_dir/"
+    install -m0644 "$srcdir/$pkgname-src/gnome-extension/window-monitor-pro/metadata.json" "$ext_dir/"
+    find "$dest" -type d -exec chmod 0755 {} +
+    find "$dest" -type f -exec chmod 0644 {} +
+    chmod 0666 "$dest/linux-touchbar-control-center/config.ts"
+    chmod 0777 "$dest/linux-touchbar-control-center/dist"
+    [[ -f "$dest/linux-touchbar-control-center/dist/config.js" ]] && chmod 0666 "$dest/linux-touchbar-control-center/dist/config.js"
+    chmod 0755 "$dest/system/react-drm-tb-detach"
+    [[ -d "$dest/node_modules/.bin" ]] && chmod -R 0755 "$dest/node_modules/.bin"
+    find "$dest" -type f \( -name "*.sh" -o -name "*.node" -o -name "*.so*" \) -exec chmod 0755 {} +
+    [[ -f "$srcdir/$pkgname-src/LICENSE" ]] && install -Dm0644 "$srcdir/$pkgname-src/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

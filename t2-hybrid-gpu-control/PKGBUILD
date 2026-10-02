@@ -1,0 +1,52 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-hybrid-gpu-control
+pkgver=0.1.0.r14.9b640be
+pkgrel=1
+pkgdesc="Configure hybrid graphics on MacBookPro15,1/16,1/16,4'"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 't2gmux-dkms')
+makedepends=('cargo' 'git')
+provides=("$pkgname-git")
+conflicts=('t2-dgpu-control' "$pkgname-git")
+replaces=("$pkgname-git")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    sed -i 's|/usr/local/libexec|/usr/lib/t2-hybrid-gpu-control|g' \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/main.rs" \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.policy" \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.status.policy"
+    sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/main.rs"
+    cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+}
+
+build() {
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" build
+}
+
+package() {
+    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/lib/t2-hybrid-gpu-control" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor/scalable/apps" "$pkgdir/usr/share/polkit-1/actions" "$pkgdir/etc/environment.d"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/target/release/t2-hybrid-gpu-control" "$pkgdir/usr/bin/t2-hybrid-gpu-control"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/t2-hybrid-gpu-control-helper" "$pkgdir/usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-helper"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/t2-hybrid-gpu-control-status" "$pkgdir/usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-status"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2hybridgpucontrol.gtk.desktop" "$pkgdir/usr/share/applications/org.t2hybridgpucontrol.gtk.desktop"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/assets/icons/hicolor/scalable/apps/org.t2hybridgpucontrol.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2hybridgpucontrol.gtk.svg"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.status.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.status.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/90-kait2en-gsk-renderer.conf" "$pkgdir/etc/environment.d/90-kait2en-gsk-renderer.conf"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

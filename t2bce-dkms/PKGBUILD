@@ -1,0 +1,58 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2bce-dkms
+pkgver=0.01.r41.a02d231
+pkgrel=1
+pkgdesc="KaiT2en BCE (dma, core, vhci, audio, ave) module"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+depends=('dkms')
+optdepends=(
+    'linux-t2-headers: build modules against the T2 kernel'
+    'linux-headers: build modules against the Arch kernel'
+    't2bce_audio-alsa-ucm-conf: ALSA UCM audio profiles'
+    't2bce_audio-dsp: Model-specific host-side audio DSP'
+)
+makedepends=('git')
+provides=('t2bce' 't2bce_core' 't2bce_audio' 't2bce_ave' 't2bce_dma' 't2bce_vhci')
+conflicts=('t2bce_core' 't2bce_audio' 't2bce_ave' 't2bce_dma' 't2bce_vhci')
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora"
+  _version=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$_p/modules/t2bce_stack/dkms.conf")
+  local _paths=(modules/t2bce_stack modules/t2bce_core modules/t2bce_dma modules/t2bce_audio modules/t2bce_ave modules/t2bce_vhci t2-services/t2-ave/kernel/t2bce_ave)
+  _revision=$(git -C "$_p" rev-list --count HEAD -- "${_paths[@]}")
+  _commit=$(git -C "$_p" log -1 --format="%h" -- "${_paths[@]}")
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    local src="$srcdir/KaiT2en-Fedora" dest="$srcdir/t2bce_stack"
+    rm -rf "$dest"
+    mkdir -p "$dest"
+    cp -a "$src/modules/t2bce_stack/Makefile" "$src/modules/t2bce_stack/dkms.conf" "$src/modules/t2bce_stack/README.md" "$dest/"
+    local m
+    for m in t2bce_dma t2bce_core t2bce_vhci t2bce_audio; do
+        cp -a "$src/modules/$m" "$dest/"
+    done
+    if [[ -d "$src/t2-services/t2-ave/kernel/t2bce_ave" ]]; then
+        cp -a "$src/t2-services/t2-ave/kernel/t2bce_ave" "$dest/t2bce_ave"
+    else
+        cp -a "$src/modules/t2bce_ave" "$dest/t2bce_ave"
+    fi
+}
+
+package() {
+    local src="$srcdir/KaiT2en-Fedora"
+    local dest="$srcdir/t2bce_stack"
+    install -d -m0755 "$pkgdir/usr/src/t2bce_stack-$pkgver"
+    cp -a "$dest/." "$pkgdir/usr/src/t2bce_stack-$pkgver/"
+    sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$pkgver\"/" "$pkgdir/usr/src/t2bce_stack-$pkgver/dkms.conf"
+    install -D -m0644 "$startdir/modprobe.d/00-kait2en-t2bce.conf" "$pkgdir/usr/lib/modprobe.d/00-kait2en-t2bce.conf"
+    install -D -m0644 "$startdir/mkinitcpio.conf.d/00-kait2en-t2bce.conf" "$pkgdir/etc/mkinitcpio.conf.d/00-kait2en-t2bce.conf"
+    install -D -m0644 "$src/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

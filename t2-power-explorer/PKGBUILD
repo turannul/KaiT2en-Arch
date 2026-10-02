@@ -1,0 +1,47 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-power-explorer
+pkgver=0.1.0.r10.e452274
+pkgrel=1
+pkgdesc="Device topology and runtime power state explorer"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets')
+makedepends=('cargo' 'git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/ui.rs"
+    sed -i 's|/usr/local/libexec|/usr/lib/t2-power-explorer|g' \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/diagnostics.rs" \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2powerexplorer.policy"
+    cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+}
+
+build() {
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" build
+}
+
+package() {
+    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/lib/t2-power-explorer" "$pkgdir/usr/share/polkit-1/actions" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor/scalable/apps"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/target/release/t2-power-explorer" "$pkgdir/usr/bin/t2-power-explorer"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-power-explorer-status" "$pkgdir/usr/lib/t2-power-explorer/t2-power-explorer-status"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2powerexplorer.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2powerexplorer.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2powerexplorer.gtk.desktop" "$pkgdir/usr/share/applications/org.t2powerexplorer.gtk.desktop"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/assets/icons/hicolor/scalable/apps/org.t2powerexplorer.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2powerexplorer.gtk.svg"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

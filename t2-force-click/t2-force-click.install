@@ -1,0 +1,13 @@
+post_install() {
+    systemctl enable t2-force-click.service
+    [ -d /run/systemd/system ] && systemctl start t2-force-click.service
+}
+
+post_upgrade() {
+    [ -d /run/systemd/system ] && systemctl try-restart t2-force-click.service
+}
+
+pre_remove() {
+    [ -d /run/systemd/system ] && systemctl stop t2-force-click.service
+    systemctl disable t2-force-click.service
+}

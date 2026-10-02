@@ -1,0 +1,18 @@
+post_install() {
+    [ -d /run/systemd/system ] && systemctl stop kait2en-dgpu-off.service kait2en-dgpu-suspend.service kait2en-amdgpu-profile.service kait2en-amdgpu-profile-resume.service || true
+    systemctl disable kait2en-dgpu-off.service kait2en-dgpu-suspend.service kait2en-amdgpu-profile.service kait2en-amdgpu-profile-resume.service || true
+    if command -v flatpak >/dev/null 2>&1; then
+        flatpak override --system --env=GSK_RENDERER=ngl || true
+    fi
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    if [ -f /var/lib/flatpak/overrides/global ]; then
+        sed -i '/^GSK_RENDERER=ngl$/d' /var/lib/flatpak/overrides/global || true
+    fi
+}
+

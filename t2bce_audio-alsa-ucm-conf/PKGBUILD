@@ -1,0 +1,35 @@
+# Maintainer: Noa Himesaka <himesaka@noa.codes>
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2bce_audio-alsa-ucm-conf
+pkgver=0.5.r5.a02d231
+pkgrel=1
+pkgdesc="ALSA UCM configuration for the t2bce_audio"
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+arch=('x86_64')
+license=('GPL-2.0-only')
+depends=('t2bce_audio')
+optdepends=('pipewire' 'pulseaudio')
+provides=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
+conflicts=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
+replaces=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
+install="$pkgname.install"
+makedepends=('git')
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _revision _commit _p="$srcdir/KaiT2en-Fedora"
+  _revision=$(git -C "$_p" rev-list --count HEAD -- "modules/$pkgname")
+  _commit=$(git -C "$_p" log -1 --format="%h" -- "modules/$pkgname")
+  printf '0.5.r%s.%s' "${_revision:?}" "${_commit:?}"
+}
+
+package() {
+  cd "$srcdir/KaiT2en-Fedora/modules/$pkgname"
+  for conf in ucm2/AppleT2/*.conf ucm2/conf.d/*/*.conf; do
+    install -Dm644 "$conf" "$pkgdir/usr/share/alsa/$conf"
+  done
+  install -Dm644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,43 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-journal
+pkgver=0.1.0.r17.5e09e3f
+pkgrel=1
+pkgdesc="Utility for Apple T2 bridgeOS logs"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('systemd')
+makedepends=('cargo' 'git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/t2-services/$pkgname/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- "apps/$pkgname" "t2-services/$pkgname")
+  _commit=$(git -C "$_p" log -1 --format="%h" -- "apps/$pkgname" "t2-services/$pkgname")
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/t2-services/$pkgname/Cargo.toml"
+}
+
+build() {
+    make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" build CARGO_FLAGS='--frozen --locked' TARGET_DIR="$srcdir/KaiT2en-Fedora/t2-services/$pkgname/target"
+}
+
+check() {
+    make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" test CARGO_FLAGS='--release --frozen --locked' TARGET_DIR="$srcdir/KaiT2en-Fedora/t2-services/$pkgname/target"
+}
+
+package() {
+    make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" install PREFIX=/usr DESTDIR="$pkgdir" TARGET_DIR="$srcdir/KaiT2en-Fedora/t2-services/$pkgname/target"
+    ln -sf t2journal "$pkgdir/usr/bin/t2-journal"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

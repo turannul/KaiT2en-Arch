@@ -1,0 +1,20 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=kait2en-apps-meta
+pkgver=0.2
+pkgrel=2
+pkgdesc="KaiT2en applications metapackage."
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+groups=('kait2en')
+depends=('t2-ave' 't2-cpu-control' 't2-fan-control' 't2-power-explorer' 't2-power-tune' 't2-smc-control' 't2-touchid' 't2-force-click' 't2-journal')
+optdepends=(
+    't2bce_audio-alsa-ucm-conf: ALSA UCM audio profiles for T2 Macs'
+    't2bce_audio-dsp: Model-specific host-side audio DSP'
+    'react-drm: Touch Bar control center'
+    't2-touchbar: Touch Bar replacement with dark-first display, media and F-key rows'
+    't2-hybrid-gpu-control: Configure hybrid graphics on MacBookPro15,1/16,1/16,4'
+    't2-dgpu-control: Discrete GPU power and boot-GPU selector for dual-GPU Macs'
+)

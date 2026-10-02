@@ -1,0 +1,22 @@
+post_install() {
+    [ -d /run/systemd/system ] && systemctl is-active --quiet tiny-dfr.service && systemctl stop tiny-dfr.service
+    [ -d /run/systemd/system ] && systemctl is-enabled --quiet tiny-dfr.service && systemctl disable tiny-dfr.service
+    [ -d /run/systemd/system ] && systemctl enable kait2en-touchbar-attach.service && systemctl --global enable kait2en-touchbar.service
+
+    [ -f /usr/lib/tmpfiles.d/t2-touchbar.conf ] && systemd-tmpfiles --create /usr/lib/tmpfiles.d/t2-touchbar.conf
+    [ -d /run/udev ] && udevadm control --reload && udevadm trigger -c add -s drm -s backlight -s input -s usb -s misc -s hid
+
+    echo "==> [t2-touchbar] To enable Touch Bar access for your user, run:"
+    echo "==>     sudo usermod -aG kait2en-touchbar username"
+    echo "==> and logout and back in."
+}
+
+post_upgrade() {
+    post_install
+}
+
+pre_remove() {
+    [ -d /run/systemd/system ] && systemctl disable --now kait2en-touchbar-attach.service && systemctl --global disable kait2en-touchbar.service
+    [ -x /usr/bin/kait2en-touchbar ] && /usr/bin/kait2en-touchbar --detach
+    [ -d /run/udev ] && udevadm control --reload && udevadm trigger -c add -s drm -s backlight -s input -s usb -s misc -s hid
+}

@@ -1,0 +1,58 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-cpu-control
+pkgver=0.02.r14.295f84e
+pkgrel=1
+pkgdesc="CPU power limit and thermal telemetry controller"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'polkit' 'msr-tools' 'kait2en-assets' 't2smc-dkms')
+optdepends=(
+    'linux-t2-headers: for kernel benchmark on T2 kernel'
+    'linux-headers: for kernel benchmark on Arch kernel'
+)
+makedepends=('git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+  _version=$(sed -n 's/^[[:space:]]*APP_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$_p/t2-cpu-control.py" | head -n1)
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    sed -i 's|/usr/local/libexec|/usr/lib/t2-cpu-control|g' \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control.py" \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control.service" \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control-resume" \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2cpucontrol.policy"
+    sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control.py"
+    sed -i 's|/usr/local/bin|/usr/bin|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2cpucontrol.gtk.desktop"
+}
+
+check() {
+    python -m py_compile "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control.py"
+}
+
+package() {
+    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/lib/t2-cpu-control" "$pkgdir/usr/share/polkit-1/actions" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor/scalable/apps" "$pkgdir/usr/lib/systemd/system" "$pkgdir/usr/lib/systemd/system-sleep"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control.py" "$pkgdir/usr/bin/t2-cpu-control"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control-helper" "$pkgdir/usr/lib/t2-cpu-control/t2-cpu-control-helper"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control-status" "$pkgdir/usr/lib/t2-cpu-control/t2-cpu-control-status"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-kernel-benchmark" "$pkgdir/usr/lib/t2-cpu-control/t2-cpu-kernel-benchmark"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control-resume" "$pkgdir/usr/lib/systemd/system-sleep/t2-cpu-control"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/t2-cpu-control.service" "$pkgdir/usr/lib/systemd/system/t2-cpu-control.service"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2cpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2cpucontrol.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2cpucontrol.gtk.desktop" "$pkgdir/usr/share/applications/org.t2cpucontrol.gtk.desktop"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2cpucontrol.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2cpucontrol.gtk.svg"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

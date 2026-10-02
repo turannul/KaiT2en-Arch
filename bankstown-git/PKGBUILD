@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MIT
+# Maintainer: Sagar Patil <fntneerqqlcngvy@tznvy.pbz>
+
+pkgname=bankstown-git
+pkgver=1.1.0.r22.8e6f96f
+pkgrel=1
+pkgdesc="Bankstown LV2 Plugin"
+arch=('x86_64')
+url="https://github.com/chadmed/bankstown"
+license=('MIT')
+depends=('lv2')
+makedepends=('cargo' 'git')
+provides=('bankstown')
+conflicts=('bankstown')
+source=("git+https://github.com/chadmed/bankstown.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/bankstown"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD)
+  _commit=$(git -C "$_p" log -1 --format="%h")
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    cargo fetch --locked --manifest-path "$srcdir/bankstown/Cargo.toml"
+}
+
+build() {
+    make -C "$srcdir/bankstown"
+}
+
+package() {
+    make -C "$srcdir/bankstown" DESTDIR="$pkgdir" LIBDIR=/usr/lib install
+}

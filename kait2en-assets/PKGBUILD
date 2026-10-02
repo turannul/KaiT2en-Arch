@@ -1,0 +1,36 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=kait2en-assets
+pkgver=r9.204cb32
+pkgrel=1
+pkgdesc="Shared branding assets and fonts"
+arch=('any')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+makedepends=('git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _revision _commit _p="$srcdir/KaiT2en-Fedora/assets"
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf 'r%s.%s' "${_revision:?}" "${_commit:?}"
+}
+
+package() {
+    install -d -m0755 "$pkgdir/usr/share/kait2en"
+    install -m0644 "$srcdir/KaiT2en-Fedora/assets/kait2en-app-logo.png" "$pkgdir/usr/share/kait2en/kait2en-wordmark.png"
+    if [[ -f "$srcdir/KaiT2en-Fedora/assets/kaiT2en-logo.png" ]]; then
+        install -m0644 "$srcdir/KaiT2en-Fedora/assets/kaiT2en-logo.png" "$pkgdir/usr/share/kait2en/kaiT2en-logo.png"
+    fi
+    if [[ -d "$srcdir/KaiT2en-Fedora/assets/fonts" ]]; then
+        install -d -m0755 "$pkgdir/usr/share/fonts/kait2en"
+        install -m0644 "$srcdir/KaiT2en-Fedora/assets/fonts"/*.ttf "$pkgdir/usr/share/fonts/kait2en/"
+    fi
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

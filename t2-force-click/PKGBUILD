@@ -1,0 +1,49 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-force-click
+pkgver=0.1.0.r2.665ad11
+pkgrel=1
+pkgdesc="Trackpad click and force-click pressure and action configurator"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('gtk4' 'libadwaita' 'kait2en-assets' 't2_precision_trackpad-dkms' 't2_trackpad_actuator-dkms')
+makedepends=('cargo' 'git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    local src="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+    sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/main.rs"
+    cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+}
+
+build() {
+    local src="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" build
+}
+
+package() {
+    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor/scalable/apps" "$pkgdir/usr/lib/systemd/system"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/target/release/t2-force-click" "$pkgdir/usr/bin/t2-force-click"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2forceclick.gtk.desktop" "$pkgdir/usr/share/applications/org.t2forceclick.gtk.desktop"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/assets/icons/hicolor/scalable/apps/org.t2forceclick.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2forceclick.gtk.svg"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/t2-force-click.service" "$pkgdir/usr/lib/systemd/system/t2-force-click.service"
+    sed -i 's|/usr/local/bin|/usr/bin|g' \
+        "$pkgdir/usr/share/applications/org.t2forceclick.gtk.desktop" \
+        "$pkgdir/usr/lib/systemd/system/t2-force-click.service"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
