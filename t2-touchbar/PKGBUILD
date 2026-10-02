@@ -1,0 +1,50 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-touchbar
+pkgver=0.1.0.r612.g431d05b
+pkgrel=1
+pkgdesc="Touch Bar replacement with dark-first display, media and F-key rows"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('t2bdrm-dkms' 't2touchbar-dkms' 't2_trackpad_actuator-dkms' 'adwaita-fonts' 'libinput')
+optdepends=(
+    'cantarell-fonts: Humanist sans serif font'
+    'inter-font: A typeface specially designed for user interfaces'
+)
+makedepends=('cargo' 'git')
+checkdepends=('adwaita-fonts')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git" "react-drm" "mac-touchbar-plus" "tiny-dfr")
+replaces=("$pkgname-git" "react-drm" "mac-touchbar-plus" "tiny-dfr")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+    sed -i 's|const FONT_PATHS: \[&str; 3\]|const FONT_PATHS: [\&str; 6]|' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/renderer.rs"
+    sed -i '/^const FONT_PATHS/,/^];/s|^];|    "/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf",\n    "/usr/share/fonts/inter/InterVariable.ttf",\n    "/usr/share/fonts/cantarell/Cantarell-VF.otf",\n];|' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/renderer.rs"
+}
+
+check() {
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" test
+}
+
+build() {
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" build
+}
+
+package() {
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" install DESTDIR="$pkgdir"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/local/share/licenses/kait2en-touchbar/LICENSE"
+}

@@ -1,0 +1,248 @@
+name: compile
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'installed_files.txt'
+      - 'README.md'
+      - '.gitignore'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Package to build (or "all")'
+        required: false
+        default: 'all'
+  schedule:
+    - cron: '0 9 * * *'
+
+env:
+  CARGO_HOME: ${{ github.workspace }}/.cargo-cache
+  npm_config_cache: ${{ github.workspace }}/.npm-cache
+  PACKAGER: "Turann_ (turannul) <turanull000@gmail.com>"
+  REPO_NAME: "turann-s-place"
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    container: archlinux:base
+    permissions:
+      contents: write
+    outputs:
+      packages: ${{ steps.set-matrix.outputs.packages }}
+      has_packages: ${{ steps.set-matrix.outputs.has_packages }}
+    steps:
+      - name: Install dependencies
+        run: pacman -Sy --noconfirm --needed git nodejs jq base-devel
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Create non-root user
+        run: |
+          useradd -m turannul
+          chown -R turannul:turannul .
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Determine packages to build
+        id: set-matrix
+        run: |
+          set -e
+          event="${{ github.event_name }}"
+          echo "Trigger event: $event"
+          
+          if [ "$event" = "schedule" ]; then
+            echo "Running daily pkgver refresh..."
+            for d in */; do
+              [ -f "$d/PKGBUILD" ] || continue
+              grep -q 'pkgver()' "$d/PKGBUILD" || continue
+              echo "== checking $d =="
+              su -p turannul -c "cd $d && makepkg --nobuild --nodeps --noprepare --skippgpcheck" || true
+            done
+
+            changed_pkgs=$(git status -s '*/PKGBUILD' | awk '{print $2}' | cut -d/ -f1 | sort -u)
+            if [ -z "$changed_pkgs" ]; then
+              echo "No pkgver changes detected."
+              echo "has_packages=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            echo "Committing pkgver bump for: $changed_pkgs"
+            git config user.name "actions-user"
+            git config user.email "actions-user@users.noreply.github.com"
+            git add '*/PKGBUILD'
+            git commit -m "chore: daily pkgver bump [skip ci]"
+            git push origin main
+
+            matrix=$(echo "$changed_pkgs" | jq -R -s -c 'split("\n")[:-1]')
+            echo "packages=$matrix" >> "$GITHUB_OUTPUT"
+            echo "has_packages=true" >> "$GITHUB_OUTPUT"
+
+          elif [ "$event" = "workflow_dispatch" ]; then
+            target="${{ inputs.target }}"
+            if [ "$target" = "all" ] || [ -z "$target" ]; then
+              matrix=$(ls -d */ | sed 's|/||' | while read -r p; do [ -f "$p/PKGBUILD" ] && echo "$p"; done | jq -R -s -c 'split("\n")[:-1]')
+            else
+              matrix=$(jq -n --arg pkg "$target" '[$pkg]')
+            fi
+            echo "packages=$matrix" >> "$GITHUB_OUTPUT"
+            echo "has_packages=true" >> "$GITHUB_OUTPUT"
+
+          elif [ "$event" = "pull_request" ]; then
+            changed_pkgs=$(git diff --name-only "origin/${{ github.base_ref }}" HEAD | grep -E '^[^/]+/.*' | cut -d/ -f1 | sort -u | while read -r p; do [ -f "$p/PKGBUILD" ] && echo "$p"; done || true)
+            if [ -z "$changed_pkgs" ]; then
+              echo "No package directories modified in PR."
+              echo "has_packages=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            matrix=$(echo "$changed_pkgs" | jq -R -s -c 'split("\n")[:-1]')
+            echo "packages=$matrix" >> "$GITHUB_OUTPUT"
+            echo "has_packages=true" >> "$GITHUB_OUTPUT"
+
+          else # push
+            if [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+              diff_base="${{ github.event.before }}"
+            else
+              diff_base="HEAD~1"
+            fi
+            changed_pkgs=$(git diff --name-only "$diff_base" HEAD | grep -E '^[^/]+/.*' | cut -d/ -f1 | sort -u | while read -r p; do [ -f "$p/PKGBUILD" ] && echo "$p"; done || true)
+            if [ -z "$changed_pkgs" ]; then
+              echo "No package directories modified."
+              echo "has_packages=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            matrix=$(echo "$changed_pkgs" | jq -R -s -c 'split("\n")[:-1]')
+            echo "packages=$matrix" >> "$GITHUB_OUTPUT"
+            echo "has_packages=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: detect
+    if: needs.detect.outputs.has_packages == 'true'
+    runs-on: ubuntu-latest
+    container: archlinux:base
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.detect.outputs.packages) }}
+
+    steps:
+      - name: Install build dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed base-devel git rust npm nodejs python cargo gtk4 libadwaita pango cairo librsvg libdrm libinput fprintd libimobiledevice libplist libfprint pipewire pipewire-audio pipewire-pulse wireplumber lsp-plugins-lv2 lv2 alsa-ucm-conf systemd python-gobject polkit bc cpio curl msr-tools pciutils rsync brightnessctl cava adwaita-fonts
+
+      - name: Checkout Arch Repo
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Create non-root user
+        run: |
+          useradd -m turannul
+          chown -R turannul:turannul .
+
+      - name: Build ${{ matrix.package }}
+        run: su -p turannul -c "cd ${{ matrix.package }} && makepkg --nodeps --force"
+
+      - name: Upload ${{ matrix.package }} artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.package }}
+          path: ${{ matrix.package }}/*.pkg.tar.zst
+          if-no-files-found: error
+
+  publish:
+    needs: [detect, build]
+    if: needs.detect.outputs.has_packages == 'true' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    container: archlinux:base
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - name: Install tools
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed git base-devel
+
+      - name: Checkout main repo
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download built packages
+        uses: actions/download-artifact@v7
+        with:
+          path: pkgs
+          merge-multiple: true
+
+      - name: Update gh-pages repository and pacman db
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE/gh-pages"
+
+          if git clone --depth 1 --branch gh-pages "https://actions-user:${GH_TOKEN}@github.com/turannul/KaiT2en-Arch.git" gh-pages 2>/dev/null; then
+            cd gh-pages
+          else
+            mkdir gh-pages && cd gh-pages
+            git init -b gh-pages
+            git remote add origin "https://actions-user:${GH_TOKEN}@github.com/turannul/KaiT2en-Arch.git"
+          fi
+
+          mkdir -p x86_64
+          for pkg in ../pkgs/*.pkg.tar.zst; do
+            [ -f "$pkg" ] || continue
+            case "$(basename "$pkg")" in *-debug-*) continue ;; esac
+            name=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
+            echo "Updating package $name..."
+            rm -f x86_64/"${name}"-*.pkg.tar.zst
+            cp "$pkg" x86_64/
+          done
+
+          echo "Updating pacman database..."
+          repo-add "x86_64/${REPO_NAME}.db.tar.gz" x86_64/*.pkg.tar.zst
+
+          git config user.name "actions-user"
+          git config user.email "actions-user@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No repository changes on gh-pages."
+          else
+            git commit -m "chore: publish packages [skip ci]"
+            git push -u origin gh-pages
+          fi
+
+      - name: Update installed_files.txt on main
+        run: |
+          set -e
+          cd "$GITHUB_WORKSPACE"
+          : > installed_files.txt
+          for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
+            [ -f "$pkg" ] || continue
+            case "$(basename "$pkg")" in *-debug-* | *-meta-*) continue ;; esac
+            name=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
+            {
+              echo "# $name"
+              tar -tf "$pkg" | grep -vE '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$' || true
+              echo
+            } >> installed_files.txt
+          done
+
+          git config user.name "actions-user"
+          git config user.email "actions-user@users.noreply.github.com"
+          git add installed_files.txt
+          if git diff --cached --quiet; then
+            echo "No changes to installed_files.txt"
+          else
+            git commit -m "chore: update installed_files.txt [skip ci]"
+            git push origin main
+          fi

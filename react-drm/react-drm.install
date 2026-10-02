@@ -1,0 +1,66 @@
+_detect_profile() {
+    if lsmod 2>/dev/null | grep -qE 't2bdrm|t2touchbar_(bl|kbd)'; then
+        echo kait2en
+        return 0
+    fi
+    if pacman -Qq t2bdrm-dkms >/dev/null 2>&1 || pacman -Qq t2touchbar-dkms >/dev/null 2>&1; then
+        echo kait2en
+        return 0
+    fi
+    echo t2linux
+}
+
+_install_profile_files() {
+    local profile=$1
+    local env_src="/opt/react-drm/.env.example.$profile"
+    local rules_src="/opt/react-drm/system/99-react-drm-$profile.rules"
+
+    echo "==> [react-drm] hardware profile: $profile"
+    if [[ ! -f $env_src || ! -f $rules_src ]]; then
+        echo "==> [react-drm] WARNING: profile files for '$profile' missing, falling back to t2linux"
+        profile=t2linux
+        env_src="/opt/react-drm/.env.example.$profile"
+        rules_src="/opt/react-drm/system/99-react-drm-$profile.rules"
+    fi
+    if [[ ! -f /opt/react-drm/.env ]]; then
+        install -m0644 "$env_src" /opt/react-drm/.env
+    else
+        echo "==> [react-drm] keeping existing /opt/react-drm/.env (remove it to re-apply profile defaults)"
+    fi
+    install -m0644 "$rules_src" /usr/lib/udev/rules.d/99-react-drm.rules
+    if [[ -d /run/udev ]]; then
+        udevadm control --reload-rules
+        udevadm trigger -s drm -s backlight -s input -s usb
+    fi
+    true
+}
+
+_fix_configs() {
+    local cc_dir="/opt/react-drm/linux-touchbar-control-center"
+    [[ -f $cc_dir/config.ts ]] && chmod 0666 "$cc_dir/config.ts"
+    if [[ -d $cc_dir/dist ]]; then
+        chmod 0777 "$cc_dir/dist"
+        [[ -f $cc_dir/dist/config.js ]] && chmod 0666 "$cc_dir/dist/config.js"
+    fi
+    true
+}
+
+post_install() {
+    local profile
+    profile=$(_detect_profile)
+    _install_profile_files "$profile"
+    _fix_configs
+    echo "==> [react-drm] enable the Touch Bar UI with: systemctl --user enable --now react-drm"
+}
+
+post_upgrade() {
+    post_install
+}
+
+pre_remove() {
+    rm -f /opt/react-drm/.env /usr/lib/udev/rules.d/99-react-drm.rules
+    if [[ -d /run/udev ]]; then
+        udevadm control --reload-rules
+    fi
+    true
+}

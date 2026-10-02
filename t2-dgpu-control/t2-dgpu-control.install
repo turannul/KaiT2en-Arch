@@ -1,0 +1,16 @@
+_unit_control() {
+    if systemctl is-enabled --quiet kait2en-dgpu-off.service; then
+        systemctl enable kait2en-dgpu-suspend.service
+    else
+        systemctl disable kait2en-dgpu-suspend.service
+    fi
+}
+
+post_upgrade() {
+    _unit_control
+}
+
+pre_remove() {
+    [ -d /run/systemd/system ] && systemctl stop kait2en-dgpu-off.service kait2en-dgpu-suspend.service kait2en-amdgpu-profile.service kait2en-amdgpu-profile-resume.service
+    systemctl disable kait2en-dgpu-off.service kait2en-dgpu-suspend.service kait2en-amdgpu-profile.service kait2en-amdgpu-profile-resume.service
+}

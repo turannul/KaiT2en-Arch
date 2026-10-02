@@ -1,0 +1,11 @@
+.build/
+*.pkg.tar.zst
+src/
+pkg/
+KaiT2en-Fedora/
+react-drm-src/
+bankstown-*.tar.gz
+.cargo-cache/
+.npm-cache/
+deps/
+public/

@@ -1,0 +1,13 @@
+post_install() {
+    systemctl enable t2-cpu-control.service
+    [ -d /run/systemd/system ] && systemctl start t2-cpu-control.service
+}
+
+post_upgrade() {
+    [ -d /run/systemd/system ] && systemctl try-restart t2-cpu-control.service
+}
+
+pre_remove() {
+    [ -d /run/systemd/system ] && systemctl stop t2-cpu-control.service
+    systemctl disable t2-cpu-control.service
+}

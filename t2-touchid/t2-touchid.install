@@ -1,0 +1,45 @@
+_detect_user() {
+    [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ] && user="$SUDO_USER" && return
+    user=$(loginctl list-sessions --no-legend 2>/dev/null | awk '$4 == "seat0" && $3 != "root" && $3 != "" {print $3; exit}')
+    [ -n "$user" ] && return
+    user=$(logname 2>/dev/null)
+    [ -n "$user" ] && [ "$user" != "root" ] && return
+    user=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 65000 && $7 !~ /(nologin|false)$/ {print $1; exit}')
+}
+
+_bind_user() {
+    local etc_conf="/etc/kait2en/t2-touchid.conf"
+
+    _detect_user
+    [ -z "$user" ] && echo "==> [kait2en] No user detected; set T2_TOUCHID_BIND_USER in $etc_conf" && return 0
+
+    if [ ! -f "$etc_conf" ]; then
+        install -d -m 0755 /etc/kait2en
+        printf 'T2_TOUCHID_UID=auto\nT2_TOUCHID_FLAGS=0\nT2_TOUCHID_BIND_USER=%s\nT2_TOUCHID_SOCKET=/run/t2-touchid/fprint.sock\n' "$user" > "$etc_conf"
+        echo "==> [kait2en] Bound Touch ID to user '$user' in $etc_conf"
+    elif grep -q '^T2_TOUCHID_BIND_USER=none' "$etc_conf"; then
+        sed -i "s/^T2_TOUCHID_BIND_USER=none/T2_TOUCHID_BIND_USER=$user/" "$etc_conf"
+        echo "==> [kait2en] Bound Touch ID to user '$user' in $etc_conf"
+    elif ! grep -q '^T2_TOUCHID_BIND_USER=' "$etc_conf"; then
+        echo "T2_TOUCHID_BIND_USER=$user" >> "$etc_conf"
+        echo "==> [kait2en] Bound Touch ID to user '$user' in $etc_conf"
+    fi
+}
+
+post_install() {
+    _bind_user
+    systemctl enable kait2en-t2-touchid.service
+    [ -d /run/systemd/system ] && systemctl restart kait2en-t2-touchid.service fprintd.service
+    echo "==> For configuring PAM/sudo/pkexec please consult 'arch wiki fprintd' or 'arch wiki pam'"
+}
+
+post_upgrade() {
+    _bind_user
+    [ -d /run/systemd/system ] && systemctl try-restart kait2en-t2-touchid.service fprintd.service
+}
+
+pre_remove() {
+    [ -d /run/systemd/system ] && systemctl stop kait2en-t2-touchid.service
+    [ -d /run/systemd/system ] && systemctl try-restart fprintd.service
+    systemctl disable kait2en-t2-touchid.service
+}

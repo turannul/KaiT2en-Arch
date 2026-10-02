@@ -1,0 +1,42 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-touchid
+pkgver=0.1.0.r612.g431d05b
+pkgrel=1
+pkgdesc="T2 Touch ID bridge for fprintd"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora/t2-services/t2-touchid"
+license=('GPL-3.0-or-later')
+depends=('fprintd')
+optdepends=('react-drm' 't2-touchbar')
+backup=('etc/kait2en/t2-touchid.conf')
+makedepends=('cargo' 'git')
+install="${pkgname}.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/t2-services/$pkgname"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+  cargo fetch --locked --manifest-path="$srcdir/KaiT2en-Fedora/t2-services/$pkgname/Cargo.toml"
+}
+
+build() {
+  make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" build CARGO_FLAGS='--frozen --locked' TARGET_DIR="$srcdir/target"
+}
+
+check() {
+  make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" test CARGO_FLAGS='--frozen --locked'
+}
+
+package() {
+  make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" install PREFIX=/usr DESTDIR="$pkgdir" SYSCONFDIR=/etc TARGET_DIR="$srcdir/target" CARGO_FLAGS='--locked --frozen --release'
+  install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

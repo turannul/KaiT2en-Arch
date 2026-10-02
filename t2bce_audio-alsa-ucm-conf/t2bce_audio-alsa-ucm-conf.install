@@ -1,0 +1,99 @@
+_detect_user() {
+    [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ] && user="$SUDO_USER" && return
+    user=$(loginctl list-sessions --no-legend 2>/dev/null | awk '$4 == "seat0" && $3 != "root" && $3 != "" {print $3; exit}')
+    [ -n "$user" ] && return
+    user=$(logname 2>/dev/null)
+    [ -n "$user" ] && [ "$user" != "root" ] && return
+    user=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 65000 && $7 !~ /(nologin|false)$/ {print $1; exit}')
+}
+
+_t2_wireplumber_devices() {
+    local card dev_path pci_path vendor device pci_id pci_tag
+    for card in /sys/class/sound/card*; do
+        [ -e "$card" ] || continue
+        dev_path=$(readlink -f "$card/device" 2>/dev/null) || dev_path=""
+        pci_path="$dev_path"
+        while [ -n "$pci_path" ] && [ "$pci_path" != / ]; do
+            if [ -r "$pci_path/vendor" ] && [ -r "$pci_path/device" ]; then
+                vendor=$(<"$pci_path/vendor")
+                device=$(<"$pci_path/device")
+                if [ "$vendor" = "0x106b" ] && [ "$device" = "0x1803" ]; then
+                    pci_id=$(basename "$pci_path")
+                    pci_tag="${pci_id//:/_}"
+                    printf 'alsa_card.pci-%s\n' "$pci_tag"
+                fi
+                break
+            fi
+            pci_path="${pci_path%/*}"
+        done
+    done
+}
+
+_reset_wireplumber_state() {
+    local state_dir default_profile default_nodes default_routes
+    local device escaped node_tag changed=
+
+    state_dir="$(getent passwd "$user" | cut -d: -f6)/.local/state/wireplumber"
+    default_profile="$state_dir/default-profile"
+    default_nodes="$state_dir/default-nodes"
+    default_routes="$state_dir/default-routes"
+
+    [ -d "$state_dir" ] || return 0
+
+    while IFS= read -r device; do
+        escaped="${device//./\\.}"
+        node_tag="${device#alsa_card.}"
+        node_tag="${node_tag//./\\.}"
+
+        if [ -f "$default_profile" ]; then
+            [ -e "$default_profile.kait2en.bak" ] || cp -p "$default_profile" "$default_profile.kait2en.bak"
+            sed -i "/^${escaped}=/d" "$default_profile"
+            changed=1
+        fi
+
+        if [ -f "$default_nodes" ]; then
+            [ -e "$default_nodes.kait2en.bak" ] || cp -p "$default_nodes" "$default_nodes.kait2en.bak"
+            sed -i -e "/${escaped}/d" -e "/${node_tag}/d" -e '/\.t2-/d' "$default_nodes"
+            changed=1
+        fi
+
+        if [ -f "$default_routes" ]; then
+            [ -e "$default_routes.kait2en.bak" ] || cp -p "$default_routes" "$default_routes.kait2en.bak"
+            sed -i "/^${escaped}:/d" "$default_routes"
+            changed=1
+        fi
+    done < <(_t2_wireplumber_devices)
+
+    [ -n "$changed" ] && echo "==> [kait2en] Reset stored WirePlumber profile defaults for Apple T2 audio"
+    return 0
+}
+
+_restart_user_audio() {
+    if [ -z "$user" ] || [ "$user" = "root" ]; then
+        echo "==> [kait2en] Cannot determine non-root user; restart WirePlumber and PipeWire manually"
+        return 0
+    fi
+
+    local uid runtime
+    uid=$(id -u "$user")
+    runtime="/run/user/$uid"
+    if [ ! -d "$runtime" ]; then
+        echo "==> [kait2en] User runtime $runtime is not active; restart WirePlumber and PipeWire after login"
+        return 0
+    fi
+
+    echo "==> [kait2en] Restarting WirePlumber and PipeWire for $user"
+    runuser -u "$user" -- env XDG_RUNTIME_DIR="$runtime" systemctl --user restart wireplumber pipewire pipewire-pulse ||
+        echo "==> [kait2en] Could not restart user audio services; reboot or restart them manually"
+}
+
+post_install() {
+    _detect_user
+    rm -f /usr/share/alsa/ucm2/AppleT2/HiFi.conf /usr/share/alsa/ucm2/AppleT2/Measurement-x4.conf
+    _reset_wireplumber_state
+    _restart_user_audio
+}
+
+post_upgrade() {
+    post_install
+}

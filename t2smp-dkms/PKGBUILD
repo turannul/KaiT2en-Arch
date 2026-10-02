@@ -1,0 +1,41 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2smp-dkms
+pkgver=0.1.r612.g431d05b
+pkgrel=1
+pkgdesc="KaiT2en SMP module"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+depends=('dkms')
+optdepends=(
+    'linux-t2-headers: build modules against the T2 kernel'
+    'linux-headers: build modules against the Arch kernel'
+)
+makedepends=('git')
+provides=('t2smp')
+conflicts=('t2smp')
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/modules/${pkgname%-dkms}"
+  _version=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$_p/dkms.conf")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    rm -rf "$srcdir/t2smp"
+    mkdir -p "$srcdir/t2smp"
+    cp -a "$srcdir/KaiT2en-Fedora/modules/t2smp/." "$srcdir/t2smp/"
+}
+
+package() {
+    install -d -m0755 "$pkgdir/usr/src/t2smp-$pkgver"
+    cp -a "$srcdir/t2smp/." "$pkgdir/usr/src/t2smp-$pkgver/"
+    sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$pkgver\"/" "$pkgdir/usr/src/t2smp-$pkgver/dkms.conf"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
