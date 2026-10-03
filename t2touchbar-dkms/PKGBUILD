@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2touchbar-dkms
-pkgver=0.1.r612.g431d05b
+pkgver=0.1.r14.ed334cb
 pkgrel=1
 pkgdesc="KaiT2en TouchBar module"
 arch=('x86_64')
@@ -21,7 +21,7 @@ sha256sums=('SKIP')
 
 pkgver() {
   local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/modules/${pkgname%-dkms}"
-  _version=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*//p' "$_p/dkms.conf")
+  _version=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$_p/dkms.conf")
   _revision=$(git -C "$_p" rev-list --count HEAD -- .)
   _commit=$(git -C "$_p" log -1 --format="%h" -- .)
   printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
