@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2sep-dkms
-pkgver=0.7.r612.g431d05b
+pkgver=0.7.r1.1e9c571
 pkgrel=1
 pkgdesc="KaiT2en SEP mailbox module"
 arch=('x86_64')

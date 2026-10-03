@@ -2,7 +2,7 @@
 # Maintainer: Sagar Patil <fntneerqqlcngvy@tznvy.pbz>
 
 pkgname=bankstown-git
-pkgver=1.1.0.r22.g8e6f96f
+pkgver=1.1.0.r22.8e6f96f
 pkgrel=1
 pkgdesc="Bankstown LV2 Plugin"
 arch=('x86_64')

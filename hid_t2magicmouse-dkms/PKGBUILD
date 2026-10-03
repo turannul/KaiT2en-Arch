@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=hid_t2magicmouse-dkms
-pkgver=0.1.r612.g431d05b
+pkgver=0.1.r5.ce07b03
 pkgrel=1
 pkgdesc="KaiT2en Apple HID module"
 arch=('x86_64')

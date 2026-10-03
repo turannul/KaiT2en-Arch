@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2mfi_fastcharge-dkms
-pkgver=0.1.r612.g431d05b
+pkgver=0.1.r2.ee1dbfe
 pkgrel=1
 pkgdesc="KaiT2en MFI fast charge module"
 arch=('x86_64')

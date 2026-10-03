@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2_trackpad_actuator-dkms
-pkgver=0.01.r612.g431d05b
+pkgver=0.01.r1.ce07b03
 pkgrel=1
 pkgdesc="KaiT2en trackpad actuator module"
 arch=('x86_64')

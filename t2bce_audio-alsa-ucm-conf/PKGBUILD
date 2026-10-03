@@ -3,7 +3,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2bce_audio-alsa-ucm-conf
-pkgver=0.5.r5.431d05b
+pkgver=0.5.r5.a02d231
 pkgrel=1
 pkgdesc="ALSA UCM configuration for the t2bce_audio"
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

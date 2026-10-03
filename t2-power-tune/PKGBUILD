@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-power-tune
-pkgver=0.02.r8.431d05b
+pkgver=0.02.r8.c23ede9
 pkgrel=1
 pkgdesc="PCIe ASPM and system power optimization utility"
 arch=('any')
