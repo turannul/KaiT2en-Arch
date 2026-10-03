@@ -3698,13 +3698,13 @@ usr/share/licenses/
 usr/share/licenses/t2touchbar-dkms/
 usr/share/licenses/t2touchbar-dkms/LICENSE
 usr/src/
-usr/src/t2touchbar-\001.r14.ed334cb/
-usr/src/t2touchbar-\001.r14.ed334cb/.gitignore
-usr/src/t2touchbar-\001.r14.ed334cb/Makefile
-usr/src/t2touchbar-\001.r14.ed334cb/README.md
-usr/src/t2touchbar-\001.r14.ed334cb/dkms.conf
-usr/src/t2touchbar-\001.r14.ed334cb/hid-ids.h
-usr/src/t2touchbar-\001.r14.ed334cb/t2hid.c
-usr/src/t2touchbar-\001.r14.ed334cb/t2touchbar_bl.c
-usr/src/t2touchbar-\001.r14.ed334cb/t2touchbar_kbd.c
+usr/src/t2touchbar-0.1.r14.ed334cb/
+usr/src/t2touchbar-0.1.r14.ed334cb/.gitignore
+usr/src/t2touchbar-0.1.r14.ed334cb/Makefile
+usr/src/t2touchbar-0.1.r14.ed334cb/README.md
+usr/src/t2touchbar-0.1.r14.ed334cb/dkms.conf
+usr/src/t2touchbar-0.1.r14.ed334cb/hid-ids.h
+usr/src/t2touchbar-0.1.r14.ed334cb/t2hid.c
+usr/src/t2touchbar-0.1.r14.ed334cb/t2touchbar_bl.c
+usr/src/t2touchbar-0.1.r14.ed334cb/t2touchbar_kbd.c
 
