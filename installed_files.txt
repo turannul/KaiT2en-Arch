@@ -31,10 +31,10 @@ usr/share/licenses/
 usr/share/licenses/fruitjuice/
 usr/share/licenses/fruitjuice/LICENSE
 usr/src/
-usr/src/fruitjuice-2.0.1_1.0.r24.ge0a504e/
-usr/src/fruitjuice-2.0.1_1.0.r24.ge0a504e/Makefile
-usr/src/fruitjuice-2.0.1_1.0.r24.ge0a504e/dkms.conf
-usr/src/fruitjuice-2.0.1_1.0.r24.ge0a504e/fruitjuice.c
+usr/src/fruitjuice-2.0.1.r24.e0a504e/
+usr/src/fruitjuice-2.0.1.r24.e0a504e/Makefile
+usr/src/fruitjuice-2.0.1.r24.e0a504e/dkms.conf
+usr/src/fruitjuice-2.0.1.r24.e0a504e/fruitjuice.c
 
 # hid_t2magicmouse-dkms
 etc/
@@ -49,11 +49,11 @@ usr/share/licenses/
 usr/share/licenses/hid_t2magicmouse-dkms/
 usr/share/licenses/hid_t2magicmouse-dkms/LICENSE
 usr/src/
-usr/src/hid_t2magicmouse-0.1.r612.g431d05b/
-usr/src/hid_t2magicmouse-0.1.r612.g431d05b/Makefile
-usr/src/hid_t2magicmouse-0.1.r612.g431d05b/dkms.conf
-usr/src/hid_t2magicmouse-0.1.r612.g431d05b/hid-ids.h
-usr/src/hid_t2magicmouse-0.1.r612.g431d05b/hid_t2magicmouse.c
+usr/src/hid_t2magicmouse-0.1.r5.ce07b03/
+usr/src/hid_t2magicmouse-0.1.r5.ce07b03/Makefile
+usr/src/hid_t2magicmouse-0.1.r5.ce07b03/dkms.conf
+usr/src/hid_t2magicmouse-0.1.r5.ce07b03/hid-ids.h
+usr/src/hid_t2magicmouse-0.1.r5.ce07b03/hid_t2magicmouse.c
 
 # kait2en-assets
 usr/
@@ -3333,13 +3333,13 @@ usr/share/licenses/
 usr/share/licenses/t2_precision_trackpad-dkms/
 usr/share/licenses/t2_precision_trackpad-dkms/LICENSE
 usr/src/
-usr/src/t2_precision_trackpad-0.01.r612.g431d05b/
-usr/src/t2_precision_trackpad-0.01.r612.g431d05b/.gitignore
-usr/src/t2_precision_trackpad-0.01.r612.g431d05b/Makefile
-usr/src/t2_precision_trackpad-0.01.r612.g431d05b/dkms.conf
-usr/src/t2_precision_trackpad-0.01.r612.g431d05b/hid-ids.h
-usr/src/t2_precision_trackpad-0.01.r612.g431d05b/t2_precision_trackpad.c
-usr/src/t2_precision_trackpad-0.01.r612.g431d05b/test-handoff.sh
+usr/src/t2_precision_trackpad-0.01.r3.665ad11/
+usr/src/t2_precision_trackpad-0.01.r3.665ad11/.gitignore
+usr/src/t2_precision_trackpad-0.01.r3.665ad11/Makefile
+usr/src/t2_precision_trackpad-0.01.r3.665ad11/dkms.conf
+usr/src/t2_precision_trackpad-0.01.r3.665ad11/hid-ids.h
+usr/src/t2_precision_trackpad-0.01.r3.665ad11/t2_precision_trackpad.c
+usr/src/t2_precision_trackpad-0.01.r3.665ad11/test-handoff.sh
 
 # t2_trackpad_actuator-dkms
 usr/
@@ -3348,14 +3348,14 @@ usr/share/licenses/
 usr/share/licenses/t2_trackpad_actuator-dkms/
 usr/share/licenses/t2_trackpad_actuator-dkms/LICENSE
 usr/src/
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/.gitignore
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/Makefile
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/dkms.conf
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/hid-ids.h
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/t2_trackpad_actuator.c
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/t2_trackpad_actuator.h
-usr/src/t2_trackpad_actuator-0.01.r612.g431d05b/test-handoff.sh
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/.gitignore
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/Makefile
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/dkms.conf
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/hid-ids.h
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/t2_trackpad_actuator.c
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/t2_trackpad_actuator.h
+usr/src/t2_trackpad_actuator-0.01.r1.ce07b03/test-handoff.sh
 
 # t2bce-dkms
 etc/
@@ -3370,61 +3370,61 @@ usr/share/licenses/
 usr/share/licenses/t2bce-dkms/
 usr/share/licenses/t2bce-dkms/LICENSE
 usr/src/
-usr/src/t2bce_stack-0.01.r612.g431d05b/
-usr/src/t2bce_stack-0.01.r612.g431d05b/Makefile
-usr/src/t2bce_stack-0.01.r612.g431d05b/README.md
-usr/src/t2bce_stack-0.01.r612.g431d05b/dkms.conf
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/Makefile
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/README.md
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/audio.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/audio.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/description.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/pcm.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/pcm.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/protocol.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/protocol.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/protocol_bce.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/protocol_bce.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/tests/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/tests/timing_test.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_audio/timing.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/Kconfig
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/Makefile
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/ave.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/encoder.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/encoder.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/protocol.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/protocol.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/video.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_ave/video.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/.gitignore
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/Makefile
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/README.md
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/include/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/include/t2bce_core_transport.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/mailbox.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/mailbox.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/t2bce.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/t2bce_main.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_core/transport.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_dma/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_dma/Makefile
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_dma/README.md
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_dma/include/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_dma/include/t2bce_dma_queue.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_dma/queue.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/Makefile
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/command.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/queue.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/queue.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/transfer.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/transfer.h
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/vhci.c
-usr/src/t2bce_stack-0.01.r612.g431d05b/t2bce_vhci/vhci.h
+usr/src/t2bce_stack-0.01.r41.a02d231/
+usr/src/t2bce_stack-0.01.r41.a02d231/Makefile
+usr/src/t2bce_stack-0.01.r41.a02d231/README.md
+usr/src/t2bce_stack-0.01.r41.a02d231/dkms.conf
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/Makefile
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/README.md
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/audio.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/audio.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/description.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/pcm.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/pcm.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/protocol.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/protocol.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/protocol_bce.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/protocol_bce.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/tests/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/tests/timing_test.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_audio/timing.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/Kconfig
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/Makefile
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/ave.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/encoder.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/encoder.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/protocol.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/protocol.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/video.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_ave/video.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/.gitignore
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/Makefile
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/README.md
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/include/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/include/t2bce_core_transport.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/mailbox.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/mailbox.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/t2bce.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/t2bce_main.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_core/transport.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_dma/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_dma/Makefile
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_dma/README.md
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_dma/include/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_dma/include/t2bce_dma_queue.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_dma/queue.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/Makefile
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/command.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/queue.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/queue.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/transfer.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/transfer.h
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/vhci.c
+usr/src/t2bce_stack-0.01.r41.a02d231/t2bce_vhci/vhci.h
 
 # t2bce_audio-alsa-ucm-conf
 usr/
@@ -3583,11 +3583,11 @@ usr/share/licenses/
 usr/share/licenses/t2bdrm-dkms/
 usr/share/licenses/t2bdrm-dkms/LICENSE
 usr/src/
-usr/src/t2bdrm-0.1.r612.g431d05b/
-usr/src/t2bdrm-0.1.r612.g431d05b/Makefile
-usr/src/t2bdrm-0.1.r612.g431d05b/README.md
-usr/src/t2bdrm-0.1.r612.g431d05b/dkms.conf
-usr/src/t2bdrm-0.1.r612.g431d05b/t2bdrm.c
+usr/src/t2bdrm-0.1.r8.b936d6b/
+usr/src/t2bdrm-0.1.r8.b936d6b/Makefile
+usr/src/t2bdrm-0.1.r8.b936d6b/README.md
+usr/src/t2bdrm-0.1.r8.b936d6b/dkms.conf
+usr/src/t2bdrm-0.1.r8.b936d6b/t2bdrm.c
 
 # t2gmux-dkms
 etc/
@@ -3602,11 +3602,11 @@ usr/share/licenses/
 usr/share/licenses/t2gmux-dkms/
 usr/share/licenses/t2gmux-dkms/LICENSE
 usr/src/
-usr/src/t2gmux-0.8.r612.g431d05b/
-usr/src/t2gmux-0.8.r612.g431d05b/Makefile
-usr/src/t2gmux-0.8.r612.g431d05b/README.md
-usr/src/t2gmux-0.8.r612.g431d05b/dkms.conf
-usr/src/t2gmux-0.8.r612.g431d05b/t2gmux.c
+usr/src/t2gmux-0.8.r21.8f32b9c/
+usr/src/t2gmux-0.8.r21.8f32b9c/Makefile
+usr/src/t2gmux-0.8.r21.8f32b9c/README.md
+usr/src/t2gmux-0.8.r21.8f32b9c/dkms.conf
+usr/src/t2gmux-0.8.r21.8f32b9c/t2gmux.c
 
 # t2mfi_fastcharge-dkms
 usr/
@@ -3618,11 +3618,11 @@ usr/share/licenses/
 usr/share/licenses/t2mfi_fastcharge-dkms/
 usr/share/licenses/t2mfi_fastcharge-dkms/LICENSE
 usr/src/
-usr/src/t2mfi_fastcharge-0.1.r612.g431d05b/
-usr/src/t2mfi_fastcharge-0.1.r612.g431d05b/Makefile
-usr/src/t2mfi_fastcharge-0.1.r612.g431d05b/README.md
-usr/src/t2mfi_fastcharge-0.1.r612.g431d05b/dkms.conf
-usr/src/t2mfi_fastcharge-0.1.r612.g431d05b/t2mfi_fastcharge.c
+usr/src/t2mfi_fastcharge-0.1.r2.ee1dbfe/
+usr/src/t2mfi_fastcharge-0.1.r2.ee1dbfe/Makefile
+usr/src/t2mfi_fastcharge-0.1.r2.ee1dbfe/README.md
+usr/src/t2mfi_fastcharge-0.1.r2.ee1dbfe/dkms.conf
+usr/src/t2mfi_fastcharge-0.1.r2.ee1dbfe/t2mfi_fastcharge.c
 
 # t2sep-dkms
 usr/
@@ -3631,14 +3631,14 @@ usr/share/licenses/
 usr/share/licenses/t2sep-dkms/
 usr/share/licenses/t2sep-dkms/LICENSE
 usr/src/
-usr/src/t2sep-0.7.r612.g431d05b/
-usr/src/t2sep-0.7.r612.g431d05b/Makefile
-usr/src/t2sep-0.7.r612.g431d05b/README.md
-usr/src/t2sep-0.7.r612.g431d05b/dkms.conf
-usr/src/t2sep-0.7.r612.g431d05b/t2sep_mailbox.c
-usr/src/t2sep-0.7.r612.g431d05b/t2sep_mailbox.h
-usr/src/t2sep-0.7.r612.g431d05b/t2sep_main.c
-usr/src/t2sep-0.7.r612.g431d05b/t2sep_uapi.h
+usr/src/t2sep-0.7.r1.1e9c571/
+usr/src/t2sep-0.7.r1.1e9c571/Makefile
+usr/src/t2sep-0.7.r1.1e9c571/README.md
+usr/src/t2sep-0.7.r1.1e9c571/dkms.conf
+usr/src/t2sep-0.7.r1.1e9c571/t2sep_mailbox.c
+usr/src/t2sep-0.7.r1.1e9c571/t2sep_mailbox.h
+usr/src/t2sep-0.7.r1.1e9c571/t2sep_main.c
+usr/src/t2sep-0.7.r1.1e9c571/t2sep_uapi.h
 
 # t2smc-dkms
 etc/
@@ -3653,11 +3653,11 @@ usr/share/licenses/
 usr/share/licenses/t2smc-dkms/
 usr/share/licenses/t2smc-dkms/LICENSE
 usr/src/
-usr/src/t2smc-0.1.r612.g431d05b/
-usr/src/t2smc-0.1.r612.g431d05b/Makefile
-usr/src/t2smc-0.1.r612.g431d05b/README.md
-usr/src/t2smc-0.1.r612.g431d05b/dkms.conf
-usr/src/t2smc-0.1.r612.g431d05b/t2smc.c
+usr/src/t2smc-0.1.r11.6715ce6/
+usr/src/t2smc-0.1.r11.6715ce6/Makefile
+usr/src/t2smc-0.1.r11.6715ce6/README.md
+usr/src/t2smc-0.1.r11.6715ce6/dkms.conf
+usr/src/t2smc-0.1.r11.6715ce6/t2smc.c
 
 # t2smp-dkms
 usr/
@@ -3666,10 +3666,10 @@ usr/share/licenses/
 usr/share/licenses/t2smp-dkms/
 usr/share/licenses/t2smp-dkms/LICENSE
 usr/src/
-usr/src/t2smp-0.1.r612.g431d05b/
-usr/src/t2smp-0.1.r612.g431d05b/Makefile
-usr/src/t2smp-0.1.r612.g431d05b/dkms.conf
-usr/src/t2smp-0.1.r612.g431d05b/t2smp.c
+usr/src/t2smp-0.1.r2.72841ef/
+usr/src/t2smp-0.1.r2.72841ef/Makefile
+usr/src/t2smp-0.1.r2.72841ef/dkms.conf
+usr/src/t2smp-0.1.r2.72841ef/t2smp.c
 
 # t2thunderbolt-dkms
 usr/
@@ -3678,12 +3678,12 @@ usr/share/licenses/
 usr/share/licenses/t2thunderbolt-dkms/
 usr/share/licenses/t2thunderbolt-dkms/LICENSE
 usr/src/
-usr/src/t2thunderbolt-0.6.r612.g431d05b/
-usr/src/t2thunderbolt-0.6.r612.g431d05b/Makefile
-usr/src/t2thunderbolt-0.6.r612.g431d05b/README.md
-usr/src/t2thunderbolt-0.6.r612.g431d05b/dkms.conf
-usr/src/t2thunderbolt-0.6.r612.g431d05b/mbp15-1-thunderbolt-baseline.md
-usr/src/t2thunderbolt-0.6.r612.g431d05b/t2thunderbolt.c
+usr/src/t2thunderbolt-0.6.r20.b1855a0/
+usr/src/t2thunderbolt-0.6.r20.b1855a0/Makefile
+usr/src/t2thunderbolt-0.6.r20.b1855a0/README.md
+usr/src/t2thunderbolt-0.6.r20.b1855a0/dkms.conf
+usr/src/t2thunderbolt-0.6.r20.b1855a0/mbp15-1-thunderbolt-baseline.md
+usr/src/t2thunderbolt-0.6.r20.b1855a0/t2thunderbolt.c
 
 # t2touchbar-dkms
 etc/
@@ -3698,13 +3698,13 @@ usr/share/licenses/
 usr/share/licenses/t2touchbar-dkms/
 usr/share/licenses/t2touchbar-dkms/LICENSE
 usr/src/
-usr/src/t2touchbar-0.1.r612.g431d05b/
-usr/src/t2touchbar-0.1.r612.g431d05b/.gitignore
-usr/src/t2touchbar-0.1.r612.g431d05b/Makefile
-usr/src/t2touchbar-0.1.r612.g431d05b/README.md
-usr/src/t2touchbar-0.1.r612.g431d05b/dkms.conf
-usr/src/t2touchbar-0.1.r612.g431d05b/hid-ids.h
-usr/src/t2touchbar-0.1.r612.g431d05b/t2hid.c
-usr/src/t2touchbar-0.1.r612.g431d05b/t2touchbar_bl.c
-usr/src/t2touchbar-0.1.r612.g431d05b/t2touchbar_kbd.c
+usr/src/t2touchbar-\001.r14.ed334cb/
+usr/src/t2touchbar-\001.r14.ed334cb/.gitignore
+usr/src/t2touchbar-\001.r14.ed334cb/Makefile
+usr/src/t2touchbar-\001.r14.ed334cb/README.md
+usr/src/t2touchbar-\001.r14.ed334cb/dkms.conf
+usr/src/t2touchbar-\001.r14.ed334cb/hid-ids.h
+usr/src/t2touchbar-\001.r14.ed334cb/t2hid.c
+usr/src/t2touchbar-\001.r14.ed334cb/t2touchbar_bl.c
+usr/src/t2touchbar-\001.r14.ed334cb/t2touchbar_kbd.c
 
