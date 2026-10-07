@@ -1,10 +1,25 @@
-name: Scheduled Daily Check
+name: Repository Pipeline
+
 on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'installed_files.txt'
+      - 'README.md'
+      - '.gitignore'
+  pull_request:
+    branches: [ main ]
   schedule:
     - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Package to build (or "all")'
+        required: false
+        default: 'all'
 
 concurrency:
-  group: schedule-${{ github.ref }}
+  group: pipeline-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -14,47 +29,39 @@ env:
   REPO_NAME: "turann-s-place"
 
 jobs:
-  check_for_updates:
+  detect:
     runs-on: ubuntu-latest
     container: archlinux:base
     outputs:
       packages: ${{ steps.set-matrix.outputs.packages }}
       has_packages: ${{ steps.set-matrix.outputs.has_packages }}
     steps:
-      - name: Install detection dependencies
-        run: pacman -Sy --noconfirm --needed git jq base-devel
+      - name: Install dependencies
+        run: pacman -Sy --noconfirm --needed git base-devel nodejs
 
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Create non-root user
-        run: |
-          useradd -m turannul
-          chown -R turannul:turannul .
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-      - name: Cache KaiT2en-Fedora git repo
-        run: |
-          git clone --mirror https://github.com/kaiT2en/KaiT2en-Fedora.git /tmp/KaiT2en-Fedora.git
-          chmod -R a+rX /tmp/KaiT2en-Fedora.git
-          git config --system url."/tmp/KaiT2en-Fedora.git".insteadOf "https://github.com/kaiT2en/KaiT2en-Fedora.git"
-          git config --system url."/tmp/KaiT2en-Fedora.git".insteadOf "https://github.com/kaiT2en/KaiT2en-Fedora"
-
-      - name: Determine packages to build
+      - name: Detect packages to build
         id: set-matrix
-        run: bash .github/workflow_scripts/detect_schedule.sh
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE_REF: ${{ github.event.before }}
+          TARGET: ${{ inputs.target }}
+        run: bash .github/workflow_scripts/detect.sh
 
   build:
-    needs: check_for_updates
-    if: needs.check_for_updates.outputs.has_packages == 'true'
+    needs: detect
+    if: needs.detect.outputs.has_packages == 'true'
     runs-on: ubuntu-latest
     container: archlinux:base
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJson(needs.check_for_updates.outputs.packages) }}
+        package: ${{ fromJson(needs.detect.outputs.packages) }}
 
     steps:
       - name: Checkout repository
@@ -86,8 +93,8 @@ jobs:
           if-no-files-found: error
 
   prepare_repo:
-    needs: [check_for_updates, build]
-    if: "!cancelled() && needs.check_for_updates.outputs.has_packages == 'true'"
+    needs: [detect, build]
+    if: "!cancelled() && needs.detect.outputs.has_packages == 'true' && github.event_name != 'pull_request'"
     runs-on: ubuntu-latest
     container: archlinux:base
     permissions:

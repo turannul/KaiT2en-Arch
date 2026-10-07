@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-set -e
 
-git config --global --add safe.directory '*' 2>/dev/null || true
+setup_environment() {
+  set -e
+  git config --global --add safe.directory '*'
+}
 
 clone_pages() {
   local ws="$1" tok="$2"
@@ -114,6 +116,8 @@ commit_main() {
 }
 
 main() {
+  setup_environment
+
   local ws="${GITHUB_WORKSPACE:-$(pwd)}"
   local repo="${REPO_NAME:-turann-s-place}"
   local tok="${GH_TOKEN:-}"

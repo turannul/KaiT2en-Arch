@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 
 setup_makepkg() {
   if [ -w /etc/makepkg.conf ] && ! grep -q '!debug' /etc/makepkg.conf; then
@@ -41,6 +40,7 @@ install_npm() {
 }
 
 main() {
+  set -e
   local p="${1:-}"
   [ -z "$p" ] && { echo "Package name required"; exit 1; }
 
