@@ -83,7 +83,7 @@ jobs:
       - name: Build ${{ matrix.package }}
         run: su -p turannul -c "cd ${{ matrix.package }} && makepkg --nodeps --force"
 
-      - name: Upload ${{ matrix.package }} artifacts
+      - name: Upload ${{ matrix.package }}
         uses: actions/upload-artifact@v7
         with:
           name: pkg-${{ matrix.package }}
