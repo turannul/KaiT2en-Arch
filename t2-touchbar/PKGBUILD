@@ -3,7 +3,7 @@
 
 pkgname=t2-touchbar
 pkgver=0.1.0.r25.5c0bd88
-pkgrel=1
+pkgrel=2
 pkgdesc="Touch Bar replacement with dark-first display, media and F-key rows"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
