@@ -84,18 +84,21 @@ $b"
 post_install() {
     _bind_user
     systemctl enable kait2en-t2-touchid.service
+    [ -d /run/systemd/system ] && systemctl daemon-reload
     [ -d /run/systemd/system ] && systemctl restart kait2en-t2-touchid.service fprintd.service
     for t in $_PAM_TARGETS; do _pam_handler enable "$t"; done
 }
 
 post_upgrade() {
     _bind_user
+    [ -d /run/systemd/system ] && systemctl daemon-reload
     [ -d /run/systemd/system ] && systemctl try-restart kait2en-t2-touchid.service fprintd.service
     for t in $_PAM_TARGETS; do _pam_handler enable "$t"; done
 }
 
 pre_remove() {
     [ -d /run/systemd/system ] && systemctl stop kait2en-t2-touchid.service
+    [ -d /run/systemd/system ] && systemctl daemon-reload
     [ -d /run/systemd/system ] && systemctl try-restart fprintd.service
     systemctl disable kait2en-t2-touchid.service
     for t in $_PAM_TARGETS; do _pam_handler disable "$t"; done

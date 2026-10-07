@@ -1,9 +1,11 @@
 post_install() {
     systemctl enable t2-fancontrol.service
+    [ -d /run/systemd/system ] && systemctl daemon-reload
     [ -d /run/systemd/system ] && systemctl start t2-fancontrol.service
 }
 
 post_upgrade() {
+    [ -d /run/systemd/system ] && systemctl daemon-reload
     [ -d /run/systemd/system ] && systemctl try-restart t2-fancontrol.service
 }
 

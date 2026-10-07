@@ -3,7 +3,7 @@
 
 pkgname=t2-fan-control
 pkgver=0.1.0.r18.7c2032b
-pkgrel=1
+pkgrel=2
 pkgdesc="Fan speed controller and monitor"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

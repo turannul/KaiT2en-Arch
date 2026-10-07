@@ -3,7 +3,7 @@
 
 pkgname=t2-services
 pkgver=r5.431d05b
-pkgrel=1
+pkgrel=2
 pkgdesc="Shared network and suspend integration"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

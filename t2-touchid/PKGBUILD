@@ -3,7 +3,7 @@
 
 pkgname=t2-touchid
 pkgver=0.1.0.r9.7b282c1
-pkgrel=4
+pkgrel=5
 pkgdesc="T2 Touch ID bridge for fprintd"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora/t2-services/t2-touchid"
