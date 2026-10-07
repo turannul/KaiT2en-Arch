@@ -2829,10 +2829,10 @@ usr/src/t2bdrm-0.1.r8.b936d6b/t2bdrm.c
 etc/mkinitcpio.conf.d/00-kait2en-t2gmux.conf
 usr/lib/modprobe.d/00-kait2en-t2gmux.conf
 usr/share/licenses/t2gmux-dkms/LICENSE
-usr/src/t2gmux-0.8.r24.1e86611/Makefile
-usr/src/t2gmux-0.8.r24.1e86611/README.md
-usr/src/t2gmux-0.8.r24.1e86611/dkms.conf
-usr/src/t2gmux-0.8.r24.1e86611/t2gmux.c
+usr/src/t2gmux-0.8.r29.65d47b3/Makefile
+usr/src/t2gmux-0.8.r29.65d47b3/README.md
+usr/src/t2gmux-0.8.r29.65d47b3/dkms.conf
+usr/src/t2gmux-0.8.r29.65d47b3/t2gmux.c
 
 # t2mfi_fastcharge-dkms
 usr/lib/modprobe.d/00-kait2en-t2mfi-fastcharge.conf
@@ -2856,11 +2856,11 @@ usr/src/t2sep-0.7.r1.1e9c571/t2sep_uapi.h
 etc/mkinitcpio.conf.d/00-kait2en-t2smc.conf
 usr/lib/modprobe.d/00-kait2en-t2smc.conf
 usr/share/licenses/t2smc-dkms/LICENSE
-usr/src/t2smc-0.1.r21.14c4eb7/Makefile
-usr/src/t2smc-0.1.r21.14c4eb7/README.md
-usr/src/t2smc-0.1.r21.14c4eb7/dkms.conf
-usr/src/t2smc-0.1.r21.14c4eb7/t2smc.c
-usr/src/t2smc-0.1.r21.14c4eb7/tools/t2smc-rtc-client.c
+usr/src/t2smc-0.1.r22.9af323e/Makefile
+usr/src/t2smc-0.1.r22.9af323e/README.md
+usr/src/t2smc-0.1.r22.9af323e/dkms.conf
+usr/src/t2smc-0.1.r22.9af323e/t2smc.c
+usr/src/t2smc-0.1.r22.9af323e/tools/t2smc-rtc-client.c
 
 # t2smp-dkms
 usr/share/licenses/t2smp-dkms/LICENSE

@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2smc-dkms
-pkgver=0.1.r21.14c4eb7
+pkgver=0.1.r22.9af323e
 pkgrel=1
 pkgdesc="KaiT2en SMC module"
 arch=('x86_64')
