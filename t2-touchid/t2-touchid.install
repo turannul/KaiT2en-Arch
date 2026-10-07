@@ -30,7 +30,7 @@ _bind_user() {
 # WARNING: I will avoid modifying system-*-login it (may) does break login/display managers and/or keyrings.
 # INFO: KDE & GNOME Screen lock do not require manual configuration.
 # INFO: According to my search, services that require manual configuration are down below.
-_PAM_TARGETS="sudo polkit-1 swaylock hyprlock waylock gtklock i3lock"
+_PAM_TARGETS="sudo doas polkit-1 swaylock hyprlock waylock gtklock i3lock"
 # INFO: If i missed any, please let me know, or add here ^ and PR please?.
 
 _pam_handler() {
