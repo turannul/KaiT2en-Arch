@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-smc-control
-pkgver=0.1.0.r22.7d1c446
+pkgver=0.1.0.r25.af9e9b0
 pkgrel=1
 pkgdesc="Hardware monitor and Apple SMC sensor utility"
 arch=('x86_64')

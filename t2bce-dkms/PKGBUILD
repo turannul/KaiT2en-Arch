@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2bce-dkms
-pkgver=0.01.r41.a02d231
+pkgver=0.01.r42.31bc7b0
 pkgrel=1
 pkgdesc="KaiT2en BCE (dma, core, vhci, audio, ave) module"
 arch=('x86_64')
