@@ -34,9 +34,10 @@ prepare() {
 }
 
 package() {
-    install -d -m0755 "$pkgdir/usr/src/t2gmux-$pkgver"
-    cp -a "$srcdir/t2gmux/." "$pkgdir/usr/src/t2gmux-$pkgver/"
-    sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$pkgver\"/" "$pkgdir/usr/src/t2gmux-$pkgver/dkms.conf"
+    _module_version=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$srcdir/KaiT2en-Fedora/modules/${pkgname%-dkms}/dkms.conf")
+    install -d -m0755 "$pkgdir/usr/src/t2gmux-$_module_version"
+    cp -a "$srcdir/t2gmux/." "$pkgdir/usr/src/t2gmux-$_module_version/"
+    sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$_module_version\"/" "$pkgdir/usr/src/t2gmux-$_module_version/dkms.conf"
     install -D -m0644 "$startdir/modprobe.d/00-kait2en-t2gmux.conf" "$pkgdir/usr/lib/modprobe.d/00-kait2en-t2gmux.conf"
     install -D -m0644 "$startdir/mkinitcpio.conf.d/00-kait2en-t2gmux.conf" "$pkgdir/etc/mkinitcpio.conf.d/00-kait2en-t2gmux.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"

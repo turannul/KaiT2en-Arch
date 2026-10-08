@@ -49,9 +49,10 @@ prepare() {
 package() {
     local src="$srcdir/KaiT2en-Fedora"
     local dest="$srcdir/t2bce_stack"
-    install -d -m0755 "$pkgdir/usr/src/t2bce_stack-$pkgver"
-    cp -a "$dest/." "$pkgdir/usr/src/t2bce_stack-$pkgver/"
-    sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$pkgver\"/" "$pkgdir/usr/src/t2bce_stack-$pkgver/dkms.conf"
+    _module_version=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$srcdir/KaiT2en-Fedora/modules/t2bce_stack/dkms.conf")
+    install -d -m0755 "$pkgdir/usr/src/t2bce_stack-$_module_version"
+    cp -a "$dest/." "$pkgdir/usr/src/t2bce_stack-$_module_version/"
+    sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$_module_version\"/" "$pkgdir/usr/src/t2bce_stack-$_module_version/dkms.conf"
     install -D -m0644 "$startdir/modprobe.d/00-kait2en-t2bce.conf" "$pkgdir/usr/lib/modprobe.d/00-kait2en-t2bce.conf"
     install -D -m0644 "$startdir/mkinitcpio.conf.d/00-kait2en-t2bce.conf" "$pkgdir/etc/mkinitcpio.conf.d/00-kait2en-t2bce.conf"
     install -D -m0644 "$src/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
