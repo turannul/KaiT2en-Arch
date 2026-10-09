@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-services
-pkgver=r5.431d05b
-pkgrel=2
+pkgver=r6.cb317c0
+pkgrel=1
 pkgdesc="Shared network and suspend integration"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
