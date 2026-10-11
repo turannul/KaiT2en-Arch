@@ -28,8 +28,17 @@ pkgver() {
 
 package() {
   cd "$srcdir/KaiT2en-Fedora/modules/$pkgname"
-  for conf in ucm2/AppleT2/*.conf ucm2/conf.d/*/*.conf; do
-    install -Dm644 "$conf" "$pkgdir/usr/share/alsa/$conf"
+  for profile in HiFi-x2 HiFi-x4 HiFi-x6; do
+    [[ -r "ucm2/AppleT2/$profile.conf" ]] || return 1
+  done
+  for driver in AppleT2x2 AppleT2x4 AppleT2x6; do
+    [[ -r "ucm2/conf.d/$driver/$driver.conf" ]] || return 1
+  done
+  for profile in HiFi-x2 HiFi-x4 HiFi-x6; do
+    install -Dm644 "ucm2/AppleT2/$profile.conf" "$pkgdir/usr/share/alsa/ucm2/AppleT2/$profile.conf"
+  done
+  for driver in AppleT2x2 AppleT2x4 AppleT2x6; do
+    install -Dm644 "ucm2/conf.d/$driver/$driver.conf" "$pkgdir/usr/share/alsa/ucm2/conf.d/$driver/$driver.conf"
   done
   install -Dm644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
