@@ -22,15 +22,20 @@ pkgver() {
   printf 'r%s.%s' "${_revision:?}" "${_commit:?}"
 }
 
+prepare() {
+    rm -rf "$srcdir/assets"
+    mkdir -p "$srcdir/assets"
+    cp -a "$srcdir/KaiT2en-Fedora/assets/." "$srcdir/assets/"
+}
+
 package() {
     install -d -m0755 "$pkgdir/usr/share/kait2en"
-    install -m0644 "$srcdir/KaiT2en-Fedora/assets/kait2en-app-logo.png" "$pkgdir/usr/share/kait2en/kait2en-wordmark.png"
-    if [[ -f "$srcdir/KaiT2en-Fedora/assets/kaiT2en-logo.png" ]]; then
-        install -m0644 "$srcdir/KaiT2en-Fedora/assets/kaiT2en-logo.png" "$pkgdir/usr/share/kait2en/kaiT2en-logo.png"
-    fi
-    if [[ -d "$srcdir/KaiT2en-Fedora/assets/fonts" ]]; then
-        install -d -m0755 "$pkgdir/usr/share/fonts/kait2en"
-        install -m0644 "$srcdir/KaiT2en-Fedora/assets/fonts"/*.ttf "$pkgdir/usr/share/fonts/kait2en/"
-    fi
+    install -m0644 "$srcdir/assets/kait2en-app-logo.png" "$pkgdir/usr/share/kait2en/kait2en-wordmark.png"
+    for f in kaiT2en-logo.png kaiT2en-logo-tr.png kaiT2en-logo-tr.svg kait2en-fedora.jpeg kanji.ans kanji.txt; do
+        [[ -f "$srcdir/assets/$f" ]] && install -m0644 "$srcdir/assets/$f" "$pkgdir/usr/share/kait2en/$f"
+    done
+    install -d -m0755 "$pkgdir/usr/share/fonts/kait2en"
+    install -m0644 "$srcdir/assets/fonts"/*.ttf "$pkgdir/usr/share/fonts/kait2en/"
+    install -D -m0644 "$srcdir/assets/fonts/OFL.txt" "$pkgdir/usr/share/licenses/$pkgname/OFL.txt"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
