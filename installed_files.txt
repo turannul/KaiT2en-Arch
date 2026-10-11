@@ -2666,6 +2666,8 @@ usr/bin/t2-touchid
 usr/lib/systemd/system/fprintd.service.d/kait2en-t2-touchid.conf
 usr/lib/systemd/system/kait2en-t2-touchid.service
 usr/share/dbus-1/system.d/org.kait2en.TouchId.conf
+usr/share/libalpm/hooks/t2-touchid-pam.hook
+usr/share/libalpm/scripts/t2-touchid-pam
 usr/share/licenses/t2-touchid/LICENSE
 
 # t2_precision_trackpad-dkms
