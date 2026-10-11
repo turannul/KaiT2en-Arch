@@ -26,13 +26,11 @@ pkgver() {
 }
 
 prepare() {
-    local src="$srcdir/KaiT2en-Fedora/apps/$pkgname"
     sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/main.rs"
     cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
 }
 
 build() {
-    local src="$srcdir/KaiT2en-Fedora/apps/$pkgname"
     make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" build
 }
 
