@@ -1,0 +1,11 @@
+post_install() {
+    command -v dconf >/dev/null 2>&1 && dconf update >/dev/null 2>&1 || true
+}
+
+post_upgrade() {
+    post_install
+}
+
+post_remove() {
+    command -v dconf >/dev/null 2>&1 && dconf update >/dev/null 2>&1 || true
+}
