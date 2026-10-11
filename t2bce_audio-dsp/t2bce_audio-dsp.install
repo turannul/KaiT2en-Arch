@@ -8,7 +8,16 @@ pre_upgrade() {
 }
 
 post_install() {
+    local _user="${SUDO_USER:-}" _rt
     [[ -x /usr/lib/t2-dsp/package-actions ]] && bash /usr/lib/t2-dsp/package-actions configure
+    if [[ -n "$_user" && "$_user" != root ]]; then
+        _rt="/run/user/$(id -u "$_user" 2>/dev/null)"
+        if [[ -d "$_rt" ]]; then
+            runuser -u "$_user" -- env XDG_RUNTIME_DIR="$_rt" wpctl clear-default 0 || echo "==> [t2-dsp] run 'wpctl clear-default 0' after login to select the T2 output"
+        else
+            echo "==> [t2-dsp] run 'wpctl clear-default 0' after login to select the T2 output"
+        fi
+    fi
     [ -d /run/udev ] && udevadm control --reload-rules
     [ -d /run/udev ] && udevadm trigger -s sound || true
 }
