@@ -1,4 +1,5 @@
 post_install() {
+    [ -d /run/systemd/system ] && systemctl daemon-reload
     systemctl enable kait2en-t2-remote.service
 }
 
