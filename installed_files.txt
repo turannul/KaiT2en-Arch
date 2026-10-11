@@ -29,9 +29,15 @@ usr/src/hid_t2magicmouse-0.1/hid_t2magicmouse.c
 # kait2en-assets
 usr/share/fonts/kait2en/JetBrainsMono-Medium.ttf
 usr/share/fonts/kait2en/JetBrainsMono-Regular.ttf
+usr/share/kait2en/kaiT2en-logo-tr.png
+usr/share/kait2en/kaiT2en-logo-tr.svg
 usr/share/kait2en/kaiT2en-logo.png
+usr/share/kait2en/kait2en-fedora.jpeg
 usr/share/kait2en/kait2en-wordmark.png
+usr/share/kait2en/kanji.ans
+usr/share/kait2en/kanji.txt
 usr/share/licenses/kait2en-assets/LICENSE
+usr/share/licenses/kait2en-assets/OFL.txt
 
 # react-drm
 opt/react-drm/.env.example.kait2en
