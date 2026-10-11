@@ -1,0 +1,69 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+_kver=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${_kver:?Cannot find latest kernel version.} ]]
+_upstream=${_kver%%.arch*}
+_major=${_upstream%%.*}
+
+pkgname=kait2en-gpu-runtime-pm
+pkgver=${_kver//-/_}.r0
+pkgrel=5
+pkgdesc="Patched AMDGPU with Apple GMUX runtime PM support"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+depends=("linux=$_kver" 't2gmux')
+makedepends=('git' 'linux-headers')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
+noextract=("linux-$_upstream.tar.xz")
+sha256sums=('SKIP' 'SKIP')
+
+pkgver() {
+  local _srev _scommit
+  _srev=$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- patches/runtime/gpu-runtime-pm)
+  _scommit=$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- patches/runtime/gpu-runtime-pm)
+  printf '%s.r%s.%s' "${_kver//-/_}" "${_srev:?}" "${_scommit:?}"
+}
+
+prepare() {
+    rm -rf "$srcdir/linux"
+    mkdir -p "$srcdir/linux"
+    tar -xf "$srcdir/linux-$_upstream.tar.xz" -C "$srcdir/linux" --strip-components=1
+    local _p _dir="$srcdir/KaiT2en-Fedora/patches/runtime/gpu-runtime-pm"
+    for _p in $(cat "$_dir/series"); do
+        [[ "$_p" = \#* || -z "$_p" ]] && continue
+        if patch -d "$srcdir/linux" -p1 --dry-run --batch --forward --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p" >/dev/null 2>&1; then
+            patch -d "$srcdir/linux" -p1 --batch --forward --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p"
+        elif patch -d "$srcdir/linux" -p1 --dry-run --batch --reverse --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p" >/dev/null 2>&1; then
+            :
+        else
+            return 1
+        fi
+    done
+    sed -i 's|^#define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/amd/amdgpu$|#define TRACE_INCLUDE_PATH .|' "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h"
+}
+
+build() {
+    local _kdir _k
+    _kdir=$(pacman -Ql linux-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-headers KDIR not found} ]]
+    _k=$(basename "$(dirname "$_kdir")")
+    make -j"$(nproc)" -C "$_kdir" M="$srcdir/linux/drivers/gpu/drm/amd/amdgpu" modules
+}
+
+package() {
+    local _kdir _k
+    _kdir=$(pacman -Ql linux-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-headers KDIR not found} ]]
+    _k=$(basename "$(dirname "$_kdir")")
+    install -d -m0755 "$pkgdir/usr/lib/modules/$_k/updates/kait2en-gpu-runtime-pm"
+    install -m0644 "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko" "$pkgdir/usr/lib/modules/$_k/updates/kait2en-gpu-runtime-pm/amdgpu.ko"
+    xz --check=crc32 --lzma2=dict=1MiB -f "$pkgdir/usr/lib/modules/$_k/updates/kait2en-gpu-runtime-pm/amdgpu.ko"
+    install -D -m0644 "$startdir/modprobe.d/kait2en-gpu-runtime-pm.conf" "$pkgdir/usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

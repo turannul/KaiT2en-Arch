@@ -7,7 +7,7 @@ setup_makepkg() {
 }
 
 install_base() {
-  pacman -Sy --noconfirm --needed base-devel git
+  pacman -Syu --noconfirm --needed base-devel git
 }
 
 install_cargo() {
@@ -31,6 +31,14 @@ install_cargo() {
   fi
 }
 
+install_kernel() {
+  local p="$1"
+  if grep -qE "['\"]linux-headers['\"]" "$p/PKGBUILD"; then
+    echo "Installing kernel headers for $p..."
+    pacman -S --noconfirm --needed linux-headers
+  fi
+}
+
 install_npm() {
   local p="$1"
   if grep -qE "['\"]npm['\"]" "$p/PKGBUILD"; then
@@ -48,6 +56,7 @@ main() {
   setup_makepkg
   install_base
   install_cargo "$p"
+  install_kernel "$p"
   install_npm "$p"
 }
 

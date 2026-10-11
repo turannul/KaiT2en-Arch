@@ -3,12 +3,12 @@
 
 pkgname=t2-hybrid-gpu-control
 pkgver=0.1.0.r14.9b640be
-pkgrel=1
+pkgrel=2
 pkgdesc="Configure hybrid graphics on MacBookPro15,1/16,1/16,4'"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')
-depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 't2gmux-dkms')
+depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 'kait2en-gpu-runtime-pm')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")
 conflicts=('t2-dgpu-control' "$pkgname-git")
@@ -45,8 +45,8 @@ package() {
     install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/t2-hybrid-gpu-control-status" "$pkgdir/usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-status"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2hybridgpucontrol.gtk.desktop" "$pkgdir/usr/share/applications/org.t2hybridgpucontrol.gtk.desktop"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/assets/icons/hicolor/scalable/apps/org.t2hybridgpucontrol.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2hybridgpucontrol.gtk.svg"
-    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.policy"
-    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.status.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.status.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.gtk.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.status.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.gtk.status.policy"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/90-kait2en-gsk-renderer.conf" "$pkgdir/etc/environment.d/90-kait2en-gsk-renderer.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

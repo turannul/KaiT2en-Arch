@@ -2607,8 +2607,8 @@ usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-status
 usr/share/applications/org.t2hybridgpucontrol.gtk.desktop
 usr/share/icons/hicolor/scalable/apps/org.t2hybridgpucontrol.gtk.svg
 usr/share/licenses/t2-hybrid-gpu-control/LICENSE
-usr/share/polkit-1/actions/org.t2hybridgpucontrol.policy
-usr/share/polkit-1/actions/org.t2hybridgpucontrol.status.policy
+usr/share/polkit-1/actions/org.t2hybridgpucontrol.gtk.policy
+usr/share/polkit-1/actions/org.t2hybridgpucontrol.gtk.status.policy
 
 # t2-journal
 usr/bin/t2-journal
