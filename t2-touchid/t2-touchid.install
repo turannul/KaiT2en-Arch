@@ -34,57 +34,14 @@ _PAM_TARGETS="sudo doas polkit-1 swaylock hyprlock waylock gtklock i3lock"
 # INFO: If i missed any, please let me know, or add here ^ and PR please?.
 
 _pam_handler() {
-    local act="$1" t="$2"
-    local f="/etc/pam.d/$t" pkg="t2-touchid"
-    local b="#############################################################"
-    local cnt="$b
-# Managed by $pkg - DO NOT EDIT
-auth        sufficient  pam_fprintd.so timeout=60 max-tries=3
-$b"
-# INFO: I believe 60s and 3 max-tries are reasonable defaults.
-
-    [[ ! -f "$f" ]] && {
-        echo "==> [kait2en] Skipping $t (not installed)"
-        return 0
-    }
-
-    case "$act" in
-        enable)
-            if grep -q "pam_fprintd\.so" "$f"; then
-                echo "==> [kait2en] Touch ID already enabled for $t"
-                return 0
-            fi
-            awk -v b="$cnt" '!done && /^[[:space:]]*auth[[:space:]]/ {print b; done=1} {print} END {if (!done) print b}' "$f" > "${f}.tmp" && mv "${f}.tmp" "$f"
-            echo "==> [kait2en] Enabled Touch ID for $t"
-            ;;
-        disable)
-            if grep -q "[Mm]anaged by $pkg" "$f"; then
-                awk -v pkg="$pkg" -v b="$b" '
-                    /^#{8,}/ { if (in_b) { in_b=0; next }; if (p_b) print b; p_b=1; next }
-                    p_b { if ($0 ~ "^# [Mm]anaged by " pkg) { in_b=1; p_b=0; next } print b; p_b=0 }
-                    in_b {
-                        if (!($0 ~ /pam_fprintd\.so/)) { in_b=0; print; next }
-                        next
-                    }
-                    { print }
-                    END { if (p_b) print b }
-                ' "$f" > "${f}.tmp" && mv "${f}.tmp" "$f"
-                echo "==> [kait2en] Disabled Touch ID for $t"
-            else
-                echo "==> [kait2en] No managed Touch ID found for $t"
-            fi
-            ;;
-        *)
-            echo "==> [kait2en] Unexpected/unknown action: '$act'" >&2
-            return 1
-            ;;
-    esac
+    /usr/share/libalpm/scripts/t2-touchid-pam "$1" "$2"
 }
 
 post_install() {
     _bind_user
     systemctl enable kait2en-t2-touchid.service
     [ -d /run/systemd/system ] && systemctl daemon-reload
+    [ -S /run/dbus/system_bus_socket ] && systemctl reload dbus.service
     [ -d /run/systemd/system ] && systemctl restart kait2en-t2-touchid.service fprintd.service
     for t in $_PAM_TARGETS; do _pam_handler enable "$t"; done
 }
@@ -92,6 +49,7 @@ post_install() {
 post_upgrade() {
     _bind_user
     [ -d /run/systemd/system ] && systemctl daemon-reload
+    [ -S /run/dbus/system_bus_socket ] && systemctl reload dbus.service
     [ -d /run/systemd/system ] && systemctl try-restart kait2en-t2-touchid.service fprintd.service
     for t in $_PAM_TARGETS; do _pam_handler enable "$t"; done
 }

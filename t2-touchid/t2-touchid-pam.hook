@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = etc/pam.d/*
+
+[Action]
+Description = Re-applying Touch ID to PAM services...
+When = PostTransaction
+Exec = /usr/share/libalpm/scripts/t2-touchid-pam

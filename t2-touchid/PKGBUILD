@@ -38,5 +38,7 @@ check() {
 
 package() {
   make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" install PREFIX=/usr DESTDIR="$pkgdir" SYSCONFDIR=/etc TARGET_DIR="$srcdir/target" CARGO_FLAGS='--locked --frozen --release'
+  install -D -m0644 "$startdir/t2-touchid-pam.hook" "$pkgdir/usr/share/libalpm/hooks/t2-touchid-pam.hook"
+  install -D -m0755 "$startdir/t2-touchid-pam" "$pkgdir/usr/share/libalpm/scripts/t2-touchid-pam"
   install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
