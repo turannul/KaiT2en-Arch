@@ -1,11 +1,15 @@
 post_install() {
-    systemctl enable t2-cpu-control.service
     [ -d /run/systemd/system ] && systemctl daemon-reload
+    systemctl enable t2-cpu-control.service
+    [ -d /run/systemd/system ] && systemctl disable --now t2-cpu-control-status.service || true
+    rm -f /usr/lib/systemd/system/t2-cpu-control-status.service /usr/local/lib/systemd/system/t2-cpu-control-status.service
     [ -d /run/systemd/system ] && systemctl start t2-cpu-control.service
 }
 
 post_upgrade() {
     [ -d /run/systemd/system ] && systemctl daemon-reload
+    [ -d /run/systemd/system ] && systemctl disable --now t2-cpu-control-status.service || true
+    rm -f /usr/lib/systemd/system/t2-cpu-control-status.service /usr/local/lib/systemd/system/t2-cpu-control-status.service
     [ -d /run/systemd/system ] && systemctl try-restart t2-cpu-control.service
 }
 
