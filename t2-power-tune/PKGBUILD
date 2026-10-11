@@ -13,6 +13,7 @@ makedepends=('git')
 provides=("$pkgname-git")
 conflicts=("$pkgname-git")
 replaces=("$pkgname-git")
+install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
 sha256sums=('SKIP')
 
