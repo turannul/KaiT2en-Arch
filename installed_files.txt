@@ -39,6 +39,25 @@ usr/share/kait2en/kanji.txt
 usr/share/licenses/kait2en-assets/LICENSE
 usr/share/licenses/kait2en-assets/OFL.txt
 
+# kait2en-gdm-theme
+etc/dconf/db/gdm.d/00-kait2en
+usr/share/backgrounds/kait2en/gdm-black.png
+usr/share/licenses/kait2en-gdm-theme/LICENSE
+usr/share/pixmaps/kait2en-gdm-logo.png
+
+# kait2en-plymouth-theme
+usr/share/licenses/kait2en-plymouth-theme/LICENSE
+usr/share/plymouth/themes/kait2en/boot.png
+usr/share/plymouth/themes/kait2en/box.png
+usr/share/plymouth/themes/kait2en/bullet.png
+usr/share/plymouth/themes/kait2en/entry.png
+usr/share/plymouth/themes/kait2en/kait2en.plymouth
+usr/share/plymouth/themes/kait2en/kait2en.script
+usr/share/plymouth/themes/kait2en/lock.png
+usr/share/plymouth/themes/kait2en/progress_bar.png
+usr/share/plymouth/themes/kait2en/progress_box.png
+usr/share/plymouth/themes/kait2en/watermark.png
+
 # react-drm
 opt/react-drm/.env.example.kait2en
 opt/react-drm/.env.example.t2linux
