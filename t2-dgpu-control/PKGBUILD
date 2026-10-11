@@ -47,8 +47,8 @@ package() {
     install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/t2-dgpu-control-status" "$pkgdir/usr/lib/t2-dgpu-control/t2-dgpu-control-status"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2dgpucontrol.gtk.desktop" "$pkgdir/usr/share/applications/org.t2dgpucontrol.gtk.desktop"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/assets/icons/hicolor/scalable/apps/org.t2dgpucontrol.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2dgpucontrol.gtk.svg"
-    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2dgpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2dgpucontrol.policy"
-    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2dgpucontrol.status.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2dgpucontrol.status.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2dgpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.policy"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2dgpucontrol.status.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.status.policy"
 
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/kait2en-dgpu-off.service" "$pkgdir/usr/lib/systemd/system/kait2en-dgpu-off.service"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/kait2en-dgpu-suspend.service" "$pkgdir/usr/lib/systemd/system/kait2en-dgpu-suspend.service"
