@@ -1,0 +1,36 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=kait2en-plymouth-theme
+pkgver=r11.b477249
+pkgrel=1
+pkgdesc="KaiT2en Plymouth boot splash theme"
+arch=('any')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-3.0-or-later')
+depends=('plymouth')
+makedepends=('git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _revision _commit _p="$srcdir/KaiT2en-Fedora/assets/plymouth/kait2en"
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf 'r%s.%s' "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    rm -rf "$srcdir/assets"
+    mkdir -p "$srcdir/assets"
+    cp -a "$srcdir/KaiT2en-Fedora/assets/." "$srcdir/assets/"
+}
+
+package() {
+    install -d -m0755 "$pkgdir/usr/share/plymouth/themes/kait2en"
+    install -m0644 "$srcdir/assets/plymouth/kait2en"/*.png "$srcdir/assets/plymouth/kait2en"/*.plymouth "$srcdir/assets/plymouth/kait2en"/*.script "$pkgdir/usr/share/plymouth/themes/kait2en/"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
