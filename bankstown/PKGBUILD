@@ -8,6 +8,7 @@ pkgdesc='Bankstown LV2 Plugin'
 arch=('x86_64')
 url='https://github.com/chadmed/bankstown'
 license=('MIT')
+groups=('kait2en-audio')
 depends=('lv2')
 makedepends=('cargo' 'git')
 source=("git+https://github.com/chadmed/bankstown.git")

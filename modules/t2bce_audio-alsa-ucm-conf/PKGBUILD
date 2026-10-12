@@ -9,6 +9,7 @@ pkgdesc="ALSA UCM configuration for the t2bce_audio"
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 arch=('x86_64')
 license=('GPL-2.0-only')
+groups=('kait2en-audio')
 depends=('t2bce_audio')
 optdepends=('pipewire' 'pulseaudio')
 provides=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
