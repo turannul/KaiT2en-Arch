@@ -68,7 +68,7 @@ sync_pkgbuilds() {
     fi
     if [ -n "$dir" ] && [ -f "$dir/PKGBUILD" ]; then
       if [ "$(sha256sum < "$p")" != "$(sha256sum < "$dir/PKGBUILD")" ]; then
-        echo "chore: updated $dir/PKGBUILD..."
+        echo "chore: updated $dir/PKGBUILD..." >&2
         cp -f "$p" "$dir/PKGBUILD"
         updated="${updated:+$updated, }$dir"
       fi
