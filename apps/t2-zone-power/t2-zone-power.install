@@ -1,0 +1,15 @@
+post_install() {
+    [ -d /run/systemd/system ] && systemctl daemon-reload
+    systemctl enable t2-zonepowerd.service
+    [ -d /run/systemd/system ] && systemctl start t2-zonepowerd.service
+}
+
+post_upgrade() {
+    [ -d /run/systemd/system ] && systemctl daemon-reload
+    [ -d /run/systemd/system ] && systemctl try-restart t2-zonepowerd.service
+}
+
+pre_remove() {
+    [ -d /run/systemd/system ] && systemctl stop t2-zonepowerd.service
+    systemctl disable t2-zonepowerd.service
+}
