@@ -8,8 +8,8 @@ _major=${_upstream%%.*}
 
 pkgname=kait2en-gpu-runtime-pm
 pkgver=${_kver//-/_}.r0
-pkgrel=5
-pkgdesc="Patched AMDGPU with Apple GMUX runtime PM support"
+pkgrel=6
+pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
@@ -54,6 +54,8 @@ build() {
     [[ -n ${_kdir:?linux-headers KDIR not found} ]]
     _k=$(basename "$(dirname "$_kdir")")
     make -j"$(nproc)" -C "$_kdir" M="$srcdir/linux/drivers/gpu/drm/amd/amdgpu" modules
+    strip --strip-debug "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko"
+    zstd -T0 -q -f "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko" -o "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko.zst"
 }
 
 package() {
@@ -61,9 +63,7 @@ package() {
     _kdir=$(pacman -Ql linux-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
     [[ -n ${_kdir:?linux-headers KDIR not found} ]]
     _k=$(basename "$(dirname "$_kdir")")
-    install -d -m0755 "$pkgdir/usr/lib/modules/$_k/updates/kait2en-gpu-runtime-pm"
-    install -m0644 "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko" "$pkgdir/usr/lib/modules/$_k/updates/kait2en-gpu-runtime-pm/amdgpu.ko"
-    xz --check=crc32 --lzma2=dict=1MiB -f "$pkgdir/usr/lib/modules/$_k/updates/kait2en-gpu-runtime-pm/amdgpu.ko"
-    install -D -m0644 "$startdir/modprobe.d/kait2en-gpu-runtime-pm.conf" "$pkgdir/usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf"
-    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    install -Dpm 0644 "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko.zst" "$pkgdir/usr/lib/modules/$_k/updates/amdgpu.ko.zst"
+    install -Dpm 0644 "$startdir/modprobe.d/kait2en-gpu-runtime-pm.conf" "$pkgdir/usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf"
+    install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
