@@ -24,10 +24,10 @@ noextract=("linux-$_upstream.tar.xz")
 sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
-  local _srev _scommit
-  _srev=$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- patches/runtime/gpu-runtime-pm)
-  _scommit=$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- patches/runtime/gpu-runtime-pm)
-  printf '%s.r%s.%s' "${_kver//-/_}" "${_srev:?}" "${_scommit:?}"
+  local _revision _commit
+  _revision=$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- patches/runtime/gpu-runtime-pm)
+  _commit=$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- patches/runtime/gpu-runtime-pm)
+  printf '%s.r%s.%s' "${_kver//-/_}" "${_revision:?}" "${_commit:?}"
 }
 
 prepare() {
