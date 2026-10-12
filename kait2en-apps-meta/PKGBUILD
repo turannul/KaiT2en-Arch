@@ -2,20 +2,25 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=kait2en-apps-meta
-pkgver=0.3
+pkgver=0.3.1
 pkgrel=1
 pkgdesc="KaiT2en applications metapackage."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')
 groups=('kait2en')
-depends=('t2-ave' 't2-zone-power' 't2-fan-control' 't2-power-explorer' 't2-power-tune' 't2-smc-control' 't2-touchid' 't2-force-click' 't2-journal')
+depends=('t2-ave' 't2-fan-control' 't2-power-tune' 't2-touchid')
 optdepends=(
+    'react-drm: Touch Bar control center'
+    't2-cpu-control: CPU power limit and thermal telemetry controller'
+    't2-dgpu-control: Discrete GPU power and boot-GPU selector for dual-GPU Macs'
+    't2-force-click: Trackpad click and force-click pressure and action configurator'
+    't2-hybrid-gpu-control: Configure hybrid graphics on MacBookPro15,1/16,1/16,4 iMac 20,1/20,2'
+    't2-journal: Utility for Apple T2 bridgeOS logs'
+    't2-power-explorer: Device topology and runtime power state explorer'
+    't2-smc-control: Hardware monitor and Apple SMC sensor utility'
+    't2-touchbar: Touch Bar replacement with dark-first display, media and F-key rows'
+    't2-zone-power: SMC power zone monitor and controller for T2 Macs'
     't2bce_audio-alsa-ucm-conf: ALSA UCM audio profiles for T2 Macs'
     't2bce_audio-dsp: Model-specific host-side audio DSP'
-    'react-drm: Touch Bar control center'
-    't2-touchbar: Touch Bar replacement with dark-first display, media and F-key rows'
-    't2-hybrid-gpu-control: Configure hybrid graphics on MacBookPro15,1/16,1/16,4 iMac 20,1/20,2'
-    't2-dgpu-control: Discrete GPU power and boot-GPU selector for dual-GPU Macs'
-    't2-cpu-control: CPU power limit and thermal telemetry controller'
 )
