@@ -2587,8 +2587,8 @@ usr/lib/t2-dgpu-control/t2-dgpu-control-status
 usr/share/applications/org.t2dgpucontrol.gtk.desktop
 usr/share/icons/hicolor/scalable/apps/org.t2dgpucontrol.gtk.svg
 usr/share/licenses/t2-dgpu-control/LICENSE
-usr/share/polkit-1/actions/org.t2dgpucontrol.policy
-usr/share/polkit-1/actions/org.t2dgpucontrol.status.policy
+usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.policy
+usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.status.policy
 
 # t2-fan-control
 usr/bin/t2-fancontrol-gtk
@@ -2674,6 +2674,13 @@ usr/share/dbus-1/system.d/org.kait2en.TouchId.conf
 usr/share/libalpm/hooks/t2-touchid-pam.hook
 usr/share/libalpm/scripts/t2-touchid-pam
 usr/share/licenses/t2-touchid/LICENSE
+
+# t2-zone-power
+usr/bin/t2-zonepower-gtk
+usr/lib/systemd/system/t2-zonepowerd.service
+usr/share/applications/org.t2zonepower.gtk.desktop
+usr/share/icons/hicolor/scalable/apps/org.t2zonepower.gtk.svg
+usr/share/licenses/t2-zone-power/LICENSE
 
 # t2_precision_trackpad-dkms
 usr/share/licenses/t2_precision_trackpad-dkms/LICENSE
