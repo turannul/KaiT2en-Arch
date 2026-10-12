@@ -69,8 +69,8 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install dependencies for ${{ matrix.package }}
-        run: bash .github/workflow_scripts/install_deps.sh "${{ matrix.package }}"
+      - name: Install dependencies for ${{ matrix.package.dir }}
+        run: bash .github/workflow_scripts/install_deps.sh "${{ matrix.package.dir }}"
 
       - name: Create non-root user
         run: |
@@ -80,16 +80,16 @@ jobs:
           chown -R turannul:turannul .
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Build ${{ matrix.package }}
-        run: su -p turannul -c "cd ${{ matrix.package }} && makepkg --nodeps --force"
+      - name: Build ${{ matrix.package.dir }}
+        run: su -p turannul -c "cd ${{ matrix.package.dir }} && makepkg --nodeps --force"
 
-      - name: Upload ${{ matrix.package }}
+      - name: Upload ${{ matrix.package.dir }}
         uses: actions/upload-artifact@v7
         with:
-          name: pkg-${{ matrix.package }}
+          name: ${{ matrix.package.artifact }}
           path: |
-            ${{ matrix.package }}/*.pkg.tar.zst
-            ${{ matrix.package }}/PKGBUILD
+            ${{ matrix.package.dir }}/*.pkg.tar.zst
+            ${{ matrix.package.dir }}/PKGBUILD
           if-no-files-found: error
 
   prepare_repo:

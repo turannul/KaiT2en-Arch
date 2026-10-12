@@ -53,19 +53,23 @@ publish_pages() {
   fi
 }
 
+find_pkgdir() {
+  local want="$1" p d n
+  for p in $(find . -name PKGBUILD -not -path './gh-pages/*' -not -path './artifacts/*'); do
+    d=$(dirname "$p" | sed 's|^\./||')
+    n=$(grep -E '^pkgname=' "$d/PKGBUILD" | cut -d= -f2 | tr -d "'\"()")
+    [ "$n" = "$want" ] && { echo "$d"; return 0; }
+  done
+  return 1
+}
+
 sync_pkgbuilds() {
   local updated=""
   for p in $(find artifacts -name PKGBUILD); do
     [ -f "$p" ] || continue
     local n dir=""
     n=$(grep -E '^pkgname=' "$p" | cut -d= -f2 | tr -d "'\"()")
-    if [ -d "$n" ]; then
-      dir="$n"
-    else
-      local c
-      c=$(basename "$(dirname "$p")" | sed 's/^pkg-//')
-      [ -d "$c" ] && dir="$c"
-    fi
+    dir=$(find_pkgdir "$n") || true
     if [ -n "$dir" ] && [ -f "$dir/PKGBUILD" ]; then
       if [ "$(sha256sum < "$p")" != "$(sha256sum < "$dir/PKGBUILD")" ]; then
         echo "chore: updated $dir/PKGBUILD..." >&2
@@ -99,7 +103,7 @@ commit_main() {
   git config user.name "actions-user"
   git config user.email "actions-user@users.noreply.github.com"
   git remote set-url origin "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
-  git add '*/PKGBUILD' installed_files.txt
+  git add installed_files.txt $(find . -name PKGBUILD -not -path './gh-pages/*' -not -path './artifacts/*')
 
   if git diff --cached --quiet; then
     echo "No changes to commit on main."

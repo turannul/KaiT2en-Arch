@@ -22,14 +22,14 @@ emit_matrix() {
   echo "$pkgs"
 
   local matrix
-  matrix="[$(echo "$pkgs" | awk 'NF { if (n++) printf ","; printf "\"%s\"", $1 }')]"
+  matrix="[$(echo "$pkgs" | awk 'NF { if (n++) printf ","; a=$1; gsub("/", "-", a); printf "{\"dir\":\"%s\",\"artifact\":\"pkg-%s\"}", $1, a }')]"
   out "packages=$matrix"
   out "has_packages=true"
 }
 
 all_pkgs() {
-  for d in */; do
-    [ -f "$d/PKGBUILD" ] && echo "${d%/}"
+  find . -name PKGBUILD | while read -r p; do
+    dirname "$p" | sed 's|^\./||'
   done | sort -u
 }
 
@@ -63,8 +63,9 @@ detect_ci() {
   local pkgs
   pkgs=$(git diff --name-only "$ref" HEAD | while read -r f; do
     [ -z "$f" ] && continue
-    local p="${f%%/*}"
-    [ -d "$p" ] && [ -f "$p/PKGBUILD" ] && echo "$p"
+    local d
+    d=$(dirname "$f")
+    [ -f "$d/PKGBUILD" ] && echo "$d"
   done | sort -u)
 
   emit_matrix "$pkgs"
@@ -96,14 +97,15 @@ check_pkgver() {
 
 detect_schedule() {
   setup_schedule_cache
-  for d in */; do
-    [ -f "$d/PKGBUILD" ] || continue
+  find . -name PKGBUILD | while read -r p; do
+    local d
+    d=$(dirname "$p" | sed 's|^\./||')
     grep -q 'pkgver()' "$d/PKGBUILD" || continue
     check_pkgver "$d"
   done
 
   local pkgs
-  pkgs=$(git status -s '*/PKGBUILD' | awk '{print $2}' | cut -d/ -f1 | sort -u)
+  pkgs=$(git status -s -- ':(glob)**/PKGBUILD' | awk '{print $2}' | while read -r f; do dirname "$f"; done | sort -u)
   emit_matrix "$pkgs"
 }
 
