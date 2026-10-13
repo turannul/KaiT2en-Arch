@@ -1,5 +1,5 @@
 post_install() {
-    command -v dconf >/dev/null 2>&1 && dconf update >/dev/null 2>&1 || true
+    command -v dconf && dconf update
 }
 
 post_upgrade() {
@@ -7,5 +7,5 @@ post_upgrade() {
 }
 
 post_remove() {
-    command -v dconf >/dev/null 2>&1 && dconf update >/dev/null 2>&1 || true
+    command -v dconf && dconf update
 }
