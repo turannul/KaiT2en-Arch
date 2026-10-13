@@ -6,16 +6,4 @@ post_install() {
             *) echo "==> [kait2en] $_model has no GMUX runtime PM support; the stock amdgpu remains in effect" ;;
         esac
     fi
-    [ -d /run/systemd/system ] && depmod -a || true
-    [ -d /run/systemd/system ] && mkinitcpio -P || true
-}
-
-post_upgrade() {
-    [ -d /run/systemd/system ] && depmod -a || true
-    [ -d /run/systemd/system ] && mkinitcpio -P || true
-}
-
-pre_remove() {
-    [ -d /run/systemd/system ] && depmod -a || true
-    [ -d /run/systemd/system ] && mkinitcpio -P || true
 }
