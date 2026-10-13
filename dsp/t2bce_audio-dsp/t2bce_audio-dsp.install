@@ -18,8 +18,6 @@ post_install() {
             echo "==> [t2-dsp] run 'wpctl clear-default 0' after login to select the T2 output"
         fi
     fi
-    [ -d /run/udev ] && udevadm control --reload-rules
-    [ -d /run/udev ] && udevadm trigger -s sound || true
 }
 
 post_upgrade() {
