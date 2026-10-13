@@ -14,9 +14,9 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Package to build (or "all")'
+        description: 'Package[s] to build  (" " or "all") - Leave empty for autodetect'
         required: false
-        default: 'all'
+        default: ''
 
 concurrency:
   group: pipeline-${{ github.ref }}
