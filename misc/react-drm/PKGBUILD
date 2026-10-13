@@ -21,7 +21,7 @@ sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 pkgver() {
   local _version _revision _commit _p="$srcdir/$pkgname-src"
-  _version=$(node -p "require('$_p/package.json').version" 2>/dev/null)
+  _version=$(node -p "require('$_p/package.json').version")
   _revision=$(git -C "$_p" rev-list --count HEAD)
   _commit=$(git -C "$_p" log -1 --format="%h")
   printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
