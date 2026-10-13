@@ -37,13 +37,7 @@ prepare() {
     local _p _dir="$srcdir/KaiT2en-Fedora/patches/runtime/gpu-runtime-pm"
     for _p in $(cat "$_dir/series"); do
         [[ "$_p" = \#* || -z "$_p" ]] && continue
-        if patch -d "$srcdir/linux" -p1 --dry-run --batch --forward --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p" >/dev/null 2>&1; then
-            patch -d "$srcdir/linux" -p1 --batch --forward --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p"
-        elif patch -d "$srcdir/linux" -p1 --dry-run --batch --reverse --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p" >/dev/null 2>&1; then
-            :
-        else
-            return 1
-        fi
+        patch -d "$srcdir/linux" -p1 --batch --forward --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p"
     done
     sed -i 's|^#define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/amd/amdgpu$|#define TRACE_INCLUDE_PATH .|' "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h"
 }
