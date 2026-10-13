@@ -19,6 +19,7 @@ clone_pages() {
 }
 
 sync_pkgs() {
+  local KEEP=3
   mkdir -p x86_64
   for pkg in $(find ../artifacts -name '*.pkg.tar.zst'); do
     [ -f "$pkg" ] || continue
@@ -26,14 +27,22 @@ sync_pkgs() {
     local n
     n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
     echo "Updating $n in gh-pages..."
-
-    for old in x86_64/*.pkg.tar.zst; do
+    cp "$pkg" x86_64/
+    local matches
+    matches=$(for old in x86_64/*.pkg.tar.zst; do
       [ -f "$old" ] || continue
+      case "$(basename "$old")" in *-debug-*) continue ;; esac
       local old_n
       old_n=$(basename "$old" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
-      [ "$old_n" = "$n" ] && rm -f "$old"
+      [ "$old_n" = "$n" ] && echo "$old"
+    done | sort -V)
+    local count
+    count=$(printf '%s\n' "$matches" | grep -c .)
+    while [ "$count" -gt "$KEEP" ]; do
+      rm -f "$(printf '%s\n' "$matches" | sed -n '1p')"
+      matches=$(printf '%s\n' "$matches" | sed '1d')
+      count=$((count - 1))
     done
-    cp "$pkg" x86_64/
   done
 }
 
@@ -69,8 +78,11 @@ sync_pkgbuilds() {
     [ -f "$p" ] || continue
     local n dir=""
     n=$(grep -E '^pkgname=' "$p" | cut -d= -f2 | tr -d "'\"()")
-    dir=$(find_pkgdir "$n") || true
-    if [ -n "$dir" ] && [ -f "$dir/PKGBUILD" ]; then
+    if ! dir=$(find_pkgdir "$n"); then
+      echo "skip: no local dir for $n" >&2
+      continue
+    fi
+    if [ -f "$dir/PKGBUILD" ]; then
       if [ "$(sha256sum < "$p")" != "$(sha256sum < "$dir/PKGBUILD")" ]; then
         echo "chore: updated $dir/PKGBUILD..." >&2
         cp -f "$p" "$dir/PKGBUILD"
@@ -82,6 +94,14 @@ sync_pkgbuilds() {
   echo "$updated"
 }
 
+emit_installed() {
+  {
+    echo "# $1"
+    tar -tf "$2" | grep -vE '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$'
+    echo
+  } >> installed_files.txt
+}
+
 gen_installed_files() {
   : > installed_files.txt
   for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
@@ -89,11 +109,15 @@ gen_installed_files() {
     case "$(basename "$pkg")" in *-debug-* | *-meta-*) continue ;; esac
     local n
     n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
-    {
-      echo "# $n"
-      tar -tf "$pkg" | grep -vE '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$'
-      echo
-    } >> installed_files.txt
+    local latest
+    latest=$(for f in gh-pages/x86_64/*.pkg.tar.zst; do
+      [ -f "$f" ] || continue
+      local m
+      m=$(basename "$f" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
+      [ "$m" = "$n" ] && echo "$f"
+    done | sort -V | tail -n 1)
+    [ "$latest" = "$pkg" ] || continue
+    emit_installed "$n" "$pkg"
   done
 }
 
