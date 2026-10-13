@@ -2881,6 +2881,16 @@ usr/src/t2mfi_fastcharge-0.1/README.md
 usr/src/t2mfi_fastcharge-0.1/dkms.conf
 usr/src/t2mfi_fastcharge-0.1/t2mfi_fastcharge.c
 
+# t2sbs-dkms
+etc/mkinitcpio.conf.d/00-kait2en-t2sbs.conf
+usr/lib/modprobe.d/00-kait2en-t2sbs.conf
+usr/share/licenses/t2sbs-dkms/LICENSE
+usr/src/t2sbs-0.1/Makefile
+usr/src/t2sbs-0.1/README.md
+usr/src/t2sbs-0.1/dkms.conf
+usr/src/t2sbs-0.1/sbshc.h
+usr/src/t2sbs-0.1/t2sbs.c
+
 # t2sep-dkms
 usr/share/licenses/t2sep-dkms/LICENSE
 usr/src/t2sep-0.7/Makefile

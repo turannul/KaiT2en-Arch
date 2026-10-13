@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2sbs-dkms
-pkgver=0
+pkgver=0.1.r1.8c5a0b6
 pkgrel=1
 pkgdesc="KaiT2en Smart Battery module"
 arch=('x86_64')
