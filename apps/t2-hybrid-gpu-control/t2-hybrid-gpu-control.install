@@ -4,7 +4,7 @@ post_install() {
     rm -f /etc/systemd/system/kait2en-dgpu-off.service /etc/systemd/system/kait2en-dgpu-suspend.service /etc/systemd/system/kait2en-amdgpu-profile.service /etc/systemd/system/kait2en-amdgpu-profile-resume.service
     rm -rf /run/t2-dgpu-control /run/t2-hybrid-gpu-control
     if command -v flatpak >/dev/null 2>&1; then
-        flatpak override --system --env=GSK_RENDERER=ngl || true
+        flatpak override --system --env=GSK_RENDERER=ngl
     fi
 }
 
