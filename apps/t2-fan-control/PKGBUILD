@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-fan-control
-pkgver=0.1.0.r18.7c2032b
-pkgrel=2
+pkgver=0.1.0.r19.1cc1609
+pkgrel=1
 pkgdesc="Fan speed controller and monitor"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

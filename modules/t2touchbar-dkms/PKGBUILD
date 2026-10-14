@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2touchbar-dkms
-pkgver=0.1.r15.9f3f814
+pkgver=0.1.r16.b84aa6c
 pkgrel=1
 pkgdesc="KaiT2en TouchBar module"
 arch=('x86_64')
