@@ -33,18 +33,45 @@ all_pkgs() {
   done | sort -u
 }
 
+trim() {
+  local s="$1"
+  s="${s#"${s%%[![:space:]]*}"}"
+  s="${s%"${s##*[![:space:]]}"}"
+  printf '%s' "$s"
+}
+
 detect_manual() {
-  local t="${TARGET:-${1:-all}}"
-  if [ "$t" = "all" ] || [ -z "$t" ]; then
+  local t
+  t=$(trim "${TARGET:-${1:-}}")
+  if [ -z "$t" ]; then
+    echo "No target given, autodetecting upstream changes..."
+    detect_schedule
+    return
+  fi
+  if [ "$t" = "all" ]; then
     emit_matrix "$(all_pkgs)"
-  elif [ -d "$t" ] && [ -f "$t/PKGBUILD" ]; then
-    emit_matrix "$t"
-  else
-    echo "Package '$t' not found."
+    return
+  fi
+  local valid="" inv="" p
+  for p in ${t//,/ }; do
+    if [ "$p" = "all" ]; then
+      emit_matrix "$(all_pkgs)"
+      return
+    elif [ -d "$p" ] && [ -f "$p/PKGBUILD" ]; then
+      valid="${valid:+$valid$'\n'}$p"
+    else
+      inv="${inv:+$inv, }$p"
+    fi
+  done
+  if [ -n "$inv" ]; then
+    echo "Package(s) not found: $inv"
+  fi
+  if [ -z "$valid" ]; then
     out "has_packages=false"
     out "packages=[]"
     exit 0
   fi
+  emit_matrix "$(printf '%s\n' "$valid" | sort -u)"
 }
 
 detect_ci() {
@@ -101,7 +128,7 @@ detect_schedule() {
     local d
     d=$(dirname "$p" | sed 's|^\./||')
     grep -q 'pkgver()' "$d/PKGBUILD" || continue
-    check_pkgver "$d"
+    check_pkgver "$d" || echo "WARNING: pkgver check failed for $d, skipping."
   done
 
   local pkgs
@@ -115,7 +142,7 @@ main() {
 
   case "$mode" in
     workflow_dispatch|manual)
-      detect_manual "${TARGET:-${2:-all}}"
+      detect_manual "${TARGET:-${2:-}}"
       ;;
     schedule)
       detect_schedule

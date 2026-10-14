@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Package[s] to build  (" " or "all") - Leave empty for autodetect'
+        description: 'Package dir(s) to build (space-separated) or "all" - Leave empty for autodetect (upstream pkgver check)'
         required: false
         default: ''
 
