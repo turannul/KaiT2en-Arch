@@ -7,7 +7,7 @@ _upstream=${_kver%%.arch*}
 _major=${_upstream%%.*}
 
 pkgname=kait2en-gpu-runtime-pm
-pkgver=7.2.9.arch1_1.r28.eb530dc
+pkgver=7.2.10.arch1_1.r29.5d31948
 pkgrel=1
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2)"
 arch=('x86_64')
