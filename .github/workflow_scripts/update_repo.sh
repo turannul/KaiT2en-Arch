@@ -19,7 +19,7 @@ clone_pages() {
 }
 
 sync_pkgs() {
-  local KEEP=3
+  local KEEP=20
   mkdir -p x86_64
   for pkg in $(find ../artifacts -name '*.pkg.tar.zst'); do
     [ -f "$pkg" ] || continue
