@@ -34,11 +34,38 @@ prepare() {
     rm -rf "$srcdir/linux"
     mkdir -p "$srcdir/linux"
     tar -xf "$srcdir/linux-$_upstream.tar.xz" -C "$srcdir/linux" --strip-components=1
-    local _p _dir="$srcdir/KaiT2en-Fedora/patches/runtime/gpu-runtime-pm"
+
+    local _fedora="$srcdir/KaiT2en-Fedora/scripts/fedora"
+    local _dir="$srcdir/KaiT2en-Fedora/patches/runtime/gpu-runtime-pm"
+
+    source "$_fedora/lib.sh"
+    set +eu
+    trap - ERR EXIT
+    REPO_ROOT="$_dir"
+    KVER="$_upstream"
+
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+
+    awk '/^patch_needed_for_kernel\(\) \{/,/^}/' "$_fedora/install-gpu-runtime-pm.sh" > "$srcdir/.upstream-pnf.sh"
+    awk '/^apply_patch_if_needed\(\) \{/,/^}/' "$_fedora/install-gpu-runtime-pm.sh" > "$srcdir/.upstream-apin.sh"
+    sed -i '/fail "patch does not apply/a\        return 1' "$srcdir/.upstream-apin.sh"
+    source "$srcdir/.upstream-pnf.sh"
+    source "$srcdir/.upstream-apin.sh"
+    rm -f "$srcdir/.upstream-pnf.sh" "$srcdir/.upstream-apin.sh"
+
+    local _p
     for _p in $(cat "$_dir/series"); do
         [[ "$_p" = \#* || -z "$_p" ]] && continue
-        patch -d "$srcdir/linux" -p1 --batch --forward --fuzz=3 --no-backup-if-mismatch <"$_dir/$_p"
+        if ! patch_needed_for_kernel "$_dir/$_p" "$KVER"; then
+            echo "==> skipping $_p (already present in kernel $KVER)"
+            continue
+        fi
+        if ! apply_patch_if_needed "$srcdir/linux" "$_dir/$_p"; then
+            echo "==> ERROR: patch did not apply: $_p" >&2
+            return 1
+        fi
     done
+
     sed -i 's|^#define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/amd/amdgpu$|#define TRACE_INCLUDE_PATH .|' "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h"
 }
 
