@@ -13,7 +13,7 @@ pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For Mac
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
-depends=("linux=$_kver" 't2gmux')
+depends=('t2gmux')
 makedepends=('git' 'linux-headers')
 provides=("$pkgname-git")
 conflicts=("$pkgname-git")
