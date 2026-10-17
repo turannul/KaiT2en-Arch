@@ -49,7 +49,7 @@ sync_pkgs() {
 publish_pages() {
   local repo="$1"
 
-  repo-add "x86_64/${repo}.db.tar.gz" x86_64/*.pkg.tar.zst
+  repo-add "x86_64/${repo}.db.tar.gz" $(printf '%s\n' x86_64/*.pkg.tar.zst | sort -V)
 
   git config user.name "actions-user"
   git config user.email "actions-user@users.noreply.github.com"
