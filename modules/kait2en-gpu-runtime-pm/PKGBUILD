@@ -7,8 +7,8 @@ _upstream=${_kver%%.arch*}
 _major=${_upstream%%.*}
 
 pkgname=kait2en-gpu-runtime-pm
-pkgver=0
-pkgrel=3
+pkgver=7.2.11.arch1_1.r29.5d31948
+pkgrel=1
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
