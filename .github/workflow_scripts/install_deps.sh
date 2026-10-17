@@ -6,6 +6,19 @@ setup_makepkg() {
   fi
 }
 
+setup_arch_mact2_repo() {
+  if ! grep -q '\[arch-mact2\]' /etc/pacman.conf; then
+    echo "Adding arch-mact2 repository to pacman.conf..."
+    cat >> /etc/pacman.conf <<'EOF'
+
+[arch-mact2]
+SigLevel = Never
+Server = https://arch-t2.slsrepo.com/
+EOF
+    pacman -Sy --noconfirm
+  fi
+}
+
 install_base() {
   pacman -Syu --noconfirm --needed base-devel git
 }
@@ -33,7 +46,11 @@ install_cargo() {
 
 install_kernel() {
   local p="$1"
-  if grep -qE "['\"]linux-headers['\"]" "$p/PKGBUILD"; then
+  if grep -qE "['\"]linux-t2-headers['\"]" "$p/PKGBUILD"; then
+    echo "Installing T2 kernel headers for $p..."
+    setup_arch_mact2_repo
+    pacman -S --noconfirm --needed linux-t2-headers
+  elif grep -qE "['\"]linux-headers['\"]" "$p/PKGBUILD"; then
     echo "Installing kernel headers for $p..."
     pacman -S --noconfirm --needed linux-headers
   fi

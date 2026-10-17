@@ -1,0 +1,9 @@
+post_install() {
+    if [[ -r /sys/class/dmi/id/product_name ]]; then
+        read -r _model </sys/class/dmi/id/product_name
+        case "$_model" in
+            MacBookPro15,1|MacBookPro16,1|MacBookPro16,4|iMac20,1|iMac20,2) ;;
+            *) echo "==> [kait2en] $_model has no GMUX runtime PM support; the stock amdgpu remains in effect" ;;
+        esac
+    fi
+}
