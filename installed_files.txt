@@ -47,8 +47,13 @@ usr/share/pixmaps/kait2en-gdm-logo.png
 
 # kait2en-gpu-runtime-pm
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
-usr/lib/modules/7.2.10-arch1-1/updates/amdgpu.ko.zst
+usr/lib/modules/7.2.11-arch1-1/updates/amdgpu.ko.zst
 usr/share/licenses/kait2en-gpu-runtime-pm/LICENSE
+
+# kait2en-gpu-runtime-pm-t2
+usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
+usr/lib/modules/7.2.10-arch1-Watanare-T2-2-t2/updates/amdgpu.ko.zst
+usr/share/licenses/kait2en-gpu-runtime-pm-t2/LICENSE
 
 # kait2en-plymouth-theme
 usr/share/licenses/kait2en-plymouth-theme/LICENSE
