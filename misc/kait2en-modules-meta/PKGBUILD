@@ -10,4 +10,7 @@ url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
 groups=('kait2en')
 depends=('hid_t2magicmouse-dkms' 't2bce-dkms' 't2bdrm-dkms' 't2gmux-dkms' 't2mfi_fastcharge-dkms' 't2sbs-dkms' 't2smc-dkms' 't2smp-dkms' 't2thunderbolt-dkms' 't2touchbar-dkms' 't2_precision_trackpad-dkms' 't2_trackpad_actuator-dkms')
-optdepends=('kait2en-gpu-runtime-pm: Patched AMDGPU with Apple GMUX runtime PM support')
+optdepends=(
+    'kait2en-gpu-runtime-pm: Patched AMDGPU with Apple GMUX runtime PM support'
+    'kait2en-gpu-runtime-pm-t2: Patched AMDGPU with Apple GMUX runtime PM support built for linux-t2'
+)
