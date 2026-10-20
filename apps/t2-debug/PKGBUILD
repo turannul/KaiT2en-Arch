@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-debug
-pkgver=0
+pkgver=0.1.0.r1.ba9d2d8
 pkgrel=1
 pkgdesc="Live Apple T2 (bridgeOS) debugger over the Instruments dtservicehub"
 arch=('x86_64')
