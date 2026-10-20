@@ -52,7 +52,7 @@ usr/share/licenses/kait2en-gpu-runtime-pm/LICENSE
 
 # kait2en-gpu-runtime-pm-t2
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
-usr/lib/modules/7.2.10-arch1-Watanare-T2-2-t2/updates/amdgpu.ko.zst
+usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/amdgpu.ko.zst
 usr/share/licenses/kait2en-gpu-runtime-pm-t2/LICENSE
 
 # kait2en-plymouth-theme
@@ -2580,6 +2580,13 @@ usr/share/applications/org.t2cpucontrol.gtk.desktop
 usr/share/icons/hicolor/scalable/apps/org.t2cpucontrol.gtk.svg
 usr/share/licenses/t2-cpu-control/LICENSE
 usr/share/polkit-1/actions/org.t2cpucontrol.policy
+
+# t2-debug
+usr/bin/t2-debug
+usr/bin/t2debug
+usr/share/applications/org.t2debug.gtk.desktop
+usr/share/icons/hicolor/scalable/apps/org.t2debug.gtk.svg
+usr/share/licenses/t2-debug/LICENSE
 
 # t2-dgpu-control
 usr/bin/t2-dgpu-control
