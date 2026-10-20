@@ -72,6 +72,11 @@ jobs:
       - name: Install dependencies for ${{ matrix.package.dir }}
         run: bash .github/workflow_scripts/install_deps.sh "${{ matrix.package.dir }}"
 
+      - name: Disable makepkg debug
+        run: |
+          sed -i -E '/^[[:space:]]*OPTIONS=/ s/(^|[[:space:](])debug\b/\1!debug/g' /etc/makepkg.conf
+          echo "makepkg options: $(grep -E '^[[:space:]]*OPTIONS=' /etc/makepkg.conf)"
+
       - name: Create non-root user
         run: |
           useradd -m turannul

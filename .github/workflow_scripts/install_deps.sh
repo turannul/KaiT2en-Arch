@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-setup_makepkg() {
-  if [ -w /etc/makepkg.conf ] && ! grep -q '!debug' /etc/makepkg.conf; then
-    echo 'OPTIONS+=(!debug)' >> /etc/makepkg.conf
-  fi
-}
-
 setup_arch_mact2_repo() {
   if ! grep -q '\[arch-mact2\]' /etc/pacman.conf; then
     echo "Adding arch-mact2 repository to pacman.conf..."
@@ -70,7 +64,6 @@ main() {
   [ -z "$p" ] && { echo "Package name required"; exit 1; }
 
   echo "Resolving dependencies for $p..."
-  setup_makepkg
   install_base
   install_cargo "$p"
   install_kernel "$p"
