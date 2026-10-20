@@ -13,6 +13,7 @@ depends=('t2-ave' 't2-fan-control' 't2-power-tune' 't2-touchid')
 optdepends=(
     'react-drm: Touch Bar control center'
     't2-cpu-control: CPU power limit and thermal telemetry controller'
+    't2-debug: Live Apple T2 (bridgeOS) debugger over the Instruments dtservicehub'
     't2-dgpu-control: Discrete GPU power and boot-GPU selector for dual-GPU Macs'
     't2-force-click: Trackpad click and force-click pressure and action configurator'
     't2-hybrid-gpu-control: Configure hybrid graphics on MacBookPro15,1/16,1/16,4 iMac 20,1/20,2'
