@@ -23,6 +23,7 @@ sync_pkgs() {
   mkdir -p x86_64
   for pkg in $(find ../artifacts -name '*.pkg.tar.zst'); do
     [ -f "$pkg" ] || continue
+    case "$(basename "$pkg")" in *-debug-*) continue ;; esac
     local n
     n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
     echo "Updating $n in gh-pages..."
