@@ -23,7 +23,6 @@ sync_pkgs() {
   mkdir -p x86_64
   for pkg in $(find ../artifacts -name '*.pkg.tar.zst'); do
     [ -f "$pkg" ] || continue
-    case "$(basename "$pkg")" in *-debug-*) continue ;; esac
     local n
     n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
     echo "Updating $n in gh-pages..."
@@ -31,7 +30,6 @@ sync_pkgs() {
     local matches
     matches=$(for old in x86_64/*.pkg.tar.zst; do
       [ -f "$old" ] || continue
-      case "$(basename "$old")" in *-debug-*) continue ;; esac
       local old_n
       old_n=$(basename "$old" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
       [ "$old_n" = "$n" ] && echo "$old"
@@ -95,9 +93,12 @@ sync_pkgbuilds() {
 }
 
 emit_installed() {
+  local files
+  files=$(tar -tf "$2" | grep -vE '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$' || true)
+  [ -n "$files" ] || return 0
   {
     echo "# $1"
-    tar -tf "$2" | grep -vE '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$'
+    printf '%s\n' "$files"
     echo
   } >> installed_files.txt
 }
@@ -106,7 +107,6 @@ gen_installed_files() {
   : > installed_files.txt
   for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
     [ -f "$pkg" ] || continue
-    case "$(basename "$pkg")" in *-debug-* | *-meta-*) continue ;; esac
     local n
     n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
     local latest
