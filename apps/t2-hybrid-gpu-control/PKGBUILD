@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-hybrid-gpu-control
-pkgver=0.1.0.r14.9b640be
-pkgrel=2
+pkgver=0.1.0.r17.8f3aefb
+pkgrel=1
 pkgdesc="Configure hybrid graphics on MacBookPro15,1/16,1/16,4'"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

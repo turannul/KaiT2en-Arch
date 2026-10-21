@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-zone-power
-pkgver=0.1.0.r7.6cf11ec
+pkgver=0.1.0.r10.8f3aefb
 pkgrel=1
 pkgdesc="SMC power zone monitor and controller for T2 Macs"
 arch=('x86_64')
