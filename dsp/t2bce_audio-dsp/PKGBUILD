@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2bce_audio-dsp
-pkgver=r10.1e3c61a
+pkgver=r11.81a19ab
 pkgrel=1
 pkgdesc="Model-specific host-side audio DSP"
 arch=('any')
