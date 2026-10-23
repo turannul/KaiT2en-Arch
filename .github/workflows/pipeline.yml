@@ -26,6 +26,8 @@ env:
   CARGO_HOME: ${{ github.workspace }}/.cargo-cache
   npm_config_cache: ${{ github.workspace }}/.npm-cache
   PACKAGER: "Turann_ (turannul) <turanull000@gmail.com>"
+  GPG_PRIVATE_KEY: ${{ secrets.key }}
+  GPG_KEY_ID: "98B860D8676E4DEEF322A979DC967DFB72E7D920"
   REPO_NAME: "turann-s-place"
 
 jobs:
@@ -36,9 +38,6 @@ jobs:
       packages: ${{ steps.set-matrix.outputs.packages }}
       has_packages: ${{ steps.set-matrix.outputs.has_packages }}
     steps:
-      - name: Install dependencies
-        run: pacman -Sy --noconfirm --needed git base-devel nodejs
-
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
@@ -69,24 +68,8 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install dependencies for ${{ matrix.package.dir }}
-        run: bash .github/workflow_scripts/install_deps.sh "${{ matrix.package.dir }}"
-
-      - name: Disable makepkg debug
-        run: |
-          sed -i -E '/^[[:space:]]*OPTIONS=/ s/(^|[[:space:](])debug\b/\1!debug/g' /etc/makepkg.conf
-          echo "makepkg options: $(grep -E '^[[:space:]]*OPTIONS=' /etc/makepkg.conf)"
-
-      - name: Create non-root user
-        run: |
-          useradd -m turannul
-          mkdir -p "$CARGO_HOME" "$npm_config_cache"
-          chown -R turannul:turannul "$CARGO_HOME" "$npm_config_cache"
-          chown -R turannul:turannul .
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-      - name: Build ${{ matrix.package.dir }}
-        run: su -p turannul -c "cd ${{ matrix.package.dir }} && makepkg --nodeps --force"
+      - name: build and sign
+        run: bash .github/workflow_scripts/build.sh "${{ matrix.package.dir }}"
 
       - name: Upload ${{ matrix.package.dir }}
         uses: actions/upload-artifact@v7
@@ -94,6 +77,7 @@ jobs:
           name: ${{ matrix.package.artifact }}
           path: |
             ${{ matrix.package.dir }}/*.pkg.tar.zst
+            ${{ matrix.package.dir }}/*.pkg.tar.zst.sig
             ${{ matrix.package.dir }}/PKGBUILD
           if-no-files-found: error
 
@@ -107,8 +91,8 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - name: Install git and pacman tools
-        run: pacman -Sy --noconfirm --needed git base-devel
+      - name: Install git
+        run: pacman -Sy --noconfirm --needed git
 
       - name: Checkout main repo
         uses: actions/checkout@v7
@@ -121,8 +105,7 @@ jobs:
         with:
           path: artifacts
 
-      - name: Update repository and installed_files.txt
+      - name: prepare repo
         env:
           GH_TOKEN: ${{ github.token }}
-          REPO_NAME: ${{ env.REPO_NAME }}
-        run: bash .github/workflow_scripts/update_repo.sh
+        run: bash .github/workflow_scripts/prepare_repo.sh

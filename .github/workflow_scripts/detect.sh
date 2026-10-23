@@ -1,8 +1,39 @@
 #!/usr/bin/env bash
 
+setup_t2_repo() {
+  if ! grep -q '\[arch-mact2\]' /etc/pacman.conf; then
+    cat >> /etc/pacman.conf <<'EOF'
+
+[arch-mact2]
+Server = https://arch-t2.slsrepo.com/
+SigLevel = Never
+EOF
+  fi
+}
+
+setup_my_repo() {
+  if ! grep -q '\[turann-s-place\]' /etc/pacman.conf; then
+    cat >> /etc/pacman.conf <<'EOF'
+
+[turann-s-place]
+Server = https://turannul.github.io/KaiT2en-Arch/x86_64
+SigLevel = Never
+EOF
+  fi
+}
+
+sync_pacman() {
+    pacman --files --refresh --noconfirm
+    pacman --sync --refresh --noconfirm
+}
+
 setup_environment() {
-  set -e
-  git config --global --add safe.directory '*'
+    setup_my_repo
+    setup_t2_repo
+    sync_pacman
+    pacman --sync --refresh --noconfirm git
+    set -e
+    git config --global --add safe.directory '*'
 }
 
 out() {

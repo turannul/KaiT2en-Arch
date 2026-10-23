@@ -1,13 +1,29 @@
 #!/usr/bin/env bash
+set -e
 
-setup_environment() {
-  set -e
+ws="${GITHUB_WORKSPACE:-$(pwd)}"
+repo="${REPO_NAME:-turann-s-place}"
+tok="${GH_TOKEN:?GH_TOKEN required}"
+keyid="${GPG_KEY_ID:?GPG_KEY_ID required}"
+updated_pkgs=""
+
+install_tools() {
+  pacman --sync --refresh --noconfirm --needed git gnupg
+}
+
+setup_git() {
   git config --global --add safe.directory '*'
+}
+
+import_key() {
+  local key="${GPG_PRIVATE_KEY:?GPG_PRIVATE_KEY required}"
+  export GNUPGHOME="$ws/.gnupg"
+  mkdir -p -m 700 "$GNUPGHOME"
+  echo "$key" | gpg --batch --import
 }
 
 clone_pages() {
   local ws="$1" tok="$2"
-
   cd "$ws"
   if git clone --depth 1 --branch gh-pages "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git" gh-pages; then
     cd gh-pages
@@ -19,36 +35,25 @@ clone_pages() {
 }
 
 sync_pkgs() {
-  local KEEP=20
   mkdir -p x86_64
-  for pkg in $(find ../artifacts -name '*.pkg.tar.zst'); do
+  local pkg n
+  while IFS= read -r pkg; do
     [ -f "$pkg" ] || continue
-    local n
     n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
     echo "Updating $n in gh-pages..."
     cp "$pkg" x86_64/
-    local matches
-    matches=$(for old in x86_64/*.pkg.tar.zst; do
-      [ -f "$old" ] || continue
-      local old_n
-      old_n=$(basename "$old" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
-      [ "$old_n" = "$n" ] && echo "$old"
-    done | sort -V)
-    local count
-    count=$(printf '%s\n' "$matches" | grep -c .)
-    while [ "$count" -gt "$KEEP" ]; do
-      rm -f "$(printf '%s\n' "$matches" | sed -n '1p')"
-      matches=$(printf '%s\n' "$matches" | sed '1d')
-      count=$((count - 1))
-    done
-  done
+    if [ -f "${pkg}.sig" ]; then
+      cp "${pkg}.sig" x86_64/
+    fi
+  done < <(find ../artifacts -name '*.pkg.tar.zst')
 }
 
 publish_pages() {
   local repo="$1"
-
-  repo-add "x86_64/${repo}.db.tar.gz" $(printf '%s\n' x86_64/*.pkg.tar.zst | sort -V)
-
+  rm -f "x86_64/${repo}".db* "x86_64/${repo}".files*
+  repo-add --sign --key "${keyid}" "x86_64/${repo}.db.tar.zst" \
+    $(printf '%s\n' x86_64/*.pkg.tar.zst | sort -V)
+  gpg --batch --armor --export "${keyid}" > key.asc
   git config user.name "actions-user"
   git config user.email "actions-user@users.noreply.github.com"
   git add -A
@@ -62,19 +67,22 @@ publish_pages() {
 
 find_pkgdir() {
   local want="$1" p d n
-  for p in $(find . -name PKGBUILD -not -path './gh-pages/*' -not -path './artifacts/*'); do
+  while IFS= read -r p; do
     d=$(dirname "$p" | sed 's|^\./||')
     n=$(grep -E '^pkgname=' "$d/PKGBUILD" | cut -d= -f2 | tr -d "'\"()")
-    [ "$n" = "$want" ] && { echo "$d"; return 0; }
-  done
+    if [ "$n" = "$want" ]; then
+      echo "$d"
+      return 0
+    fi
+  done < <(find . -name PKGBUILD -not -path './gh-pages/*' -not -path './artifacts/*')
   return 1
 }
 
 sync_pkgbuilds() {
-  local updated=""
-  for p in $(find artifacts -name PKGBUILD); do
+  updated_pkgs=""
+  local p n dir
+  while IFS= read -r p; do
     [ -f "$p" ] || continue
-    local n dir=""
     n=$(grep -E '^pkgname=' "$p" | cut -d= -f2 | tr -d "'\"()")
     if ! dir=$(find_pkgdir "$n"); then
       echo "skip: no local dir for $n" >&2
@@ -84,12 +92,11 @@ sync_pkgbuilds() {
       if [ "$(sha256sum < "$p")" != "$(sha256sum < "$dir/PKGBUILD")" ]; then
         echo "chore: updated $dir/PKGBUILD..." >&2
         cp -f "$p" "$dir/PKGBUILD"
-        updated="${updated:+$updated, }$dir"
+        updated_pkgs="${updated_pkgs:+$updated_pkgs, }$dir"
       fi
     fi
-  done
+  done < <(find artifacts -name PKGBUILD)
   rm -rf artifacts
-  echo "$updated"
 }
 
 emit_installed() {
@@ -105,14 +112,12 @@ emit_installed() {
 
 gen_installed_files() {
   : > installed_files.txt
+  local pkg n latest f m
   for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
     [ -f "$pkg" ] || continue
-    local n
     n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
-    local latest
     latest=$(for f in gh-pages/x86_64/*.pkg.tar.zst; do
       [ -f "$f" ] || continue
-      local m
       m=$(basename "$f" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
       [ "$m" = "$n" ] && echo "$f"
     done | sort -V | tail -n 1)
@@ -149,7 +154,7 @@ fmt_upd() {
     members=""
     for i in "${!parts[@]}"; do
       d="${parts[$i]}"
-      if [[ "$d" == "$parent" ]]; then
+      if [ "$d" == "$parent" ]; then
         base="$d"
       elif [[ "$d" == "$parent"/* ]]; then
         base="${d#*/}"
@@ -177,12 +182,10 @@ fmt_upd() {
 
 commit_main() {
   local tok="$1" updated="$2"
-
   git config user.name "actions-user"
   git config user.email "actions-user@users.noreply.github.com"
   git remote set-url origin "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
   git add installed_files.txt $(find . -name PKGBUILD -not -path './gh-pages/*' -not -path './artifacts/*')
-
   if git diff --cached --quiet; then
     echo "No changes to commit on main."
   else
@@ -197,25 +200,26 @@ commit_main() {
   fi
 }
 
-main() {
-  setup_environment
-
-  local ws="${GITHUB_WORKSPACE:-$(pwd)}"
-  local repo="${REPO_NAME:-turann-s-place}"
-  local tok="${GH_TOKEN:-}"
-
-  git config --global --add safe.directory "$ws"
-  git config --global --add safe.directory "$ws/gh-pages"
-
+prepare_repo() {
+  echo "==> install_tools"
+  install_tools
+  echo "==> setup_git"
+  setup_git
+  echo "==> import_key"
+  import_key
+  echo "==> clone_pages"
   clone_pages "$ws" "$tok"
+  echo "==> sync_pkgs"
   sync_pkgs
+  echo "==> publish_pages"
   publish_pages "$repo"
-
   cd "$ws"
-  local updated
-  updated=$(sync_pkgbuilds)
+  echo "==> sync_pkgbuilds"
+  sync_pkgbuilds
+  echo "==> gen_installed_files"
   gen_installed_files
-  commit_main "$tok" "$updated"
+  echo "==> commit_main"
+  commit_main "$tok" "$updated_pkgs"
 }
 
-main "$@"
+prepare_repo
