@@ -2758,6 +2758,14 @@ usr/src/t2bce_stack-0.01/t2bce_dma/Makefile
 usr/src/t2bce_stack-0.01/t2bce_dma/README.md
 usr/src/t2bce_stack-0.01/t2bce_dma/include/t2bce_dma_queue.h
 usr/src/t2bce_stack-0.01/t2bce_dma/queue.c
+usr/src/t2bce_stack-0.01/t2bce_sidecar/Kconfig
+usr/src/t2bce_stack-0.01/t2bce_sidecar/Makefile
+usr/src/t2bce_stack-0.01/t2bce_sidecar/bplist.c
+usr/src/t2bce_stack-0.01/t2bce_sidecar/bplist.h
+usr/src/t2bce_stack-0.01/t2bce_sidecar/session.c
+usr/src/t2bce_stack-0.01/t2bce_sidecar/sidecar.h
+usr/src/t2bce_stack-0.01/t2bce_sidecar/usb.c
+usr/src/t2bce_stack-0.01/t2bce_sidecar/video.c
 usr/src/t2bce_stack-0.01/t2bce_vhci/Makefile
 usr/src/t2bce_stack-0.01/t2bce_vhci/command.h
 usr/src/t2bce_stack-0.01/t2bce_vhci/queue.c
