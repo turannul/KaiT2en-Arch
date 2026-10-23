@@ -1,0 +1,33 @@
+# Maintainer: Turann_ (turannul) <turanull000@gmail.com>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=brcm-firmware-fetch
+pkgver=0.0.2.r1.31134c2
+pkgrel=1
+pkgdesc="Utility script for fetching Broadcom Wi-Fi Bluetooth Firmware from macOS."
+arch=('x86_64')
+url="https://github.com/turannul/brcm_fw_script"
+license=()
+depends=('bash')
+makedepends=('git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git")
+replaces=("$pkgname-git")
+source=("git+$url.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p=$srcdir/brcm_fw_script
+  _version=$(bash "$_p/src/brcm_fw.bash" --version)
+  _revision=$(git -C "$_p" rev-list --count HEAD -- "$_p/src/brcm_fw.bash")
+  _commit=$(git -C "$_p" log -1 --format="%h" -- "$_p/src/brcm_fw.bash")
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+check() {
+    bash -n "$srcdir/brcm_fw_script/src/brcm_fw.bash"
+}
+
+package() {
+    install -D -m755 "$srcdir/brcm_fw_script/src/brcm_fw.bash" "$pkgdir/usr/bin/brcm_fw.bash"
+}
