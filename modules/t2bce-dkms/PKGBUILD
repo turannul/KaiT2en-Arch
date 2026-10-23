@@ -3,8 +3,8 @@
 
 pkgname=t2bce-dkms
 pkgver=0.01.r53.abbf15c
-pkgrel=1
-pkgdesc="KaiT2en BCE (dma, core, vhci, audio, ave) module"
+pkgrel=2
+pkgdesc="KaiT2en BCE (dma, core, vhci, audio, ave, sidecar) module[s]"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
@@ -16,8 +16,8 @@ optdepends=(
     't2bce_audio-dsp: Model-specific host-side audio DSP'
 )
 makedepends=('git')
-provides=('t2bce' 't2bce_core' 't2bce_audio' 't2bce_ave' 't2bce_dma' 't2bce_vhci')
-conflicts=('t2bce_core' 't2bce_audio' 't2bce_ave' 't2bce_dma' 't2bce_vhci')
+provides=('t2bce' 't2bce_core' 't2bce_audio' 't2bce_ave' 't2bce_dma' 't2bce_vhci' 't2bce_sidecar')
+conflicts=('t2bce_core' 't2bce_audio' 't2bce_ave' 't2bce_dma' 't2bce_vhci' 't2bce_sidecar')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
 sha256sums=('SKIP')
 
@@ -35,15 +35,12 @@ prepare() {
     rm -rf "$dest"
     mkdir -p "$dest"
     cp -a "$src/modules/t2bce_stack/Makefile" "$src/modules/t2bce_stack/dkms.conf" "$src/modules/t2bce_stack/README.md" "$dest/"
-    local m
     for m in t2bce_dma t2bce_core t2bce_vhci t2bce_audio; do
         cp -a "$src/modules/$m" "$dest/"
     done
-    if [[ -d "$src/t2-services/t2-ave/kernel/t2bce_ave" ]]; then
-        cp -a "$src/t2-services/t2-ave/kernel/t2bce_ave" "$dest/t2bce_ave"
-    else
-        cp -a "$src/modules/t2bce_ave" "$dest/t2bce_ave"
-    fi
+    for m in t2bce_ave t2bce_sidecar; do
+        cp -a "$src/t2-services/t2-ave/kernel/$m" "$dest/"
+    done
 }
 
 package() {
