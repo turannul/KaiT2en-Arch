@@ -3,7 +3,7 @@
 
 pkgname=t2touchbar-dkms
 pkgver=0.1.r16.b84aa6c
-pkgrel=1
+pkgrel=2
 pkgdesc="KaiT2en TouchBar module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
