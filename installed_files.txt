@@ -8,6 +8,9 @@ usr/lib/lv2/bankstown.lv2/bankstown.so
 usr/lib/lv2/bankstown.lv2/bankstown.ttl
 usr/lib/lv2/bankstown.lv2/manifest.ttl
 
+# brcm-firmware-fetch
+usr/bin/brcm_fw.bash
+
 # fruitjuice
 usr/bin/fruitjuiced
 usr/lib/modules-load.d/fruitjuice.conf
