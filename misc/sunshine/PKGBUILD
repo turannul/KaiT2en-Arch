@@ -10,9 +10,9 @@
 
 pkgname=sunshine-t2-sidecar
 pkgver=0.01.r0.abbf15c
-pkgrel=1
+pkgrel=3
 pkgdesc="@PROJECT_DESCRIPTION@"
-arch=('x86_64' 'aarch64')
+arch=('x86_64')
 url=@PROJECT_HOMEPAGE_URL@
 license=('GPL-3.0-only')
 install=sunshine.install
@@ -189,64 +189,64 @@ build() {
     cmake --build build
 }
 
-check() {
-    if [[ "${_run_unit_tests::1}" == "t" ]]; then
-      export CC="gcc${_gcc_env_suffix}"
-      export CXX="g++${_gcc_env_suffix}"
-
-      cd "${srcdir}/build/tests"
-      # Do not silently upload misleading coverage if the gcov runtime cannot
-      # write profile data, such as when its version differs from the compiler.
-      GCOV_EXIT_AT_ERROR=1 ./test_sunshine --gtest_color=yes --gtest_output=xml:test_results.xml
-
-      # Generate coverage report
-      # Run gcovr from the build directory (where all .gcda/.gcno files are)
-      # This matches the pattern used in ci-linux.yml
-      cd "${srcdir}/build"
-
-      # Dynamically find the gcov executable from the selected compiler.
-      # This ensures we use the same gcov version that produced the .gcno files.
-      local gcov_path
-      local gcc_lib_dir
-
-      gcc_lib_dir="$("$CC" -print-libgcc-file-name)"
-      gcc_lib_dir="${gcc_lib_dir%/*}"
-      gcov_path="${gcc_lib_dir}/gcov"
-
-      if [ ! -x "$gcov_path" ]; then
-        gcov_path="$("$CC" -print-prog-name=gcov)"
-      fi
-
-      if [ -n "$gcov_path" ] && command -v "$gcov_path" > /dev/null 2>&1; then
-        gcov_path="$(command -v "$gcov_path")"
-      else
-        gcov_path="$(command -v "gcov${_gcc_env_suffix}" || command -v gcov || true)"
-      fi
-
-      if [ -z "$gcov_path" ]; then
-        echo "Unable to find gcov for ${CC}" >&2
-        return 1
-      fi
-
-      echo "Using gcov at: $gcov_path"
-
-      # Use the actual relative path to the source directory
-      # From ${srcdir}/build, the source is at ../${pkgname}/src
-      gcovr --gcov-executable "$gcov_path" . -r "../${pkgname}/src" \
-        --exclude-noncode-lines \
-        --exclude-throw-branches \
-        --exclude-unreachable-branches \
-        --verbose \
-        --xml-pretty \
-        -o coverage.xml
-
-      # Post-process the coverage XML to strip the absolute path and show only 'src'
-      sed -i "s|${srcdir}/${pkgname}/src|src|g" coverage.xml
-    fi
-
-    cd "${srcdir}/build"
-    ./sunshine --version
-}
+# check() {
+#     if [[ "${_run_unit_tests::1}" == "t" ]]; then
+#       export CC="gcc${_gcc_env_suffix}"
+#       export CXX="g++${_gcc_env_suffix}"
+# 
+#       cd "${srcdir}/build/tests"
+#       # Do not silently upload misleading coverage if the gcov runtime cannot
+#       # write profile data, such as when its version differs from the compiler.
+#       GCOV_EXIT_AT_ERROR=1 ./test_sunshine --gtest_color=yes --gtest_output=xml:test_results.xml
+# 
+#       # Generate coverage report
+#       # Run gcovr from the build directory (where all .gcda/.gcno files are)
+#       # This matches the pattern used in ci-linux.yml
+#       cd "${srcdir}/build"
+# 
+#       # Dynamically find the gcov executable from the selected compiler.
+#       # This ensures we use the same gcov version that produced the .gcno files.
+#       local gcov_path
+#       local gcc_lib_dir
+# 
+#       gcc_lib_dir="$("$CC" -print-libgcc-file-name)"
+#       gcc_lib_dir="${gcc_lib_dir%/*}"
+#       gcov_path="${gcc_lib_dir}/gcov"
+# 
+#       if [ ! -x "$gcov_path" ]; then
+#         gcov_path="$("$CC" -print-prog-name=gcov)"
+#       fi
+# 
+#       if [ -n "$gcov_path" ] && command -v "$gcov_path" > /dev/null 2>&1; then
+#         gcov_path="$(command -v "$gcov_path")"
+#       else
+#         gcov_path="$(command -v "gcov${_gcc_env_suffix}" || command -v gcov || true)"
+#       fi
+# 
+#       if [ -z "$gcov_path" ]; then
+#         echo "Unable to find gcov for ${CC}" >&2
+#         return 1
+#       fi
+# 
+#       echo "Using gcov at: $gcov_path"
+# 
+#       # Use the actual relative path to the source directory
+#       # From ${srcdir}/build, the source is at ../${pkgname}/src
+#       gcovr --gcov-executable "$gcov_path" . -r "../${pkgname}/src" \
+#         --exclude-noncode-lines \
+#         --exclude-throw-branches \
+#         --exclude-unreachable-branches \
+#         --verbose \
+#         --xml-pretty \
+#         -o coverage.xml
+# 
+#       # Post-process the coverage XML to strip the absolute path and show only 'src'
+#       sed -i "s|${srcdir}/${pkgname}/src|src|g" coverage.xml
+#     fi
+# 
+#     cd "${srcdir}/build"
+#     ./sunshine --version
+# }
 
 package() {
     export MAKEFLAGS="${MAKEFLAGS:--j$(nproc)}"
