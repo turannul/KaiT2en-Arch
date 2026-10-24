@@ -71,6 +71,10 @@ usr/share/plymouth/themes/kait2en/progress_bar.png
 usr/share/plymouth/themes/kait2en/progress_box.png
 usr/share/plymouth/themes/kait2en/watermark.png
 
+# netmuxd-git
+usr/bin/netmuxd
+usr/share/licenses/netmuxd-git/LICENSE
+
 # react-drm
 opt/react-drm/.env.example.kait2en
 opt/react-drm/.env.example.t2linux

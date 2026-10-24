@@ -2,7 +2,7 @@
 
 pkgname=netmuxd-git
 _pkgname=netmuxd
-pkgver=0.4.3.r7.g68d5bc9
+pkgver=0.4.3.r16.g3771657
 pkgrel=1
 pkgdesc="An alternative to usbmuxd just for networking (latest Git version)"
 arch=('x86_64')
