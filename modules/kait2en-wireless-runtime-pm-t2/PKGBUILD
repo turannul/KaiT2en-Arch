@@ -11,7 +11,7 @@ _kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit
 [[ -n ${_kver:?Cannot find linux-t2-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm-t2
-pkgver=0
+pkgver=7.2.11_arch1_Watanare_T2_1_t2.r2.6659728
 pkgrel=1
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For T2 Linux)."
 arch=('x86_64')
