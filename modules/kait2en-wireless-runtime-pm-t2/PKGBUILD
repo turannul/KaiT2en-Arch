@@ -22,9 +22,9 @@ makedepends=('git' 'linux-t2-headers')
 provides=('kait2en-wireless-runtime-pm')
 conflicts=('kait2en-wireless-runtime-pm')
 replaces=('kait2en-wireless-runtime-pm-t2')
-source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
-sha256sums=('SKIP')
+sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
   local _revision _commit
