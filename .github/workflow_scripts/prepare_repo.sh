@@ -18,7 +18,7 @@ setup_git() {
 import_key() {
   local key="${GPG_PRIVATE_KEY:?GPG_PRIVATE_KEY required}"
   export GNUPGHOME="$ws/.gnupg"
-  mkdir -p -m 700 "$GNUPGHOME"
+  mkdir --parents --mode=700 "$GNUPGHOME"
   echo "$key" | gpg --batch --import
 }
 
@@ -28,18 +28,18 @@ clone_pages() {
   if git clone --depth 1 --branch gh-pages "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git" gh-pages; then
     cd gh-pages
   else
-    mkdir -p gh-pages && cd gh-pages
-    git init -b gh-pages
+    mkdir --parents gh-pages && cd gh-pages
+    git init --initial-branch=gh-pages
     git remote add origin "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
   fi
 }
 
 sync_pkgs() {
-  mkdir -p x86_64
+  mkdir --parents x86_64
   local pkg n
   while IFS= read -r pkg; do
     [ -f "$pkg" ] || continue
-    n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
+    n=$(basename "$pkg" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
     echo "Updating $n in gh-pages..."
     cp "$pkg" x86_64/
     if [ -f "${pkg}.sig" ]; then
@@ -50,18 +50,18 @@ sync_pkgs() {
 
 publish_pages() {
   local repo="$1"
-  rm -f "x86_64/${repo}".db* "x86_64/${repo}".files*
+  rm --force "x86_64/${repo}".db* "x86_64/${repo}".files*
   repo-add --sign --key "${keyid}" "x86_64/${repo}.db.tar.zst" \
-    $(printf '%s\n' x86_64/*.pkg.tar.zst | sort -V)
+    $(printf '%s\n' x86_64/*.pkg.tar.zst | sort --version-sort)
   gpg --batch --armor --export "${keyid}" > key.asc
   git config user.name "actions-user"
   git config user.email "actions-user@users.noreply.github.com"
-  git add -A
+  git add --all
   if git diff --cached --quiet; then
     echo "No changes on gh-pages."
   else
-    git commit -m "Update repository [skip ci]"
-    git push -u origin gh-pages
+    git commit --message="Update repository [skip ci]"
+    git push --set-upstream origin gh-pages
   fi
 }
 
@@ -69,7 +69,7 @@ find_pkgdir() {
   local want="$1" p d n
   while IFS= read -r p; do
     d=$(dirname "$p" | sed 's|^\./||')
-    n=$(grep -E '^pkgname=' "$d/PKGBUILD" | cut -d= -f2 | tr -d "'\"()")
+    n=$(grep --extended-regexp '^pkgname=' "$d/PKGBUILD" | cut --delimiter='=' --fields=2 | tr --delete "'\"()")
     if [ "$n" = "$want" ]; then
       echo "$d"
       return 0
@@ -83,7 +83,7 @@ sync_pkgbuilds() {
   local p n dir
   while IFS= read -r p; do
     [ -f "$p" ] || continue
-    n=$(grep -E '^pkgname=' "$p" | cut -d= -f2 | tr -d "'\"()")
+    n=$(grep --extended-regexp '^pkgname=' "$p" | cut --delimiter='=' --fields=2 | tr --delete "'\"()")
     if ! dir=$(find_pkgdir "$n"); then
       echo "skip: no local dir for $n" >&2
       continue
@@ -91,17 +91,17 @@ sync_pkgbuilds() {
     if [ -f "$dir/PKGBUILD" ]; then
       if [ "$(sha256sum < "$p")" != "$(sha256sum < "$dir/PKGBUILD")" ]; then
         echo "chore: updated $dir/PKGBUILD..." >&2
-        cp -f "$p" "$dir/PKGBUILD"
+        cp --force "$p" "$dir/PKGBUILD"
         updated_pkgs="${updated_pkgs:+$updated_pkgs, }$dir"
       fi
     fi
   done < <(find artifacts -name PKGBUILD)
-  rm -rf artifacts
+  rm --recursive --force artifacts
 }
 
 emit_installed() {
   local files
-  files=$(tar -tf "$2" | grep -vE '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$' || true)
+  files=$(tar --list --file="$2" | grep --invert-match --extended-regexp '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$' || true)
   [ -n "$files" ] || return 0
   {
     echo "# $1"
@@ -115,12 +115,12 @@ gen_installed_files() {
   local pkg n latest f m
   for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
     [ -f "$pkg" ] || continue
-    n=$(basename "$pkg" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
+    n=$(basename "$pkg" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
     latest=$(for f in gh-pages/x86_64/*.pkg.tar.zst; do
       [ -f "$f" ] || continue
-      m=$(basename "$f" | sed -E 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
+      m=$(basename "$f" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
       [ "$m" = "$n" ] && echo "$f"
-    done | sort -V | tail -n 1)
+    done | sort --version-sort | tail --lines=1)
     [ "$latest" = "$pkg" ] || continue
     emit_installed "$n" "$pkg"
   done
@@ -195,7 +195,7 @@ commit_main() {
     else
       msg="chore: update installed_files.txt [skip ci]"
     fi
-    git commit -m "$msg"
+    git commit --message="$msg"
     git push origin main
   fi
 }

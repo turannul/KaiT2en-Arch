@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Package dir(s) to build (space-separated) or "all" - Leave empty for autodetect (upstream pkgver check)'
+        description: 'Package name(s) to build (space or comma separated) or "all" - Leave empty for autodetect (pkgver check)'
         required: false
         default: ''
 
@@ -35,26 +35,34 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux:base
     outputs:
-      packages: ${{ steps.set-matrix.outputs.packages }}
-      has_packages: ${{ steps.set-matrix.outputs.has_packages }}
+      packages: ${{ steps.target-matrix.outputs.packages || steps.set-matrix.outputs.packages }}
     steps:
-      - name: Checkout repository
+      - name: Setup
+        run: pacman --sync --refresh --noconfirm --needed git
+
+      - name: Checkout
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Detect packages to build
+      - name: Select
+        id: target-matrix
+        if: github.event_name == 'workflow_dispatch' && inputs.target != ''
+        env:
+          TARGET: ${{ inputs.target }}
+        run: bash .github/workflow_scripts/detect.sh manual
+
+      - name: Detect
         id: set-matrix
+        if: github.event_name != 'workflow_dispatch' || inputs.target == ''
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_REF: ${{ github.base_ref }}
-          BEFORE_REF: ${{ github.event.before }}
-          TARGET: ${{ inputs.target }}
         run: bash .github/workflow_scripts/detect.sh
 
   build:
     needs: detect
-    if: needs.detect.outputs.has_packages == 'true'
+    if: needs.detect.outputs.packages != '[]'
     runs-on: ubuntu-latest
     container: archlinux:base
     strategy:
@@ -63,15 +71,15 @@ jobs:
         package: ${{ fromJson(needs.detect.outputs.packages) }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
-      - name: build and sign
+      - name: Build
         run: bash .github/workflow_scripts/build.sh "${{ matrix.package.dir }}"
 
-      - name: Upload ${{ matrix.package.dir }}
+      - name: Upload
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.package.artifact }}
@@ -83,7 +91,7 @@ jobs:
 
   prepare_repo:
     needs: [detect, build]
-    if: "!cancelled() && needs.detect.outputs.has_packages == 'true' && github.event_name != 'pull_request'"
+    if: "!cancelled() && needs.detect.outputs.packages != '[]' && github.event_name != 'pull_request'"
     runs-on: ubuntu-latest
     container: archlinux:base
     permissions:
@@ -91,21 +99,21 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - name: Install git
-        run: pacman -Sy --noconfirm --needed git
+      - name: Setup
+        run: pacman --sync --refresh --noconfirm --needed git
 
-      - name: Checkout main repo
+      - name: Checkout
         uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
 
-      - name: Download built packages and updated PKGBUILDs
+      - name: Download
         uses: actions/download-artifact@v7
         with:
           path: artifacts
 
-      - name: prepare repo
+      - name: Prepare
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash .github/workflow_scripts/prepare_repo.sh

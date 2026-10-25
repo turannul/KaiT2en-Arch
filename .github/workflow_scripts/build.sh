@@ -5,7 +5,7 @@ key="${GPG_PRIVATE_KEY:?GPG_PRIVATE_KEY required}"
 keyid="${GPG_KEY_ID:?GPG_KEY_ID required}"
 
 setup_t2_repo() {
-  if ! grep -q '\[arch-mact2\]' /etc/pacman.conf; then
+  if ! grep --quiet '\[arch-mact2\]' /etc/pacman.conf; then
     cat >> /etc/pacman.conf <<'EOF'
 
 [arch-mact2]
@@ -16,7 +16,7 @@ EOF
 }
 
 setup_my_repo() {
-  if ! grep -q '\[turann-s-place\]' /etc/pacman.conf; then
+  if ! grep --quiet '\[turann-s-place\]' /etc/pacman.conf; then
     cat >> /etc/pacman.conf <<'EOF'
 
 [turann-s-place]
@@ -41,7 +41,7 @@ install_make_depends() {
   if [ ! -f "$pkgbuild" ]; then
     return 1
   fi
-  deps=$(cd "$p" && makepkg --printsrcinfo 2>/dev/null | awk -F' = ' '/^\t(make|check)depends(_x86_64)? = /{print $2}' | sort -u)
+  deps=$(cd "$p" && makepkg --printsrcinfo 2>/dev/null | awk --field-separator=' = ' '/^\t(make|check)depends(_x86_64)? = /{print $2}' | sort --unique)
   if [ -z "$deps" ]; then
     return 0
   fi
@@ -52,15 +52,15 @@ install_make_depends() {
 }
 
 disable_debug() {
-  sed -i -E '/^[[:space:]]*OPTIONS=/ s/(^|[[:space:](])debug\b/\1!debug/g' /etc/makepkg.conf
-  echo "makepkg options: $(grep -E '^[[:space:]]*OPTIONS=' /etc/makepkg.conf)"
+  sed --in-place --regexp-extended '/^[[:space:]]*OPTIONS=/ s/(^|[[:space:](])debug\b/\1!debug/g' /etc/makepkg.conf
+  echo "makepkg options: $(grep --extended-regexp '^[[:space:]]*OPTIONS=' /etc/makepkg.conf)"
 }
 
 create_user() {
-  useradd -m turannul
-  mkdir -p "$CARGO_HOME" "$npm_config_cache"
-  chown -R turannul:turannul "$CARGO_HOME" "$npm_config_cache"
-  chown -R turannul:turannul .
+  useradd --create-home turannul
+  mkdir --parents "$CARGO_HOME" "$npm_config_cache"
+  chown --recursive turannul:turannul "$CARGO_HOME" "$npm_config_cache"
+  chown --recursive turannul:turannul .
   echo "turannul ALL=(root) NOPASSWD: /usr/bin/pacman" > /etc/sudoers.d/turannul
   chmod 440 /etc/sudoers.d/turannul
   git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -68,13 +68,13 @@ create_user() {
 
 import_key() {
   export GNUPGHOME="$GITHUB_WORKSPACE/.gnupg"
-  mkdir -p -m 700 "$GNUPGHOME"
+  mkdir --parents --mode=700 "$GNUPGHOME"
   echo "$key" | gpg --batch --import
-  chown -R turannul:turannul "$GNUPGHOME"
+  chown --recursive turannul:turannul "$GNUPGHOME"
 }
 
 run_makepkg() {
-  su -p turannul -c "cd '$1' && makepkg --key '$keyid' --syncdeps --noconfirm --clean --cleanbuild --force --sign"
+  su --preserve-environment --command="cd '$1' && makepkg --key '$keyid' --syncdeps --noconfirm --clean --cleanbuild --force --sign" turannul
 }
 
 build_and_sign() {
