@@ -37,57 +37,73 @@ prepare() {
     rm -rf "$srcdir/linux"
     mkdir -p "$srcdir/linux"
     tar -xf "$srcdir/linux-$_upstream.tar.xz" -C "$srcdir/linux" --strip-components=1
+
+    local _fedora="$srcdir/KaiT2en-Fedora/scripts/fedora"
     local _wdir="$srcdir/KaiT2en-Fedora/patches/runtime/wireless"
     local _patch
+
+    source "$_fedora/lib.sh"
+    set +eu
+    trap - ERR EXIT
+    REPO_ROOT="$_wdir"
+
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+
     for _patch in $(cat "$_wdir/series"); do
         [[ "$_patch" = \#* || -z "$_patch" ]] && continue
-        local _patch_path="$_wdir/$_patch"
-        if patch -d "$srcdir/linux" -p1 --dry-run --batch --forward --fuzz=3 \
-                --no-backup-if-mismatch <"$_patch_path" >/dev/null 2>&1; then
-            info "applying wireless patch $_patch"
-            patch -d "$srcdir/linux" -p1 --batch --forward --fuzz=3 \
-                --no-backup-if-mismatch <"$_patch_path"
-        elif patch -d "$srcdir/linux" -p1 --dry-run --batch --reverse --fuzz=3 \
-                --no-backup-if-mismatch <"$_patch_path" >/dev/null 2>&1; then
-            info "skipping $_patch (already present in kernel $_upstream)"
-        else
-            echo "==> WARNING: wireless patch $_patch may not apply to kernel $_upstream"
-        fi
+        apply_patch_if_needed "$srcdir/linux" "$_wdir/$_patch" || return 1
     done
 }
 
 build() {
-    local _kdir _k
+    local _kdir _cfg _brcm _bt _m
+    local -a _flags _args _mods
     _kdir=$(pacman -Ql linux-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
     [[ -n ${_kdir:?linux-headers KDIR not found} ]]
-    _k=$(basename "$(dirname "$_kdir")")
-    if [[ -d "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac" ]]; then
-        info "building brcmfmac wireless modules"
-        make -j"$(nproc)" -C "$_kdir" M="$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac" modules
-        strip --strip-debug "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko"
-        zstd -T0 -q -f "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko" -o "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko.zst"
+    _cfg="$_kdir/.config"
+    _brcm="$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"
+    _bt="$srcdir/linux/drivers/bluetooth"
+
+    if [[ $(sed -n 's/^CONFIG_BRCMFMAC=//p' "$_cfg") == m ]]; then
+        [[ $(sed -n 's/^CONFIG_BRCMDBG=//p' "$_cfg") == y ]] && _flags=(KCFLAGS=-DDEBUG)
+        msg2 "Building brcmfmac"
+        make -j"$(nproc)" -C "$_kdir" M="$_brcm" "${_flags[@]}" modules
+        for _m in brcmfmac.ko wcc/brcmfmac-wcc.ko cyw/brcmfmac-cyw.ko bca/brcmfmac-bca.ko; do
+            strip --strip-debug "$_brcm/$_m"
+            zstd -T0 -q -f "$_brcm/$_m" -o "$_brcm/$_m.zst"
+        done
     fi
-    if [[ -d "$srcdir/linux/drivers/bluetooth/btbcm" ]]; then
-        info "building btbcm Bluetooth modules"
-        make -j"$(nproc)" -C "$_kdir" M="$srcdir/linux/drivers/bluetooth/btbcm" modules
-        strip --strip-debug "$srcdir/linux/drivers/bluetooth/btbcm/btbcm.ko"
-        zstd -T0 -q -f "$srcdir/linux/drivers/bluetooth/btbcm/btbcm.ko" -o "$srcdir/linux/drivers/bluetooth/btbcm/btbcm.ko.zst"
+
+    if [[ $(sed -n 's/^CONFIG_BT_HCIUART=//p' "$_cfg") == m ||
+          $(sed -n 's/^CONFIG_BT_HCIBCM4377=//p' "$_cfg") == m ]]; then
+        case $(sed -n 's/^CONFIG_BT_BCM=//p' "$_cfg") in
+            m) ;;
+            y) error "btbcm is built into the kernel, the patched Bluetooth drivers cannot link to it"; return 1 ;;
+            *) _args=(CONFIG_BT_BCM=m KCPPFLAGS=-DCONFIG_BT_BCM_MODULE=1) ;;
+        esac
+        msg2 "Building the Bluetooth drivers"
+        make -j"$(nproc)" -C "$_kdir" M="$_bt" "${_args[@]}" modules
+        _mods=(btbcm.ko)
+        [[ $(sed -n 's/^CONFIG_BT_HCIUART=//p' "$_cfg") == m ]] && _mods+=(hci_uart.ko)
+        [[ $(sed -n 's/^CONFIG_BT_HCIBCM4377=//p' "$_cfg") == m ]] && _mods+=(hci_bcm4377.ko)
+        for _m in "${_mods[@]}"; do
+            strip --strip-debug "$_bt/$_m"
+            zstd -T0 -q -f "$_bt/$_m" -o "$_bt/$_m.zst"
+        done
     fi
 }
 
 package() {
-    local _kdir _k
+    local _kdir _k _m
     _kdir=$(pacman -Ql linux-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
     [[ -n ${_kdir:?linux-headers KDIR not found} ]]
     _k=$(basename "$(dirname "$_kdir")")
-    if [[ -f "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko.zst" ]]; then
-        install -Dpm 0644 "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko.zst" "$pkgdir/usr/lib/modules/$_k/updates/brcmfmac.ko.zst"
-    fi
-    if [[ -f "$srcdir/linux/drivers/bluetooth/btbcm/btbcm.ko.zst" ]]; then
-        install -Dpm 0644 "$srcdir/linux/drivers/bluetooth/btbcm/btbcm.ko.zst" "$pkgdir/usr/lib/modules/$_k/updates/btbcm.ko.zst"
-    fi
-    install -Dpm 0644 /dev/null "$pkgdir/usr/lib/modprobe.d/$pkgname.conf" || true
-    if [[ -d "$srcdir/KaiT2en-Fedora" && -f "$srcdir/KaiT2en-Fedora/LICENSE" ]]; then
-        install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
-    fi
+    for _m in "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/brcmfmac.ko.zst \
+              "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/{wcc,cyw,bca}/*.ko.zst \
+              "$srcdir/linux/drivers/bluetooth"/{btbcm,hci_uart,hci_bcm4377}.ko.zst; do
+        [[ -f "$_m" ]] || continue
+        install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
+    done
+    install -Dpm 0644 /dev/null "$pkgdir/usr/lib/modprobe.d/$pkgname.conf"
+    install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
