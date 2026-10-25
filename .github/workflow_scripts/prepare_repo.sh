@@ -92,7 +92,7 @@ sync_pkgbuilds() {
       if [ "$(sha256sum < "$p")" != "$(sha256sum < "$dir/PKGBUILD")" ]; then
         echo "chore: updated $dir/PKGBUILD..." >&2
         cp --force "$p" "$dir/PKGBUILD"
-        updated_pkgs="${updated_pkgs:+$updated_pkgs, }$dir"
+        updated_pkgs="${updated_pkgs:+$updated_pkgs }$n"
       fi
     fi
   done < <(find artifacts -name PKGBUILD)
@@ -126,60 +126,6 @@ gen_installed_files() {
   done
 }
 
-fmt_upd() {
-  local input="$1"
-  if [ -z "$input" ]; then
-    echo ""
-    return 0
-  fi
-  local -a parts=()
-  IFS=',' read -ra parts <<< "$input"
-  local parents="" i d parent
-  for i in "${!parts[@]}"; do
-    d="$(echo "${parts[$i]}" | sed 's/^ *//;s/ *$//')"
-    parts[$i]="$d"
-    if [[ "$d" == */* ]]; then
-      parent="${d%%/*}"
-    else
-      parent="$d"
-    fi
-    case " $parents " in
-      *" $parent "*) ;;
-      *) parents="$parents $parent" ;;
-    esac
-  done
-  parents="$(echo "$parents" | sed 's/^ *//')"
-  local result="" members base
-  for parent in $parents; do
-    members=""
-    for i in "${!parts[@]}"; do
-      d="${parts[$i]}"
-      if [ "$d" == "$parent" ]; then
-        base="$d"
-      elif [[ "$d" == "$parent"/* ]]; then
-        base="${d#*/}"
-      else
-        continue
-      fi
-      if [ -z "$members" ]; then
-        if [[ "$d" == */* ]]; then
-          members="$parent/$base"
-        else
-          members="$base"
-        fi
-      else
-        members="$members $base"
-      fi
-    done
-    if [ -z "$result" ]; then
-      result="$members"
-    else
-      result="$result, $members"
-    fi
-  done
-  echo "$result"
-}
-
 commit_main() {
   local tok="$1" updated="$2"
   git config user.name "actions-user"
@@ -191,7 +137,7 @@ commit_main() {
   else
     local msg
     if [ -n "$updated" ]; then
-      msg="chore: $(fmt_upd "$updated") updated. [skip ci]"
+      msg="chore: $updated updated. [skip ci]"
     else
       msg="chore: update installed_files.txt [skip ci]"
     fi
