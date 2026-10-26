@@ -12,7 +12,7 @@ _kver=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 
 pkgname=kait2en-wireless-runtime-pm
 pkgver=7.2.11_arch1_1.r2.6659728
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -104,6 +104,5 @@ package() {
         [[ -f "$_m" ]] || continue
         install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
     done
-    install -Dpm 0644 /dev/null "$pkgdir/usr/lib/modprobe.d/$pkgname.conf"
     install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
