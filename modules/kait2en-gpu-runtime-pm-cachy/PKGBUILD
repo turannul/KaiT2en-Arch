@@ -13,7 +13,7 @@ _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3;
 
 pkgname=kait2en-gpu-runtime-pm-cachy
 pkgver=0
-pkgrel=3
+pkgrel=4
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2) - For linux-cachy"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -75,6 +75,7 @@ prepare() {
 }
 
 build() {
+    export CC=clang LD=lld
     local _kdir _k
     _kdir=$(pacman -Ql linux-cachyos-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
     [[ -n ${_kdir:?linux-cachyos-headers KDIR not found} ]]
