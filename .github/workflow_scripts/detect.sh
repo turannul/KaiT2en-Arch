@@ -1,55 +1,10 @@
 #!/usr/bin/env bash
 
-setup_cachy_repo() {
-  if ! grep --quiet '\[cachyos-v3\]' /etc/pacman.conf; then
-    cat >> /etc/pacman.conf <<'EOF'
-
-[cachyos-v3]
-Include = /etc/pacman.d/cachyos-v3-mirrorlist
-SigLevel = Never
-[cachyos-core-v3]
-Include = /etc/pacman.d/cachyos-v3-mirrorlist
-SigLevel = Never
-[cachyos-extra-v3]
-Include = /etc/pacman.d/cachyos-v3-mirrorlist
-SigLevel = Never
-[cachyos]
-Include = /etc/pacman.d/cachyos-mirrorlist
-SigLevel = Never
-EOF
-  fi
-  pacman --upgrade --noconfirm 'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-keyring-20240331-1-any.pkg.tar.zst' 'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-mirrorlist-27-1-any.pkg.tar.zst' 'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-v3-mirrorlist-27-1-any.pkg.tar.zst'
-}
-
-setup_t2_repo() {
-  if ! grep --quiet '\[arch-mact2\]' /etc/pacman.conf; then
-    cat >> /etc/pacman.conf <<'EOF'
-
-[arch-mact2]
-Server = https://arch-t2.slsrepo.com/
-SigLevel = Never
-EOF
-  fi
-}
-
-setup_my_repo() {
-  if ! grep --quiet '\[turann-s-place\]' /etc/pacman.conf; then
-    cat >> /etc/pacman.conf <<'EOF'
-
-[turann-s-place]
-Server = https://turannul.github.io/KaiT2en-Arch/x86_64
-SigLevel = Never
-EOF
-  fi
-}
-
-sync_pacman() {
-    pacman --files --refresh --noconfirm
-    pacman --sync --refresh --noconfirm
-}
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 setup_environment() {
     setup_my_repo
+    setup_cachy_repo
     setup_t2_repo
     sync_pacman
     pacman --sync --refresh --noconfirm git nodejs

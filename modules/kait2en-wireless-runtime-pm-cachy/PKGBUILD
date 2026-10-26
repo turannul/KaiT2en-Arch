@@ -5,15 +5,16 @@ _kfile=$(pacman -Ql linux-cachyos-headers 2>/dev/null | awk '/\/build\/Makefile$
 [[ -z $_kfile ]] && _kfile=$(pacman -Fl linux-cachyos-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
 [[ -n ${_kfile:?linux-cachyos-headers not found (install it, or run 'pacman -Fy' for the sync file list).} ]]
 _krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
-_upstream=${_krelease%%-arch*}
+_upstream=${_krelease%%-*}
+[[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
 _major=${_upstream%%.*}
 _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm-cachy
 pkgver=0
-pkgrel=2
-pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For T2 Linux)."
+pkgrel=3
+pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For linux-cachy)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')

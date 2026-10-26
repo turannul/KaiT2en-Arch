@@ -5,14 +5,15 @@ _kfile=$(pacman -Ql linux-t2-headers 2>/dev/null | awk '/\/build\/Makefile$/ {pr
 [[ -z $_kfile ]] && _kfile=$(pacman -Fl linux-t2-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
 [[ -n ${_kfile:?linux-t2-headers not found (install it, or run 'pacman -Fy' for the sync file list).} ]]
 _krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
-_upstream=${_krelease%%-arch*}
+_upstream=${_krelease%%-*}
+[[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
 _major=${_upstream%%.*}
 _kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${_kver:?Cannot find linux-t2-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm-t2
-pkgver=7.2.11_arch1_Watanare_T2_1_t2.r2.6659728
-pkgrel=2
+pkgver=0
+pkgrel=3
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For T2 Linux)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
