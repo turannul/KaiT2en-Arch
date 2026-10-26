@@ -72,7 +72,6 @@ usr/share/plymouth/themes/kait2en/progress_box.png
 usr/share/plymouth/themes/kait2en/watermark.png
 
 # kait2en-wireless-runtime-pm
-usr/lib/modprobe.d/kait2en-wireless-runtime-pm.conf
 usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac-bca.ko.zst
 usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac-cyw.ko.zst
 usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac-wcc.ko.zst
@@ -83,7 +82,6 @@ usr/lib/modules/7.2.11-arch1-1/updates/hci_uart.ko.zst
 usr/share/licenses/kait2en-wireless-runtime-pm/LICENSE
 
 # kait2en-wireless-runtime-pm-t2
-usr/lib/modprobe.d/kait2en-wireless-runtime-pm-t2.conf
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/brcmfmac-bca.ko.zst
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/brcmfmac-cyw.ko.zst
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/brcmfmac-wcc.ko.zst
