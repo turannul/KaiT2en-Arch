@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+setup_cachy_repo() {
+  if ! grep --quiet '\[cachyos-v3\]' /etc/pacman.conf; then
+    cat >> /etc/pacman.conf <<'EOF'
+
+[cachyos-v3]
+Include = /etc/pacman.d/cachyos-v3-mirrorlist
+SigLevel = Never
+[cachyos-core-v3]
+Include = /etc/pacman.d/cachyos-v3-mirrorlist
+SigLevel = Never
+[cachyos-extra-v3]
+Include = /etc/pacman.d/cachyos-v3-mirrorlist
+SigLevel = Never
+[cachyos]
+Include = /etc/pacman.d/cachyos-mirrorlist
+SigLevel = Never
+EOF
+  fi
+  pacman --upgrade --noconfirm 'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-keyring-20240331-1-any.pkg.tar.zst' 'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-mirrorlist-27-1-any.pkg.tar.zst' 'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-v3-mirrorlist-27-1-any.pkg.tar.zst'
+}
+
 setup_t2_repo() {
   if ! grep --quiet '\[arch-mact2\]' /etc/pacman.conf; then
     cat >> /etc/pacman.conf <<'EOF'

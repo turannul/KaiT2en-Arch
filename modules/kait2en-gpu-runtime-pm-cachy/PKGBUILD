@@ -1,0 +1,94 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+_kfile=$(pacman -Ql linux-cachyos-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -z $_kfile ]] && _kfile=$(pacman -Fl linux-cachyos-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -n ${_kfile:?linux-cachyos-headers not found (install it, or run 'pacman -Fy' for the sync file list).} ]]
+_krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
+_upstream=${_krelease%%-arch*}
+_major=${_upstream%%.*}
+_kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
+
+pkgname=kait2en-gpu-runtime-pm-t2
+pkgver=7.2.11_arch1_Watanare_T2_1_t2.r34.c5760b1
+pkgrel=1
+pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2) - For linux-t2"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+depends=('t2gmux' "linux-cachyos=$_kver")
+makedepends=('git' 'linux-cachyos-headers')
+provides=('kait2en-gpu-runtime-pm')
+conflicts=('kait2en-gpu-runtime-pm')
+replaces=('kait2en-gpu-runtime-pm')
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
+noextract=("linux-$_upstream.tar.xz")
+sha256sums=('SKIP' 'SKIP')
+
+pkgver() {
+  local _revision _commit
+  _revision=$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- patches/runtime/gpu-runtime-pm)
+  _commit=$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- patches/runtime/gpu-runtime-pm)
+  printf '%s.r%s.%s' "${_krelease//-/_}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    rm -rf "$srcdir/linux"
+    mkdir -p "$srcdir/linux"
+    tar -xf "$srcdir/linux-$_upstream.tar.xz" -C "$srcdir/linux" --strip-components=1
+
+    local _fedora="$srcdir/KaiT2en-Fedora/scripts/fedora"
+    local _dir="$srcdir/KaiT2en-Fedora/patches/runtime/gpu-runtime-pm"
+
+    source "$_fedora/lib.sh"
+    set +eu
+    trap - ERR EXIT
+    REPO_ROOT="$_dir"
+    KVER="$_upstream"
+
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+
+    awk '/^patch_needed_for_kernel\(\) \{/,/^}/' "$_fedora/install-gpu-runtime-pm.sh" > "$srcdir/.upstream-pnf.sh"
+    awk '/^apply_patch_if_needed\(\) \{/,/^}/' "$_fedora/install-gpu-runtime-pm.sh" > "$srcdir/.upstream-apin.sh"
+    sed -i '/fail "patch does not apply/a\        return 1' "$srcdir/.upstream-apin.sh"
+    source "$srcdir/.upstream-pnf.sh"
+    source "$srcdir/.upstream-apin.sh"
+    rm -f "$srcdir/.upstream-pnf.sh" "$srcdir/.upstream-apin.sh"
+
+    local _p
+    for _p in $(cat "$_dir/series"); do
+        [[ "$_p" = \#* || -z "$_p" ]] && continue
+        if ! patch_needed_for_kernel "$_dir/$_p" "$KVER"; then
+            echo "==> skipping $_p (already present in kernel $KVER)"
+            continue
+        fi
+        if ! apply_patch_if_needed "$srcdir/linux" "$_dir/$_p"; then
+            echo "==> ERROR: patch did not apply: $_p" >&2
+            return 1
+        fi
+    done
+
+    sed -i 's|^#define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/amd/amdgpu$|#define TRACE_INCLUDE_PATH .|' "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu_trace.h"
+}
+
+build() {
+    local _kdir _k
+    _kdir=$(pacman -Ql linux-cachyos-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-cachyos-headers KDIR not found} ]]
+    _k=$(basename "$(dirname "$_kdir")")
+    make -j"$(nproc)" -C "$_kdir" M="$srcdir/linux/drivers/gpu/drm/amd/amdgpu" modules
+    strip --strip-debug "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko"
+    zstd -T0 -q -f "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko" -o "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko.zst"
+}
+
+package() {
+    local _kdir _k
+    _kdir=$(pacman -Ql linux-cachyos-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-cachyos-headers KDIR not found} ]]
+    _k=$(basename "$(dirname "$_kdir")")
+    install -Dpm 0644 "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko.zst" "$pkgdir/usr/lib/modules/$_k/updates/amdgpu.ko.zst"
+    install -Dpm 0644 "$startdir/modprobe.d/kait2en-gpu-runtime-pm.conf" "$pkgdir/usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf"
+    install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,108 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+_kfile=$(pacman -Ql linux-cachyos-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -z $_kfile ]] && _kfile=$(pacman -Fl linux-cachyos-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -n ${_kfile:?linux-cachyos-headers not found (install it, or run 'pacman -Fy' for the sync file list).} ]]
+_krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
+_upstream=${_krelease%%-arch*}
+_major=${_upstream%%.*}
+_kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
+
+pkgname=kait2en-wireless-runtime-pm-cachy
+pkgver=0
+pkgrel=2
+pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For T2 Linux)."
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+depends=('t2gmux' "linux-cachyos=$_kver")
+makedepends=('git' 'linux-cachyos-headers')
+provides=('kait2en-wireless-runtime-pm')
+conflicts=('kait2en-wireless-runtime-pm')
+replaces=('kait2en-wireless-runtime-pm-t2')
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
+noextract=("linux-$_upstream.tar.xz")
+sha256sums=('SKIP' 'SKIP')
+
+pkgver() {
+  local _revision _commit
+  _revision=$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- patches/runtime/wireless)
+  _commit=$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- patches/runtime/wireless)
+  printf '%s.r%s.%s' "${_krelease//-/_}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    rm -rf "$srcdir/linux"
+    mkdir -p "$srcdir/linux"
+    tar -xf "$srcdir/linux-$_upstream.tar.xz" -C "$srcdir/linux" --strip-components=1
+
+    local _fedora="$srcdir/KaiT2en-Fedora/scripts/fedora"
+    local _wdir="$srcdir/KaiT2en-Fedora/patches/runtime/wireless"
+    local _patch
+
+    source "$_fedora/lib.sh"
+    set +eu
+    trap - ERR EXIT
+    REPO_ROOT="$_wdir"
+
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+
+    for _patch in $(cat "$_wdir/series"); do
+        [[ "$_patch" = \#* || -z "$_patch" ]] && continue
+        apply_patch_if_needed "$srcdir/linux" "$_wdir/$_patch" || return 1
+    done
+}
+
+build() {
+    local _kdir _cfg _brcm _bt _m
+    local -a _flags _args _mods
+    _kdir=$(pacman -Ql linux-cachyos-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-cachyos-headers KDIR not found} ]]
+    _cfg="$_kdir/.config"
+    _brcm="$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"
+    _bt="$srcdir/linux/drivers/bluetooth"
+
+    if [[ $(sed -n 's/^CONFIG_BRCMFMAC=//p' "$_cfg") == m ]]; then
+        [[ $(sed -n 's/^CONFIG_BRCMDBG=//p' "$_cfg") == y ]] && _flags=(KCFLAGS=-DDEBUG)
+        msg2 "Building brcmfmac"
+        make -j"$(nproc)" -C "$_kdir" M="$_brcm" "${_flags[@]}" modules
+        for _m in brcmfmac.ko wcc/brcmfmac-wcc.ko cyw/brcmfmac-cyw.ko bca/brcmfmac-bca.ko; do
+            strip --strip-debug "$_brcm/$_m"
+            zstd -T0 -q -f "$_brcm/$_m" -o "$_brcm/$_m.zst"
+        done
+    fi
+
+    if [[ $(sed -n 's/^CONFIG_BT_HCIUART=//p' "$_cfg") == m ||
+          $(sed -n 's/^CONFIG_BT_HCIBCM4377=//p' "$_cfg") == m ]]; then
+        case $(sed -n 's/^CONFIG_BT_BCM=//p' "$_cfg") in
+            m) ;;
+            y) error "btbcm is built into the kernel, the patched Bluetooth drivers cannot link to it"; return 1 ;;
+            *) _args=(CONFIG_BT_BCM=m KCPPFLAGS=-DCONFIG_BT_BCM_MODULE=1) ;;
+        esac
+        msg2 "Building the Bluetooth drivers"
+        make -j"$(nproc)" -C "$_kdir" M="$_bt" "${_args[@]}" modules
+        _mods=(btbcm.ko)
+        [[ $(sed -n 's/^CONFIG_BT_HCIUART=//p' "$_cfg") == m ]] && _mods+=(hci_uart.ko)
+        [[ $(sed -n 's/^CONFIG_BT_HCIBCM4377=//p' "$_cfg") == m ]] && _mods+=(hci_bcm4377.ko)
+        for _m in "${_mods[@]}"; do
+            strip --strip-debug "$_bt/$_m"
+            zstd -T0 -q -f "$_bt/$_m" -o "$_bt/$_m.zst"
+        done
+    fi
+}
+
+package() {
+    local _kdir _k _m
+    _kdir=$(pacman -Ql linux-cachyos-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-cachyos-headers KDIR not found} ]]
+    _k=$(basename "$(dirname "$_kdir")")
+    for _m in "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/brcmfmac.ko.zst \
+              "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/{wcc,cyw,bca}/*.ko.zst \
+              "$srcdir/linux/drivers/bluetooth"/{btbcm,hci_uart,hci_bcm4377}.ko.zst; do
+        [[ -f "$_m" ]] || continue
+        install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
+    done
+    install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
