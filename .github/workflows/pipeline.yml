@@ -32,7 +32,7 @@ env:
 
 jobs:
   detect:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     container: archlinux:base
     outputs:
       packages: ${{ steps.target-matrix.outputs.packages || steps.set-matrix.outputs.packages }}
@@ -63,7 +63,7 @@ jobs:
   build:
     needs: detect
     if: needs.detect.outputs.packages != '[]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     container: archlinux:base
     strategy:
       fail-fast: false
@@ -92,7 +92,7 @@ jobs:
   prepare_repo:
     needs: [detect, build]
     if: "!cancelled() && needs.detect.outputs.packages != '[]' && github.event_name != 'pull_request'"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     container: archlinux:base
     permissions:
       contents: write
