@@ -118,7 +118,7 @@ check_pkgver() {
     return 1
   fi
 
-  echo "   committed: $before"
+  echo "   current: $before"
   echo "   expected:  $after"
 
   if [ "$before" = "$after" ]; then
