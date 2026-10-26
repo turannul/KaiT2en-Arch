@@ -22,9 +22,8 @@ source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
 sha256sums=('SKIP')
 
 pkgver() {
-  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora"
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora" _paths=(modules/t2bce_stack modules/t2bce_core modules/t2bce_dma modules/t2bce_audio modules/t2bce_ave modules/t2bce_vhci t2-services/t2-ave/kernel)
   _version=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$_p/modules/t2bce_stack/dkms.conf")
-  local _paths=(modules/t2bce_stack modules/t2bce_core modules/t2bce_dma modules/t2bce_audio modules/t2bce_ave modules/t2bce_vhci t2-services/t2-ave/kernel/t2bce_ave t2-services/t2-ave/kernel/t2bce_sidecar)
   _revision=$(git -C "$_p" rev-list --count HEAD -- "${_paths[@]}")
   _commit=$(git -C "$_p" log -1 --format="%h" -- "${_paths[@]}")
   printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
@@ -38,8 +37,8 @@ prepare() {
     for m in t2bce_dma t2bce_core t2bce_vhci t2bce_audio; do
         cp -a "$src/modules/$m" "$dest/"
     done
-    for m in t2bce_ave t2bce_sidecar; do
-        cp -a "$src/t2-services/t2-ave/kernel/$m" "$dest/"
+    for m in "$src"/t2-services/t2-ave/kernel/*/; do
+        cp -a "${m%/}" "$dest/"
     done
 }
 
