@@ -75,12 +75,11 @@ prepare() {
 }
 
 build() {
-    export CC=clang LD=lld
     local _kdir _k
     _kdir=$(pacman -Ql linux-cachyos-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
     [[ -n ${_kdir:?linux-cachyos-headers KDIR not found} ]]
     _k=$(basename "$(dirname "$_kdir")")
-    make -j"$(nproc)" -C "$_kdir" M="$srcdir/linux/drivers/gpu/drm/amd/amdgpu" modules
+    make -j"$(nproc)" -C "$_kdir" LLVM=1 LD=ld.lld M="$srcdir/linux/drivers/gpu/drm/amd/amdgpu" modules
     strip --strip-debug "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko"
     zstd -T0 -q -f "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko" -o "$srcdir/linux/drivers/gpu/drm/amd/amdgpu/amdgpu.ko.zst"
 }

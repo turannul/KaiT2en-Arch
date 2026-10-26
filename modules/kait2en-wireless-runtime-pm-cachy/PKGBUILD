@@ -57,7 +57,6 @@ prepare() {
 }
 
 build() {
-    export CC=clang LD=lld
     local _kdir _cfg _brcm _bt _m
     local -a _flags _args _mods
     _kdir=$(pacman -Ql linux-cachyos-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
@@ -69,7 +68,7 @@ build() {
     if [[ $(sed -n 's/^CONFIG_BRCMFMAC=//p' "$_cfg") == m ]]; then
         [[ $(sed -n 's/^CONFIG_BRCMDBG=//p' "$_cfg") == y ]] && _flags=(KCFLAGS=-DDEBUG)
         msg2 "Building brcmfmac"
-        make -j"$(nproc)" -C "$_kdir" M="$_brcm" "${_flags[@]}" modules
+        make -j"$(nproc)" -C "$_kdir" LLVM=1 LD=ld.lld M="$_brcm" "${_flags[@]}" modules
         for _m in brcmfmac.ko wcc/brcmfmac-wcc.ko cyw/brcmfmac-cyw.ko bca/brcmfmac-bca.ko; do
             strip --strip-debug "$_brcm/$_m"
             zstd -T0 -q -f "$_brcm/$_m" -o "$_brcm/$_m.zst"
@@ -84,7 +83,7 @@ build() {
             *) _args=(CONFIG_BT_BCM=m KCPPFLAGS=-DCONFIG_BT_BCM_MODULE=1) ;;
         esac
         msg2 "Building the Bluetooth drivers"
-        make -j"$(nproc)" -C "$_kdir" M="$_bt" "${_args[@]}" modules
+        make -j"$(nproc)" -C "$_kdir" LLVM=1 LD=ld.lld M="$_bt" "${_args[@]}" modules
         _mods=(btbcm.ko)
         [[ $(sed -n 's/^CONFIG_BT_HCIUART=//p' "$_cfg") == m ]] && _mods+=(hci_uart.ko)
         [[ $(sed -n 's/^CONFIG_BT_HCIBCM4377=//p' "$_cfg") == m ]] && _mods+=(hci_bcm4377.ko)
