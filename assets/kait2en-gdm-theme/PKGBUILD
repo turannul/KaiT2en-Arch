@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=kait2en-gdm-theme
-pkgver=r1.741d2f2
+pkgver=r2.c2391f1
 pkgrel=1
 pkgdesc="KaiT2en GDM login-screen theme"
 arch=('any')

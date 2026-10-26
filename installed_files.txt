@@ -69,7 +69,6 @@ usr/share/plymouth/themes/kait2en/kait2en.script
 usr/share/plymouth/themes/kait2en/lock.png
 usr/share/plymouth/themes/kait2en/progress_bar.png
 usr/share/plymouth/themes/kait2en/progress_box.png
-usr/share/plymouth/themes/kait2en/watermark.png
 
 # kait2en-wireless-runtime-pm
 usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac-bca.ko.zst
