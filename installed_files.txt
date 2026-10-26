@@ -81,6 +81,16 @@ usr/lib/modules/7.2.11-arch1-1/updates/hci_bcm4377.ko.zst
 usr/lib/modules/7.2.11-arch1-1/updates/hci_uart.ko.zst
 usr/share/licenses/kait2en-wireless-runtime-pm/LICENSE
 
+# kait2en-wireless-runtime-pm-cachy
+usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac-bca.ko.zst
+usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac-cyw.ko.zst
+usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac-wcc.ko.zst
+usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac.ko.zst
+usr/lib/modules/7.3.0-4-cachyos/updates/btbcm.ko.zst
+usr/lib/modules/7.3.0-4-cachyos/updates/hci_bcm4377.ko.zst
+usr/lib/modules/7.3.0-4-cachyos/updates/hci_uart.ko.zst
+usr/share/licenses/kait2en-wireless-runtime-pm-cachy/LICENSE
+
 # kait2en-wireless-runtime-pm-t2
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/brcmfmac-bca.ko.zst
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/brcmfmac-cyw.ko.zst

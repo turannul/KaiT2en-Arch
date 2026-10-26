@@ -12,8 +12,8 @@ _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3;
 [[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm-cachy
-pkgver=0
-pkgrel=4
+pkgver=7.3.0_4_cachyos.r2.6659728
+pkgrel=1
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For linux-cachy)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
