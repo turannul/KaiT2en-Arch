@@ -21,8 +21,8 @@ license=('GPL-2.0-only')
 depends=('t2gmux' "linux=$_kver")
 makedepends=('git' 'linux-headers')
 provides=('kait2en-gpu-runtime-pm')
-conflicts=('kait2en-gpu-runtime-pm-t2')
-replaces=('kait2en-gpu-runtime-pm-t2')
+conflicts=('kait2en-gpu-runtime-pm-t2' 'kait2en-gpu-runtime-pm-cachy')
+replaces=('kait2en-gpu-runtime-pm-t2' 'kait2en-gpu-runtime-pm-cachy')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
@@ -44,7 +44,7 @@ prepare() {
     local _dir="$srcdir/KaiT2en-Fedora/patches/runtime/gpu-runtime-pm"
 
     source "$_fedora/lib.sh"
-    set +eu
+    set +u
     trap - ERR EXIT
     REPO_ROOT="$_dir"
     KVER="$_upstream"
