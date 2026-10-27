@@ -2786,13 +2786,13 @@ usr/share/polkit-1/actions/org.t2powertune.policy
 
 # t2-services
 etc/NetworkManager/conf.d/10-t2-services.conf
-etc/NetworkManager/system-connections/t2-ncm.nmconnection
 usr/lib/systemd/system/t2-services-suspend.service
 usr/lib/t2-services/lifecycle.py
 usr/lib/t2-services/migration/kait2en-suspend.sh
 usr/lib/t2-services/migration/suspend-hashes.json
 usr/lib/t2-services/package-actions
 usr/lib/t2-services/t2-ncm-sleep
+usr/lib/udev/rules.d/90-t2-services-ncm.rules
 usr/share/licenses/t2-services/LICENSE
 
 # t2-smc-control
