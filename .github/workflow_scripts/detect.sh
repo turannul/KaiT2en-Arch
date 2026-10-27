@@ -3,39 +3,20 @@
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 setup_environment() {
-    setup_my_repo
-    setup_cachy_repo
-    setup_t2_repo
-    sync_pacman
+    setup_repos
     pacman --sync --refresh --noconfirm git nodejs
     set -e
-    git config --global --add safe.directory '*'
+    create_user
 }
 
 out() {
-  echo "$1" >> "${GITHUB_OUTPUT:-/dev/stdout}"
+  echo "$1" >> "$GITHUB_OUTPUT"
 }
 
 emit_matrix() {
-  local pkgs="$1"
-  if [ -z "$pkgs" ]; then
-    echo "No packages to build."
-    out "packages=[]"
-    return 0
-  fi
-
   echo "Packages to build:"
-  echo "$pkgs"
-
-  local matrix
-  matrix="[$(echo "$pkgs" | awk 'NF { if (n++) printf ","; a=$1; gsub("/", "-", a); printf "{\"dir\":\"%s\",\"artifact\":\"pkg-%s\"}", $1, a }')]"
-  out "packages=$matrix"
-}
-
-all_pkgs() {
-  find . -name PKGBUILD -not -path './.git/*' | while read -r p; do
-    dirname "$p" | sed 's|^\./||'
-  done | sort --unique
+  echo "${1:-none}"
+  out "packages=[$(awk 'NF { if (n++) printf ","; a=$1; gsub("/", "-", a); printf "{\"dir\":\"%s\",\"artifact\":\"pkg-%s\"}", $1, a }' <<<"$1")]"
 }
 
 trim() {
@@ -45,91 +26,29 @@ trim() {
   printf '%s' "$s"
 }
 
-pkgname_of() {
-  local d="$1" n
-  n=$(sed --quiet 's/^[[:space:]]*pkgname=//p' "$d/PKGBUILD" | head --lines=1)
-  n=${n#(}
-  n=${n%)}
-  n=${n%%[[:space:]]*}
-  n=$(printf '%s' "$n" | tr --delete "'\"")
-  printf '%s' "$n"
-}
-
-find_pkg_dir() {
-  local want="$1" p d
-  while IFS= read -r p; do
-    d=$(dirname "$p" | sed 's|^\./||')
-    if [ "$(pkgname_of "$d")" = "$want" ]; then
-      printf '%s' "$d"
-      return 0
-    fi
-  done < <(find . -name PKGBUILD -not -path './.git/*' | sort)
-  return 1
-}
-
 pkgver_of() {
-  local d="$1" v
-  v=$(cd "$d" && makepkg --printsrcinfo 2>/dev/null | awk --field-separator=' = ' '/^[[:space:]]*pkgver = /{print $2; exit}')
-  if [ -z "$v" ]; then
-    v=$(sed --quiet 's/^[[:space:]]*pkgver=//p' "$d/PKGBUILD" | head --lines=1)
-    v=$(printf '%s' "$v" | tr --delete "'\"[:space:]")
-  fi
-  printf '%s' "$v"
+  makepkg_as_user "$1" --printsrcinfo </dev/null | awk --field-separator=' = ' '/^[[:space:]]*pkgver = /{print $2}'
 }
 
 run_makepkg_nobuild() {
-  local d="$1"
-  if [ "$(id --user)" -eq 0 ]; then
-    if ! grep --quiet '^turannul:' /etc/passwd; then
-      useradd --create-home turannul
-      chown --recursive turannul:turannul .
-    fi
-    su --preserve-environment --command="cd '$d' && makepkg --nobuild --cleanbuild --nodeps --noprepare --skippgpcheck" turannul </dev/null
-  else
-    (cd "$d" && makepkg --nobuild --cleanbuild --nodeps --noprepare --skippgpcheck) </dev/null
-  fi
+  makepkg_as_user "$1" --nobuild --cleanbuild --nodeps --noprepare --skippgpcheck </dev/null >/dev/null 2>&1
 }
 
+# return: 0 = outdated, 1 = up to date, 2 = error
 check_pkgver() {
-  local d="$1" before after tmp
+  local d="$1" local_ver upstream_ver
   echo "== checking $d =="
 
-  before=$(pkgver_of "$d")
-  if [ -z "$before" ]; then
-    echo "WARNING: cannot read pkgver for $d, skipping."
-    return 1
-  fi
+  local_ver=$(pkgver_of "$d")
+  run_makepkg_nobuild "$d" && upstream_ver=$(pkgver_of "$d")
 
-  tmp=$(mktemp)
-  cp "$d/PKGBUILD" "$tmp"
+  echo "   local: ${local_ver:-?}"
+  echo "   upstream: ${upstream_ver:-?}"
 
-  if ! run_makepkg_nobuild "$d"; then
-    echo "WARNING: pkgver check failed for $d, skipping."
-    cp "$tmp" "$d/PKGBUILD"
-    rm --force "$tmp"
-    return 1
-  fi
-
-  after=$(pkgver_of "$d")
-  if [ -z "$after" ]; then
-    echo "WARNING: cannot determine expected pkgver for $d, skipping."
-    cp "$tmp" "$d/PKGBUILD"
-    rm --force "$tmp"
-    return 1
-  fi
-
-  echo "   current: $before"
-  echo "   expected:  $after"
-
-  if [ "$before" = "$after" ]; then
-    cp "$tmp" "$d/PKGBUILD"
-    rm --force "$tmp"
-    return 1
-  fi
+  [ -n "$local_ver" ] && [ -n "$upstream_ver" ] || { echo "   -> error"; return 2; }
+  [ "$local_ver" != "$upstream_ver" ] || { echo "   -> up to date"; return 1; }
 
   echo "   -> outdated"
-  rm --force "$tmp"
-  return 0
 }
 
 setup_upstream_cache() {
@@ -148,19 +67,16 @@ setup_upstream_cache() {
 
 outdated_pkgs() {
   setup_upstream_cache
-  local -a pkgbuilds=()
-  local p d result=""
-
-  mapfile -t pkgbuilds < <(find . -name PKGBUILD -not -path './.git/*' | sort)
-  for p in "${pkgbuilds[@]}"; do
-    d=$(dirname "$p" | sed 's|^\./||')
+  local d rc
+  for d in $(all_pkgs); do
     grep --quiet 'pkgver()' "$d/PKGBUILD" || continue
-    if check_pkgver "$d" >&2; then
-      result="${result:+$result$'\n'}$d"
-    fi
+    rc=0
+    check_pkgver "$d" >&2 || rc=$?
+    case $rc in
+      0) echo "$d" ;;
+      2) echo "::warning::version check failed for $d" >&2 ;;
+    esac
   done
-
-  printf '%s' "$result"
 }
 
 changed_pkgs() {

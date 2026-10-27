@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-ws="${GITHUB_WORKSPACE:-$(pwd)}"
-repo="${REPO_NAME:-turann-s-place}"
+: "${GPG_PRIVATE_KEY:?GPG_PRIVATE_KEY required}"
 tok="${GH_TOKEN:?GH_TOKEN required}"
 keyid="${GPG_KEY_ID:?GPG_KEY_ID required}"
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+
+ws="$GITHUB_WORKSPACE"
+repo="${REPO_NAME:-turann-s-place}"
+remote="https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
 updated_pkgs=""
 
 install_tools() {
@@ -12,91 +16,56 @@ install_tools() {
 }
 
 setup_git() {
-  git config --global --add safe.directory '*'
-}
-
-import_key() {
-  local key="${GPG_PRIVATE_KEY:?GPG_PRIVATE_KEY required}"
-  export GNUPGHOME="$ws/.gnupg"
-  mkdir --parents --mode=700 "$GNUPGHOME"
-  echo "$key" | gpg --batch --import
+  trust_git_dirs
+  git config --global user.name "actions-user"
+  git config --global user.email "actions-user@users.noreply.github.com"
 }
 
 clone_pages() {
-  local ws="$1" tok="$2"
   cd "$ws"
-  if git clone --depth 1 --branch gh-pages "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git" gh-pages; then
-    cd gh-pages
-  else
-    mkdir --parents gh-pages && cd gh-pages
-    git init --initial-branch=gh-pages
-    git remote add origin "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
-  fi
+  git clone --depth 1 --branch gh-pages "$remote" gh-pages || {
+    git init --initial-branch=gh-pages gh-pages
+    git -C gh-pages remote add origin "$remote"
+  }
+  cd gh-pages
 }
 
 sync_pkgs() {
   mkdir --parents x86_64
-  local pkg n
-  while IFS= read -r pkg; do
-    [ -f "$pkg" ] || continue
-    n=$(basename "$pkg" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
-    echo "Updating $n in gh-pages..."
-    cp "$pkg" x86_64/
-    if [ -f "${pkg}.sig" ]; then
-      cp "${pkg}.sig" x86_64/
-    fi
-  done < <(find ../artifacts -name '*.pkg.tar.zst')
+  [ -d ../artifacts ] || return 0
+  find ../artifacts -name '*.pkg.tar.zst*' -exec cp --verbose --target-directory=x86_64 {} +
+}
+
+commit_push() {
+  git diff --cached --quiet && { echo "No changes to commit on $2."; return; }
+  git commit --message="$1"
+  git push --set-upstream origin "$2"
 }
 
 publish_pages() {
-  local repo="$1"
   rm --force "x86_64/${repo}".db* "x86_64/${repo}".files*
-  repo-add --sign --key "${keyid}" "x86_64/${repo}.db.tar.zst" \
+  repo-add --sign --key "$keyid" "x86_64/${repo}.db.tar.zst" \
     $(printf '%s\n' x86_64/*.pkg.tar.zst | sort --version-sort)
-  gpg --batch --armor --export "${keyid}" > key.asc
-  git config user.name "actions-user"
-  git config user.email "actions-user@users.noreply.github.com"
+  gpg --batch --armor --export "$keyid" > key.asc
   git add --all
-  if git diff --cached --quiet; then
-    echo "No changes on gh-pages."
-  else
-    git commit --message="Update repository [skip ci]"
-    git push --set-upstream origin gh-pages
-  fi
-}
-
-find_pkgdir() {
-  local want="$1" p d n
-  while IFS= read -r p; do
-    d=$(dirname "$p" | sed 's|^\./||')
-    n=$(grep --extended-regexp '^pkgname=' "$d/PKGBUILD" | cut --delimiter='=' --fields=2 | tr --delete "'\"()")
-    if [ "$n" = "$want" ]; then
-      echo "$d"
-      return 0
-    fi
-  done < <(find . -name PKGBUILD -not -path './gh-pages/*' -not -path './artifacts/*')
-  return 1
+  commit_push "Update repository [skip ci]" gh-pages
 }
 
 sync_pkgbuilds() {
-  updated_pkgs=""
   local p n dir
   while IFS= read -r p; do
-    [ -f "$p" ] || continue
-    n=$(grep --extended-regexp '^pkgname=' "$p" | cut --delimiter='=' --fields=2 | tr --delete "'\"()")
-    if ! dir=$(find_pkgdir "$n"); then
-      echo "skip: no local dir for $n" >&2
-      continue
-    fi
-    if [ -f "$dir/PKGBUILD" ]; then
-      if [ "$(sha256sum < "$p")" != "$(sha256sum < "$dir/PKGBUILD")" ]; then
-        echo "chore: updated $dir/PKGBUILD..." >&2
-        cp --force "$p" "$dir/PKGBUILD"
-        updated_pkgs="${updated_pkgs:+$updated_pkgs }$n"
-      fi
-    fi
+    n=$(pkgname_of "$(dirname "$p")")
+    dir=$(find_pkg_dir "$n") || { echo "skip: no local dir for $n" >&2; continue; }
+    cmp --silent "$p" "$dir/PKGBUILD" && continue
+    echo "chore: updated $dir/PKGBUILD..." >&2
+    cp --force "$p" "$dir/PKGBUILD"
+    updated_pkgs="${updated_pkgs:+$updated_pkgs }$n"
   done < <(find artifacts -name PKGBUILD)
   rm --recursive --force artifacts
+}
+
+pkgfile_name() {
+  basename "$1" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//'
 }
 
 emit_installed() {
@@ -112,14 +81,13 @@ emit_installed() {
 
 gen_installed_files() {
   : > installed_files.txt
-  local pkg n latest f m
+  local pkg n latest f
   for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
     [ -f "$pkg" ] || continue
-    n=$(basename "$pkg" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
+    n=$(pkgfile_name "$pkg")
     latest=$(for f in gh-pages/x86_64/*.pkg.tar.zst; do
       [ -f "$f" ] || continue
-      m=$(basename "$f" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//')
-      [ "$m" = "$n" ] && echo "$f"
+      [ "$(pkgfile_name "$f")" = "$n" ] && echo "$f"
     done | sort --version-sort | tail --lines=1)
     [ "$latest" = "$pkg" ] || continue
     emit_installed "$n" "$pkg"
@@ -127,45 +95,23 @@ gen_installed_files() {
 }
 
 commit_main() {
-  local tok="$1" updated="$2"
-  git config user.name "actions-user"
-  git config user.email "actions-user@users.noreply.github.com"
-  git remote set-url origin "https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
-  git add installed_files.txt $(find . -name PKGBUILD -not -path './gh-pages/*' -not -path './artifacts/*')
-  if git diff --cached --quiet; then
-    echo "No changes to commit on main."
-  else
-    local msg
-    if [ -n "$updated" ]; then
-      msg="chore: $updated updated. [skip ci]"
-    else
-      msg="chore: update installed_files.txt [skip ci]"
-    fi
-    git commit --message="$msg"
-    git push origin main
-  fi
+  local what="${updated_pkgs:+$updated_pkgs updated.}"
+  git remote set-url origin "$remote"
+  git add installed_files.txt $(all_pkgs | sed 's|$|/PKGBUILD|')
+  commit_push "chore: ${what:-update installed_files.txt} [skip ci]" main
 }
 
 prepare_repo() {
-  echo "==> install_tools"
-  install_tools
-  echo "==> setup_git"
-  setup_git
-  echo "==> import_key"
-  import_key
-  echo "==> clone_pages"
-  clone_pages "$ws" "$tok"
-  echo "==> sync_pkgs"
-  sync_pkgs
-  echo "==> publish_pages"
-  publish_pages "$repo"
+  step install_tools
+  step setup_git
+  step import_key
+  step clone_pages
+  step sync_pkgs
+  step publish_pages
   cd "$ws"
-  echo "==> sync_pkgbuilds"
-  sync_pkgbuilds
-  echo "==> gen_installed_files"
-  gen_installed_files
-  echo "==> commit_main"
-  commit_main "$tok" "$updated_pkgs"
+  step sync_pkgbuilds
+  step gen_installed_files
+  step commit_main
 }
 
 prepare_repo
