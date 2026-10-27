@@ -8,7 +8,7 @@ pkgdesc="Shared network and suspend integration"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')
-depends=('networkmanager' 'bash')
+depends=('bash')
 makedepends=('git')
 provides=("$pkgname-git")
 conflicts=("$pkgname-git")
@@ -29,6 +29,6 @@ check() {
 }
 
 package() {
-    make -C "$srcdir/KaiT2en-Fedora/t2-services/shared" install PREFIX=/usr LIBEXECDIR=/usr/lib DESTDIR="$pkgdir"
+    make -C "$srcdir/KaiT2en-Fedora/t2-services/shared" install PREFIX=/usr LIBEXECDIR=/usr/lib UDEV_RULES_DIR=/usr/lib/udev/rules.d DESTDIR="$pkgdir"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
