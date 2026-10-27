@@ -13,4 +13,8 @@ depends=('hid_t2magicmouse-dkms' 't2bce-dkms' 't2bdrm-dkms' 't2gmux-dkms' 't2mfi
 optdepends=(
     'kait2en-gpu-runtime-pm: Patched AMDGPU with Apple GMUX runtime PM support'
     'kait2en-gpu-runtime-pm-t2: Patched AMDGPU with Apple GMUX runtime PM support built for linux-t2'
+    'kait2en-gpu-runtime-pm-cachy: Patched AMDGPU with Apple GMUX runtime PM support built for linux-cachy'
+    'kait2en-wireless-runtime-pm: Patched Broadcom wireless modules with Apple coexistence fixes'
+    'kait2en-wireless-runtime-pm-t2: Patched Broadcom wireless modules with Apple coexistence fixes built for linux-t2'
+    'kait2en-wireless-runtime-pm-cachy: Patched Broadcom wireless modules with Apple coexistence fixes built for linux-cachy'
 )
