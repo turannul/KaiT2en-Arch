@@ -1,0 +1,29 @@
+_check(){
+    local _kernel_release=$(uname -r) _has_wireless_pm=0 _pkgname=""
+
+    for _pkg in kait2en-wireless-runtime-pm kait2en-wireless-runtime-pm-t2 kait2en-wireless-runtime-pm-cachy; do
+        pacman -Q "$_pkg" &>/dev/null && _has_wireless_pm=1 && break
+    done
+
+    if (( _has_wireless_pm == 0 )); then
+        case $_kernel_release in
+            *-t2-*)        _pkgname="kait2en-wireless-runtime-pm-t2" ;;
+            *cachy*)       _pkgname="kait2en-wireless-runtime-pm-cachy" ;;
+            *-arch*-*)     _pkgname="kait2en-wireless-runtime-pm" ;;
+            *)             _pkgname="" ;;
+        esac
+
+        echo "==> t2-share requires working WiFi/Bluetooth for Quick Share."
+        echo "==> No wireless runtime PM patches detected."
+        if [[ -n $_pkgname ]]; then
+            echo "==>   Detected kernel: ${_kernel_release}"
+            echo "==>   pacman -S $_pkgname"
+        else
+            echo "==>   Unknown kernel: ${_kernel_release}"
+            echo "==>   Open an issue: https://github.com/turannul/KaiT2en-Arch/issues"
+        fi
+    fi
+}
+
+post_install() { _check; }
+post_upgrade() { _check; }
