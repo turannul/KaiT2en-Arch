@@ -80,7 +80,7 @@ vcs_pkgs() {
 check_one() {
   local d="$1" rc=0 log
   log=$(check_pkgver "$d" 2>&1) || rc=$?
-  printf '%s\n   took %ss\n' "$log" "$SECONDS" >&2
+  printf '%s\n    %ss\n' "$log" "$SECONDS" >&2
   echo "$rc" > "$RESULTS/${d//\//%}"
 }
 
@@ -102,7 +102,7 @@ outdated_pkgs() {
       *) echo "::warning::version check failed for $d" >&2 ;;
     esac
   done
-  echo "==> version checks took $((SECONDS - start))s" >&2
+  echo "==> version checks completed in $((SECONDS - start))s" >&2
 }
 
 changed_pkgs() {

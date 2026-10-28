@@ -4,7 +4,7 @@ step() {
   local start=$SECONDS
   echo "==> $1"
   "$@"
-  echo "    $1 took $((SECONDS - start))s"
+  echo "    $1 $((SECONDS - start))s"
 }
 
 add_repo() {
