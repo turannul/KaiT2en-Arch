@@ -1,4 +1,4 @@
-post_install() {
+_hw_compatibility_check(){
     if [[ -r /sys/class/dmi/id/product_name ]]; then
         read -r _model </sys/class/dmi/id/product_name
         case "$_model" in
@@ -7,3 +7,17 @@ post_install() {
         esac
     fi
 }
+
+_check_kernel() {
+    local _kernel_release=$(uname -r)
+
+    case $_kernel_release in
+        *-arch*-*) ;;
+        *) echo "==> [kait2en] WARNING: This package is for stock Arch (linux)."
+           echo "==> [kait2en] Running kernel: ${_kernel_release}"
+           echo "==> [kait2en] Install the correct variant for your kernel." ;;
+    esac
+}
+
+post_install() { _hw_compatibility_check; _check_kernel; }
+post_upgrade() { _check_kernel; }

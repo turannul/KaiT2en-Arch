@@ -13,7 +13,7 @@ _kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit
 
 pkgname=kait2en-gpu-runtime-pm-t2
 pkgver=7.2.11_arch1_Watanare_T2_1_t2.r35.6595ce0
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2) - For linux-t2"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

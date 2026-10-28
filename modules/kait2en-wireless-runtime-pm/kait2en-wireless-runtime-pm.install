@@ -1,6 +1,16 @@
+_check_kernel() {
+    local _kernel_release=$(uname -r)
+
+    case $_kernel_release in
+        *-arch*-*) ;;
+        *) echo "==> [kait2en] WARNING: This package is for stock Arch (linux)."
+           echo "==> [kait2en] Running kernel: ${_kernel_release}"
+           echo "==> [kait2en] Install the correct variant for your kernel." ;;
+    esac
+}
+
 _reload() {
-    local kver m mods=()
-    kver=$(uname -r)
+    local kver=$(uname -r) m mods=()
 
     for m in brcmfmac hci_uart hci_bcm4377; do
         [[ -d /sys/module/$m ]] && mods+=("$m")
@@ -18,6 +28,6 @@ _reload() {
     fi
 }
 
-post_install() { _reload; }
-post_upgrade() { _reload; }
-post_remove() { _reload; }
+post_install() { _check_kernel; _reload; }
+post_upgrade() { _check_kernel; _reload; }
+post_remove()  { _reload; }
