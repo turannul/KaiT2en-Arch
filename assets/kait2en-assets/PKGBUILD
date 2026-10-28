@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=kait2en-assets
-pkgver=r15.c42f21e
+pkgver=r16.3e05a89
 pkgrel=1
 pkgdesc="Shared branding assets and fonts"
 arch=('any')
