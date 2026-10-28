@@ -2,9 +2,9 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-share
-pkgver=0
-pkgrel=1
-pkgdesc="Receive files from Android phones with Quick Share (Nearby Share)"
+pkgver=0.1.0.r3.be7f136
+pkgrel=3
+pkgdesc="Send and receive files with Android Quick Share (Nearby Share)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')
@@ -13,6 +13,8 @@ optdepends=(
     'kait2en-wireless-runtime-pm: Patched WiFi/BT modules for stock Arch kernel (linux)'
     'kait2en-wireless-runtime-pm-t2: Patched WiFi/BT modules for T2 kernel (linux-t2)'
     'kait2en-wireless-runtime-pm-cachy: Patched WiFi/BT modules for CachyOS kernel (linux-cachyos)'
+    'nautilus-python: Send entry for GNOME Files'
+    'nemo: Send entry for Cinnamon'
 )
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")
@@ -31,9 +33,7 @@ pkgver() {
 }
 
 prepare() {
-    sed -i 's|/usr/local/bin|/usr/bin|g' \
-        "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2share.gtk.desktop" \
-        "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/t2-share.service"
+    sed -i 's|:= \$(PREFIX)|:= $(DESTDIR)$(PREFIX)|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/Makefile"
     cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
 }
 
@@ -42,6 +42,7 @@ build() {
 }
 
 package() {
-    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" install DESTDIR="$pkgdir" PREFIX=/usr
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" install DESTDIR="$pkgdir" PREFIX=/usr \
+        GTK_UPDATE_ICON_CACHE=true UPDATE_DESKTOP_DATABASE=true
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

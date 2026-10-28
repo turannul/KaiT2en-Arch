@@ -79,3 +79,10 @@ import_key() {
   mkdir --parents --mode=700 "$GNUPGHOME"
   gpg --batch --import <<<"${GPG_PRIVATE_KEY:?GPG_PRIVATE_KEY required}"
 }
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  case "${1:-}" in
+    setup_repos) step setup_repos ;;
+    *) echo "usage: bash lib.sh setup_repos" >&2; exit 1 ;;
+  esac
+fi

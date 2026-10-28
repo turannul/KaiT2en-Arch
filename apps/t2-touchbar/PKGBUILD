@@ -35,7 +35,6 @@ prepare() {
     cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
     sed -i 's|const FONT_PATHS: \[&str; 3\]|const FONT_PATHS: [\&str; 6]|' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/renderer.rs"
     sed -i '/^const FONT_PATHS/,/^];/s|^];|    "/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf",\n    "/usr/share/fonts/inter/InterVariable.ttf",\n    "/usr/share/fonts/cantarell/Cantarell-VF.otf",\n];|' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/renderer.rs"
-    sed -i 's|$(CARGO) test --locked|$(CARGO) test --release --locked|' "$srcdir/KaiT2en-Fedora/apps/$pkgname/Makefile"
 }
 
 build() {
@@ -43,7 +42,7 @@ build() {
 }
 
 check() {
-    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" test
+    cargo test --release --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
 }
 
 package() {

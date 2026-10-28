@@ -14,9 +14,60 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Package name(s) to build (space or comma separated) or "all" - Leave empty for autodetect (pkgver check)'
+        description: 'Package to build ("autodetect" = full version sweep)'
         required: false
-        default: ''
+        default: 'autodetect'
+        type: choice
+        options:
+          - autodetect
+          - all
+          - bankstown
+          - bankstown-git
+          - brcm-firmware-fetch
+          - fruitjuice
+          - hid_t2magicmouse-dkms
+          - kait2en-apps-meta
+          - kait2en-assets
+          - kait2en-gdm-theme
+          - kait2en-gpu-runtime-pm
+          - kait2en-gpu-runtime-pm-t2
+          - kait2en-modules-meta
+          - kait2en-plymouth-theme
+          - kait2en-wireless-runtime-pm
+          - kait2en-wireless-runtime-pm-cachy
+          - kait2en-wireless-runtime-pm-t2
+          - netmuxd-git
+          - react-drm
+          - sunshine-t2-sidecar
+          - t2-ave
+          - t2bce_audio-alsa-ucm-conf
+          - t2bce_audio-dsp
+          - t2bce-dkms
+          - t2bdrm-dkms
+          - t2-debug
+          - t2-dgpu-control
+          - t2-fan-control
+          - t2-force-click
+          - t2gmux-dkms
+          - t2-hybrid-gpu-control
+          - t2-journal
+          - t2mfi_fastcharge-dkms
+          - t2-power-explorer
+          - t2-power-tune
+          - t2_precision_trackpad-dkms
+          - t2sbs-dkms
+          - t2sep-dkms
+          - t2-services
+          - t2-share
+          - t2-smc-control
+          - t2smc-dkms
+          - t2smp-dkms
+          - t2thunderbolt-dkms
+          - t2-touchbar
+          - t2touchbar-dkms
+          - t2-touchid
+          - t2_trackpad_actuator-dkms
+          - t2-zone-power
 
 concurrency:
   group: pipeline-${{ github.ref }}
@@ -45,6 +96,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Repos
+        run: bash .github/workflow_scripts/lib.sh setup_repos
+
       - name: Select
         id: target-matrix
         if: github.event_name == 'workflow_dispatch' && inputs.target != ''
@@ -58,6 +112,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_REF: ${{ github.base_ref }}
+          EVENT_BEFORE: ${{ github.event.before }}
         run: bash .github/workflow_scripts/detect.sh
 
   build:

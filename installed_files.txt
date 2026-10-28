@@ -2795,6 +2795,23 @@ usr/lib/t2-services/t2-ncm-sleep
 usr/lib/udev/rules.d/90-t2-services-ncm.rules
 usr/share/licenses/t2-services/LICENSE
 
+# t2-share
+usr/bin/t2-share
+usr/bin/t2share
+usr/lib/systemd/user/t2-share.service
+usr/share/applications/mimeinfo.cache
+usr/share/applications/org.t2share.gtk.desktop
+usr/share/applications/org.t2share.send.desktop
+usr/share/icons/hicolor/icon-theme.cache
+usr/share/icons/hicolor/scalable/apps/org.t2share.gtk.svg
+usr/share/kio/servicemenus/t2-share-send.desktop
+usr/share/licenses/t2-share/LICENSE
+usr/share/licenses/t2-share/LICENSE-Apache-2.0
+usr/share/licenses/t2-share/LICENSE-Chromium
+usr/share/licenses/t2-share/THIRD-PARTY-NOTICES.md
+usr/share/nautilus-python/extensions/t2-share-send.py
+usr/share/nemo/actions/t2-share-send.nemo_action
+
 # t2-smc-control
 usr/bin/t2-smc-control
 usr/share/applications/org.t2smccontrol.gtk.desktop

@@ -34,25 +34,57 @@ pkgver_of() {
   makepkg_as_user "$1" --printsrcinfo </dev/null | awk --field-separator=' = ' '/^[[:space:]]*pkgver = /{print $2}'
 }
 
+pkgrel_of() {
+  makepkg_as_user "$1" --printsrcinfo </dev/null | awk --field-separator=' = ' '/^[[:space:]]*pkgrel = /{print $2}'
+}
+
+pkgrel_from_pkgbuild() {
+  sed --quiet 's/^[[:space:]]*pkgrel=//p' "$1/PKGBUILD" | head --lines=1 | tr -d "'\""
+}
+
+repo_pkgrel() {
+  local pkgname="$1" dbfile="/var/lib/pacman/sync/turann-s-place.db"
+  [ -f "$dbfile" ] || return 1
+  tar -tf "$dbfile" 2>/dev/null | sed -nE "s/^$pkgname-.*-([0-9]+)\/desc\$/\\1/p" | head -1
+}
+
 run_makepkg_nobuild() {
   makepkg_as_user "$1" --nobuild --cleanbuild --nodeps --noprepare --skippgpcheck </dev/null >/dev/null 2>&1
 }
 
 # return: 0 = outdated, 1 = up to date, 2 = error
 check_pkgver() {
-  local d="$1" local_ver upstream_ver
+  local d="$1" local_ver upstream_ver local_rel upstream_rel repo_rel
   echo "== checking $d =="
 
   local_ver=$(pkgver_of "$d")
-  run_makepkg_nobuild "$d" && upstream_ver=$(pkgver_of "$d")
+  local_rel=$(pkgrel_of "$d")
+  run_makepkg_nobuild "$d" && upstream_ver=$(pkgver_of "$d") && upstream_rel=$(pkgrel_of "$d")
 
-  echo "   local: ${local_ver:-?}"
-  echo "   upstream: ${upstream_ver:-?}"
+  local_pkgrel=$(pkgrel_from_pkgbuild "$d")
+  local pkgname
+  pkgname=$(pkgname_of "$d")
+  repo_rel=$(repo_pkgrel "$pkgname")
+
+  echo "   local: ${local_ver:-?}-${local_pkgrel:-?}"
+  echo "   upstream: ${upstream_ver:-?}-${upstream_rel:-?}"
+  [ -n "$repo_rel" ] && echo "   repo: ${repo_rel}"
 
   [ -n "$local_ver" ] && [ -n "$upstream_ver" ] || { echo "   -> error"; return 2; }
-  [ "$local_ver" != "$upstream_ver" ] || { echo "   -> up to date"; return 1; }
 
-  echo "   -> outdated"
+  # Outdated if: upstream pkgver changed OR local pkgrel > repo pkgrel
+  if [ "$local_ver" != "$upstream_ver" ]; then
+    echo "   -> outdated (pkgver)"
+    return 0
+  fi
+
+  if [ -n "$repo_rel" ] && [ -n "$local_pkgrel" ] && [ "$local_pkgrel" -gt "$repo_rel" ]; then
+    echo "   -> outdated (pkgrel)"
+    return 0
+  fi
+
+  echo "   -> up to date"
+  return 1
 }
 
 setup_upstream_cache() {
@@ -90,7 +122,7 @@ outdated_pkgs() {
   mapfile -t pkgs < <(vcs_pkgs)
   RESULTS=$(mktemp --directory)
   export RESULTS
-  export -f check_one check_pkgver pkgver_of run_makepkg_nobuild makepkg_as_user
+  export -f check_one check_pkgver pkgver_of pkgrel_of pkgrel_from_pkgbuild repo_pkgrel pkgname_of run_makepkg_nobuild makepkg_as_user
 
   printf '%s\n' "${pkgs[@]}" | xargs --no-run-if-empty -P "$(nproc)" -I{} bash -c 'check_one "$1"' _ {} || true
 
@@ -125,12 +157,23 @@ changed_pkgs() {
 }
 
 detect_changed() {
-  local ref="origin/${BASE_REF:-main}"
-  if ! git rev-parse --verify --quiet "$ref" >/dev/null; then
-    echo "Fetching $ref..."
-    git fetch --no-tags origin "+${BASE_REF:-main}:${ref}" || true
+  trust_git_dirs
+  local ref
+  if [ -n "${EVENT_BEFORE:-}" ]; then
+    ref="$EVENT_BEFORE"
+  else
+    ref="origin/${BASE_REF:-main}"
+    if ! git rev-parse --verify --quiet "$ref" >/dev/null; then
+      echo "Fetching $ref..."
+      git fetch --no-tags origin "+${BASE_REF:-main}:${ref}" || true
+    fi
   fi
   emit_matrix "$(changed_pkgs "$ref")"
+}
+
+detect_push() {
+  trust_git_dirs
+  emit_matrix "$(changed_pkgs "${EVENT_BEFORE:-}")"
 }
 
 detect_outdated() {
@@ -141,6 +184,7 @@ detect_outdated() {
 detect_manual() {
   local t p d valid="" inv=""
   t=$(trim "${TARGET:-${1:-}}")
+  [ "$t" = "autodetect" ] && t=""
 
   if [ -z "$t" ]; then
     setup_environment
@@ -186,15 +230,13 @@ main() {
     workflow_dispatch|manual)
       detect_manual "${TARGET:-${2:-}}"
       ;;
-    schedule)
-      setup_environment
-      detect_outdated
-      ;;
     pull_request)
-      setup_environment
       detect_changed
       ;;
-    push|ci|*)
+    push|ci)
+      detect_push
+      ;;
+    schedule|*)
       setup_environment
       detect_outdated
       ;;

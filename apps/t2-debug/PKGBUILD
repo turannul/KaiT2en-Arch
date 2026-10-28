@@ -25,6 +25,8 @@ pkgver() {
 }
 
 prepare() {
+    sed -i 's|:= \$(PREFIX)|:= $(DESTDIR)$(PREFIX)|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/Makefile"
+    sed -i 's|/usr/local/bin|/usr/bin|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2debug.gtk.desktop"
     cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
 }
 
@@ -33,11 +35,6 @@ build() {
 }
 
 package() {
-    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/share/applications" "$pkgdir/usr/share/icons/hicolor/scalable/apps"
-    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/target/release/t2-debug" "$pkgdir/usr/bin/t2-debug"
-    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/target/release/t2debug" "$pkgdir/usr/bin/t2debug"
-    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2debug.gtk.desktop" "$pkgdir/usr/share/applications/org.t2debug.gtk.desktop"
-    sed -i 's|/usr/local/bin|/usr/bin|g' "$pkgdir/usr/share/applications/org.t2debug.gtk.desktop"
-    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/assets/icons/hicolor/scalable/apps/org.t2debug.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2debug.gtk.svg"
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" install DESTDIR="$pkgdir" PREFIX=/usr GTK_UPDATE_ICON_CACHE=true
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

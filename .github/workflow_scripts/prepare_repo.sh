@@ -12,7 +12,7 @@ remote="https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
 updated_pkgs=""
 
 install_tools() {
-  pacman --sync --refresh --noconfirm --needed git gnupg
+  pacman --sync --refresh --noconfirm --needed git gnupg diffutils
 }
 
 setup_git() {
@@ -51,12 +51,26 @@ publish_pages() {
   commit_push "Update repository [skip ci]" gh-pages
 }
 
+pkgver_of_file() {
+  awk '/^pkgver=/{print $2; exit}' "$1"
+}
+
+pkgrel_of_file() {
+  awk '/^pkgrel=/{print $2; exit}' "$1"
+}
+
 sync_pkgbuilds() {
-  local p n dir
+  local p n dir cur new
   while IFS= read -r p; do
     n=$(pkgname_of "$(dirname "$p")")
     dir=$(find_pkg_dir "$n") || { echo "skip: no local dir for $n" >&2; continue; }
-    cmp --silent "$p" "$dir/PKGBUILD" && continue
+    cur="$(pkgver_of_file "$dir/PKGBUILD")-$(pkgrel_of_file "$dir/PKGBUILD")"
+    new="$(pkgver_of_file "$p")-$(pkgrel_of_file "$p")"
+    [ "$cur" = "$new" ] && continue
+    if [ "$new" != "$(printf '%s\n%s\n' "$cur" "$new" | sort --version-sort | tail -1)" ]; then
+      echo "skip: built $n ($new) is older than local ($cur)" >&2
+      continue
+    fi
     echo "chore: updated $dir/PKGBUILD..." >&2
     cp --force "$p" "$dir/PKGBUILD"
     updated_pkgs="${updated_pkgs:+$updated_pkgs }$n"

@@ -13,7 +13,7 @@ _kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit
 
 pkgname=kait2en-wireless-runtime-pm-t2
 pkgver=7.2.11_arch1_Watanare_T2_1_t2.r4.16b5808
-pkgrel=1
+pkgrel=3
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For T2 Linux)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
