@@ -1,37 +1,27 @@
-user=turannul
+export user=turannul
 
 step() {
+  local start=$SECONDS
   echo "==> $1"
   "$@"
+  echo "    $1 took $((SECONDS - start))s"
+}
+
+add_repo() {
+  printf '\n[%s]\nServer = %s\nSigLevel = Never\n' "$1" "$2" >> /etc/pacman.conf
 }
 
 setup_cachy_repo() {
   sed --in-place 's/^Architecture = .*/Architecture = x86_64 x86_64_v3/' /etc/pacman.conf
-  cat >> /etc/pacman.conf <<'EOF'
-
-[cachyos-v3]
-Server = https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/
-SigLevel = Never
-
-EOF
+  add_repo cachyos-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/
 }
 
 setup_t2_repo() {
-  cat >> /etc/pacman.conf <<'EOF'
-
-[arch-mact2]
-Server = https://arch-t2.slsrepo.com/
-SigLevel = Never
-EOF
+  add_repo arch-mact2 https://mirror.funami.tech/arch-mact2/os/x86_64/
 }
 
 setup_my_repo() {
-  cat >> /etc/pacman.conf <<'EOF'
-
-[turann-s-place]
-Server = https://turannul.github.io/KaiT2en-Arch/x86_64
-SigLevel = Never
-EOF
+  add_repo turann-s-place https://turannul.github.io/KaiT2en-Arch/x86_64
 }
 
 sync_pacman() {

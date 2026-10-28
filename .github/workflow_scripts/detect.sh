@@ -2,11 +2,15 @@
 
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
+install_tools() {
+    pacman --sync --noconfirm --needed git nodejs
+}
+
 setup_environment() {
-    setup_repos
-    pacman --sync --refresh --noconfirm git nodejs
+    step setup_repos
+    step install_tools
     set -e
-    create_user
+    step create_user
 }
 
 out() {
@@ -65,18 +69,40 @@ setup_upstream_cache() {
   git config --system --add url."$cache".insteadOf "https://github.com/kaiT2en/KaiT2en-Fedora"
 }
 
-outdated_pkgs() {
-  setup_upstream_cache
-  local d rc
+vcs_pkgs() {
+  local d
   for d in $(all_pkgs); do
     grep --quiet 'pkgver()' "$d/PKGBUILD" || continue
-    rc=0
-    check_pkgver "$d" >&2 || rc=$?
+    echo "$d"
+  done
+}
+
+check_one() {
+  local d="$1" rc=0 log
+  log=$(check_pkgver "$d" 2>&1) || rc=$?
+  printf '%s\n   took %ss\n' "$log" "$SECONDS" >&2
+  echo "$rc" > "$RESULTS/${d//\//%}"
+}
+
+outdated_pkgs() {
+  local -a pkgs
+  local d rc start=$SECONDS
+  mapfile -t pkgs < <(vcs_pkgs)
+  RESULTS=$(mktemp --directory)
+  export RESULTS
+  export -f check_one check_pkgver pkgver_of run_makepkg_nobuild makepkg_as_user
+
+  printf '%s\n' "${pkgs[@]}" | xargs --no-run-if-empty -P "$(nproc)" -I{} bash -c 'check_one "$1"' _ {} || true
+
+  for d in "${pkgs[@]}"; do
+    rc=$(cat "$RESULTS/${d//\//%}" 2>/dev/null || echo 2)
     case $rc in
       0) echo "$d" ;;
-      2) echo "::warning::version check failed for $d" >&2 ;;
+      1) ;;
+      *) echo "::warning::version check failed for $d" >&2 ;;
     esac
   done
+  echo "==> version checks took $((SECONDS - start))s" >&2
 }
 
 changed_pkgs() {
@@ -108,6 +134,7 @@ detect_changed() {
 }
 
 detect_outdated() {
+  step setup_upstream_cache
   emit_matrix "$(outdated_pkgs)"
 }
 
