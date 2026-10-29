@@ -3,7 +3,7 @@
 
 pkgname=t2-share
 pkgver=0.1.0.r3.be7f136
-pkgrel=3
+pkgrel=4
 pkgdesc="Send and receive files with Android Quick Share (Nearby Share)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -33,8 +33,12 @@ pkgver() {
 }
 
 prepare() {
-    sed -i 's|:= \$(PREFIX)|:= $(DESTDIR)$(PREFIX)|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/Makefile"
     cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+    for _f in org.t2share.gtk.desktop systemd/t2-share.service integration/*; do
+        [ -f "$srcdir/KaiT2en-Fedora/apps/$pkgname/$_f" ] || continue
+        sed -i 's|/usr/local/bin|/usr/bin|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/$_f"
+    done
+    sed -i 's|:= \$(PREFIX)|:= $(DESTDIR)$(PREFIX)|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/Makefile"
 }
 
 build() {
