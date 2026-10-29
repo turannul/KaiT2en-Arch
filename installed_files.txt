@@ -2799,10 +2799,8 @@ usr/share/licenses/t2-services/LICENSE
 usr/bin/t2-share
 usr/bin/t2share
 usr/lib/systemd/user/t2-share.service
-usr/share/applications/mimeinfo.cache
 usr/share/applications/org.t2share.gtk.desktop
 usr/share/applications/org.t2share.send.desktop
-usr/share/icons/hicolor/icon-theme.cache
 usr/share/icons/hicolor/scalable/apps/org.t2share.gtk.svg
 usr/share/kio/servicemenus/t2-share-send.desktop
 usr/share/licenses/t2-share/LICENSE
