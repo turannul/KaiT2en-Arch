@@ -39,6 +39,7 @@ on:
           - netmuxd-git
           - react-drm
           - sunshine-t2-sidecar
+          - t2-airshare
           - t2-ave
           - t2bce_audio-alsa-ucm-conf
           - t2bce_audio-dsp
@@ -46,6 +47,7 @@ on:
           - t2bdrm-dkms
           - t2-debug
           - t2-dgpu-control
+          - t2-drop
           - t2-fan-control
           - t2-force-click
           - t2gmux-dkms
@@ -58,7 +60,6 @@ on:
           - t2sbs-dkms
           - t2sep-dkms
           - t2-services
-          - t2-share
           - t2-smc-control
           - t2smc-dkms
           - t2smp-dkms

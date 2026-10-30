@@ -40,6 +40,12 @@ all_pkgs() {
   find . -name PKGBUILD -not -path './.git/*' -not -path './gh-pages/*' -not -path './artifacts/*' -printf '%h\n' | sed 's|^\./||' | sort --unique
 }
 
+all_pkgnames() {
+  find . -name PKGBUILD -not -path './.git/*' -not -path './gh-pages/*' -not -path './artifacts/*' -print0 \
+    | xargs --null sed --quiet 's/^[[:space:]]*pkgname=//p' | tr --delete "'\"" | tr '(), ' '\n\n\n\n\n' \
+    | sed '/^[[:space:]]*$/d' | sort --unique
+}
+
 pkgname_of() {
   local d="$1" n
   n=$(sed --quiet 's/^[[:space:]]*pkgname=//p' "$d/PKGBUILD" | head --lines=1)

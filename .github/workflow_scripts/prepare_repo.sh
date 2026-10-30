@@ -36,6 +36,34 @@ sync_pkgs() {
   find ../artifacts -name '*.pkg.tar.zst*' -exec cp --verbose --target-directory=x86_64 {} +
 }
 
+prune_orphans() {
+  local f n removed=0 total=0
+  local -a keep=() orphans=()
+  mapfile -t keep < <(cd "$ws" && all_pkgnames)
+  if [ "${#keep[@]}" -lt 5 ]; then
+    echo "prune: refusing, only ${#keep[@]} package name(s) found on main"
+    return 0
+  fi
+  for f in x86_64/*.pkg.tar.zst; do
+    [ -f "$f" ] || continue
+    total=$((total + 1))
+    n=$(pkgfile_name "$f")
+    printf '%s\n' "${keep[@]}" | grep --quiet --line-regexp -- "$n" || orphans+=("$f")
+  done
+  if [ $(( ${#orphans[@]} * 2 )) -gt "$total" ]; then
+    echo "prune: refusing, ${#orphans[@]} of $total archive(s) look orphaned"
+    return 0
+  fi
+  [ "${#orphans[@]}" -gt 0 ] || { echo "prune: no orphans"; return 0; }
+  for f in "${orphans[@]}"; do
+    n=$(pkgfile_name "$f")
+    echo "prune: $n has no PKGBUILD, dropping archive"
+    rm --force --verbose "$f" "$f.sig"
+    removed=$((removed + 1))
+  done
+  echo "pruned $removed orphaned archive(s)"
+}
+
 commit_push() {
   git diff --cached --quiet && { echo "No changes to commit on $2."; return; }
   git commit --message="$1"
@@ -121,6 +149,7 @@ prepare_repo() {
   step import_key
   step clone_pages
   step sync_pkgs
+  step prune_orphans
   step publish_pages
   cd "$ws"
   step sync_pkgbuilds
