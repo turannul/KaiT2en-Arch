@@ -3,7 +3,7 @@
 
 pkgname=kait2en-assets
 pkgver=r16.3e05a89
-pkgrel=1
+pkgrel=2
 pkgdesc="Shared branding assets and fonts"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -31,6 +31,7 @@ prepare() {
 package() {
     install -d -m0755 "$pkgdir/usr/share/kait2en"
     install -m0644 "$srcdir/assets/kait2en-app-logo.png" "$pkgdir/usr/share/kait2en/kait2en-wordmark.png"
+    install -m0644 "$srcdir/assets/kait2en-app-logo-light.png" "$pkgdir/usr/share/kait2en/kait2en-wordmark-light.png"
     for f in kaiT2en-logo.png kaiT2en-logo-tr.png kaiT2en-logo-tr.svg kait2en-fedora.jpeg kanji.ans kanji.txt; do
         [[ -f "$srcdir/assets/$f" ]] && install -m0644 "$srcdir/assets/$f" "$pkgdir/usr/share/kait2en/$f"
     done
