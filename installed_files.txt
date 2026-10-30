@@ -2699,6 +2699,21 @@ usr/share/sunshine/web/images/sunshine.ico
 usr/share/sunshine/web/index.html
 usr/share/sunshine/web/sunshine-esm-stats.json
 
+# t2-airshare
+usr/bin/t2-airshare
+usr/bin/t2airshare
+usr/lib/systemd/user/t2-airshare.service
+usr/share/applications/org.t2airshare.gtk.desktop
+usr/share/applications/org.t2airshare.send.desktop
+usr/share/icons/hicolor/scalable/apps/org.t2airshare.gtk.svg
+usr/share/kio/servicemenus/t2-airshare-send.desktop
+usr/share/licenses/t2-airshare/LICENSE
+usr/share/licenses/t2-airshare/LICENSE-Apache-2.0
+usr/share/licenses/t2-airshare/LICENSE-Chromium
+usr/share/licenses/t2-airshare/THIRD-PARTY-NOTICES.md
+usr/share/nautilus-python/extensions/t2-airshare-send.py
+usr/share/nemo/actions/t2-airshare-send.nemo_action
+
 # t2-ave
 usr/bin/t2remote
 usr/lib/systemd/system/kait2en-t2-remote.service
