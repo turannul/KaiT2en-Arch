@@ -2738,6 +2738,13 @@ usr/share/licenses/t2-dgpu-control/LICENSE
 usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.policy
 usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.status.policy
 
+# t2-drop
+usr/bin/t2drop
+usr/lib/systemd/system/t2-drop.service
+usr/share/dbus-1/system-services/org.t2drop.service
+usr/share/dbus-1/system.d/org.t2drop.conf
+usr/share/licenses/t2-drop/LICENSE
+
 # t2-fan-control
 usr/bin/t2-fancontrol-gtk
 usr/lib/systemd/system/t2-fancontrol.service
