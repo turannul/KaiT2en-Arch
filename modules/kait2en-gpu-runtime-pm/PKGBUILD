@@ -13,7 +13,7 @@ _kver=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 
 pkgname=kait2en-gpu-runtime-pm
 pkgver=7.2.11_arch1_1.r35.6595ce0
-pkgrel=4
+pkgrel=5
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -22,7 +22,6 @@ depends=('t2gmux' "linux=$_kver")
 makedepends=('git' 'linux-headers')
 provides=('kait2en-gpu-runtime-pm')
 conflicts=('kait2en-gpu-runtime-pm-t2' 'kait2en-gpu-runtime-pm-cachy')
-replaces=('kait2en-gpu-runtime-pm-t2' 'kait2en-gpu-runtime-pm-cachy')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")

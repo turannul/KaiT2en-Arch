@@ -13,7 +13,7 @@ _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3;
 
 pkgname=kait2en-wireless-runtime-pm-cachy
 pkgver=7.3.0_4_cachyos.r4.16b5808
-pkgrel=3
+pkgrel=4
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For linux-cachy)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -22,7 +22,6 @@ depends=('t2gmux' "linux-cachyos=$_kver")
 makedepends=('git' 'linux-cachyos-headers')
 provides=('kait2en-wireless-runtime-pm')
 conflicts=('kait2en-wireless-runtime-pm' 'kait2en-wireless-runtime-pm-t2')
-replaces=('kait2en-wireless-runtime-pm' 'kait2en-wireless-runtime-pm-t2')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
