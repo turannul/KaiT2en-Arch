@@ -36,6 +36,7 @@ usr/share/kait2en/kaiT2en-logo-tr.png
 usr/share/kait2en/kaiT2en-logo-tr.svg
 usr/share/kait2en/kaiT2en-logo.png
 usr/share/kait2en/kait2en-fedora.jpeg
+usr/share/kait2en/kait2en-wordmark-light.png
 usr/share/kait2en/kait2en-wordmark.png
 usr/share/kait2en/kanji.ans
 usr/share/kait2en/kanji.txt
@@ -2737,6 +2738,13 @@ usr/share/licenses/t2-dgpu-control/LICENSE
 usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.policy
 usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.status.policy
 
+# t2-drop
+usr/bin/t2drop
+usr/lib/systemd/system/t2-drop.service
+usr/share/dbus-1/system-services/org.t2drop.service
+usr/share/dbus-1/system.d/org.t2drop.conf
+usr/share/licenses/t2-drop/LICENSE
+
 # t2-fan-control
 usr/bin/t2-fancontrol-gtk
 usr/lib/systemd/system/t2-fancontrol.service
@@ -2794,21 +2802,6 @@ usr/lib/t2-services/package-actions
 usr/lib/t2-services/t2-ncm-sleep
 usr/lib/udev/rules.d/90-t2-services-ncm.rules
 usr/share/licenses/t2-services/LICENSE
-
-# t2-share
-usr/bin/t2-share
-usr/bin/t2share
-usr/lib/systemd/user/t2-share.service
-usr/share/applications/org.t2share.gtk.desktop
-usr/share/applications/org.t2share.send.desktop
-usr/share/icons/hicolor/scalable/apps/org.t2share.gtk.svg
-usr/share/kio/servicemenus/t2-share-send.desktop
-usr/share/licenses/t2-share/LICENSE
-usr/share/licenses/t2-share/LICENSE-Apache-2.0
-usr/share/licenses/t2-share/LICENSE-Chromium
-usr/share/licenses/t2-share/THIRD-PARTY-NOTICES.md
-usr/share/nautilus-python/extensions/t2-share-send.py
-usr/share/nemo/actions/t2-share-send.nemo_action
 
 # t2-smc-control
 usr/bin/t2-smc-control
