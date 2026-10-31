@@ -73,7 +73,7 @@ commit_push() {
 publish_pages() {
   rm --force "x86_64/${repo}".db* "x86_64/${repo}".files*
   repo-add --sign --key "$keyid" "x86_64/${repo}.db.tar.zst" \
-    $(printf '%s\n' x86_64/*.pkg.tar.zst | sort --version-sort)
+    $(latest_archives x86_64/*.pkg.tar.zst)
   gpg --batch --armor --export "$keyid" > key.asc
   git add --all
   commit_push "Update repository [skip ci]" gh-pages
@@ -95,7 +95,7 @@ sync_pkgbuilds() {
     cur="$(pkgver_of_file "$dir/PKGBUILD")-$(pkgrel_of_file "$dir/PKGBUILD")"
     new="$(pkgver_of_file "$p")-$(pkgrel_of_file "$p")"
     [ "$cur" = "$new" ] && continue
-    if [ "$new" != "$(printf '%s\n%s\n' "$cur" "$new" | sort --version-sort | tail -1)" ]; then
+    if [ "$(vercmp "$new" "$cur")" = "-1" ]; then
       echo "skip: built $n ($new) is older than local ($cur)" >&2
       continue
     fi
@@ -108,6 +108,26 @@ sync_pkgbuilds() {
 
 pkgfile_name() {
   basename "$1" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//'
+}
+
+pkgfile_ver() {
+  basename "$1" | sed --regexp-extended --quiet 's/\.pkg\.tar\.zst$//p' \
+    | sed --regexp-extended "s/^$(pkgfile_name "$1")-//; s/-(x86_64|any)\$//"
+}
+
+latest_archives() {
+  local f n v
+  local -A pick=() pickver=()
+  for f in "$@"; do
+    [ -f "$f" ] || continue
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    if [ -z "${pickver[$n]:-}" ] || [ "$(vercmp "$v" "${pickver[$n]}")" = "1" ]; then
+      pick[$n]="$f"
+      pickver[$n]="$v"
+    fi
+  done
+  printf '%s\n' "${pick[@]}"
 }
 
 emit_installed() {
@@ -123,15 +143,9 @@ emit_installed() {
 
 gen_installed_files() {
   : > installed_files.txt
-  local pkg n latest f
-  for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
-    [ -f "$pkg" ] || continue
+  local pkg n
+  for pkg in $(latest_archives gh-pages/x86_64/*.pkg.tar.zst); do
     n=$(pkgfile_name "$pkg")
-    latest=$(for f in gh-pages/x86_64/*.pkg.tar.zst; do
-      [ -f "$f" ] || continue
-      [ "$(pkgfile_name "$f")" = "$n" ] && echo "$f"
-    done | sort --version-sort | tail --lines=1)
-    [ "$latest" = "$pkg" ] || continue
     emit_installed "$n" "$pkg"
   done
 }
