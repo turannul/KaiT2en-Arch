@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-force-click
-pkgver=0.1.0.r7.c2391f1
+pkgver=0.1.0.r8.3f234ae
 pkgrel=1
 pkgdesc="Trackpad click and force-click pressure and action configurator"
 arch=('x86_64')

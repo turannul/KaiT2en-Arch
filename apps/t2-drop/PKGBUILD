@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-drop
-pkgver=0
-pkgrel=0
+pkgver=0.1.0.r4.3f234ae
+pkgrel=1
 pkgdesc="AirDrop to Apple devices over AWDL, the system service of T2 AirShare"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

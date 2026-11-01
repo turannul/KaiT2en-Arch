@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-airshare
-pkgver=0
-pkgrel=0
+pkgver=0.1.0.r4.8dfd125
+pkgrel=1
 pkgdesc="Share files with Android phones over Quick Share and with Apple devices over AirDrop"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
