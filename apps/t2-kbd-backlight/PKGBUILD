@@ -3,7 +3,7 @@
 
 pkgname=t2-kbd-backlight
 pkgver=0
-pkgrel=1
+pkgrel=2
 pkgdesc="Keyboard backlight idle timeout for Apple T2 MacBooks"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -13,6 +13,7 @@ makedepends=('cargo' 'git' 'libinput')
 provides=("$pkgname-git")
 conflicts=("$pkgname-git")
 replaces=("$pkgname-git")
+backup=('etc/kait2en/kbd-backlight.toml')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
 sha256sums=('SKIP')
 
