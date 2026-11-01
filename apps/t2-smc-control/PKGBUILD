@@ -3,7 +3,7 @@
 
 pkgname=t2-smc-control
 pkgver=0.1.0.r34.626969d
-pkgrel=1
+pkgrel=2
 pkgdesc="Hardware monitor and Apple SMC sensor utility"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -39,5 +39,7 @@ package() {
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2smccontrol.gtk.desktop" "$pkgdir/usr/share/applications/org.t2smccontrol.gtk.desktop"
     sed -i 's|/usr/local/bin|/usr/bin|g' "$pkgdir/usr/share/applications/org.t2smccontrol.gtk.desktop"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/assets/icons/hicolor/scalable/apps/org.t2smccontrol.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2smccontrol.gtk.svg"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/t2-smc-gaugingd.service" "$pkgdir/usr/lib/systemd/system/t2-smc-gaugingd.service"
+    sed -i 's|/usr/local/bin|/usr/bin|g' "$pkgdir/usr/lib/systemd/system/t2-smc-gaugingd.service"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
