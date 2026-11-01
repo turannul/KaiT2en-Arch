@@ -40,35 +40,35 @@ on:
           - react-drm
           - t2-airshare
           - t2-ave
-          - t2bce_audio-alsa-ucm-conf
-          - t2bce_audio-dsp
-          - t2bce-dkms
-          - t2bdrm-dkms
           - t2-debug
           - t2-dgpu-control
           - t2-drop
           - t2-fan-control
           - t2-force-click
-          - t2gmux-dkms
           - t2-hybrid-gpu-control
           - t2-journal
           - t2-kbd-backlight
-          - t2mfi_fastcharge-dkms
           - t2-power-explorer
           - t2-power-tune
-          - t2_precision_trackpad-dkms
-          - t2sbs-dkms
-          - t2sep-dkms
           - t2-services
           - t2-smc-control
+          - t2-touchbar
+          - t2-touchid
+          - t2-zone-power
+          - t2_precision_trackpad-dkms
+          - t2_trackpad_actuator-dkms
+          - t2bce-dkms
+          - t2bce_audio-alsa-ucm-conf
+          - t2bce_audio-dsp
+          - t2bdrm-dkms
+          - t2gmux-dkms
+          - t2mfi_fastcharge-dkms
+          - t2sbs-dkms
+          - t2sep-dkms
           - t2smc-dkms
           - t2smp-dkms
           - t2thunderbolt-dkms
-          - t2-touchbar
           - t2touchbar-dkms
-          - t2-touchid
-          - t2_trackpad_actuator-dkms
-          - t2-zone-power
 
 concurrency:
   group: pipeline-${{ github.ref }}
