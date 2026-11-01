@@ -74,9 +74,9 @@ prune_pkgrels() {
     v=$(pkgfile_ver "$f")
     pv="${v%-*}"
     rel="${v##*-}"
-    names[$n]=1
-    if [ -z "${newest[$n|$pv]:-}" ] || [ "$(vercmp "$rel" "${newest[$n|$pv]}")" = "1" ]; then
-      newest[$n|$pv]="$rel"
+    names["$n"]=1
+    if [ -z "${newest["$n|$pv"]:-}" ] || [ "$(vercmp "$rel" "${newest["$n|$pv"]}")" = "1" ]; then
+      newest["$n|$pv"]="$rel"
     fi
   done
   if [ "${#names[@]}" -lt 5 ]; then
@@ -89,7 +89,7 @@ prune_pkgrels() {
     v=$(pkgfile_ver "$f")
     pv="${v%-*}"
     rel="${v##*-}"
-    [ "$rel" = "${newest[$n|$pv]}" ] || drops=$((drops + 1))
+    [ "$rel" = "${newest["$n|$pv"]}" ] || drops=$((drops + 1))
   done
   if [ $((drops * 2)) -gt "$total" ]; then
     echo "prune-pkgrel: refusing, $drops of $total archive(s) look superseded"
@@ -103,7 +103,7 @@ prune_pkgrels() {
     v=$(pkgfile_ver "$f")
     pv="${v%-*}"
     rel="${v##*-}"
-    [ "$rel" = "${newest[$n|$pv]}" ] && continue
+    [ "$rel" = "${newest["$n|$pv"]}" ] && continue
     echo "prune-pkgrel: $n $pv-$rel superseded by $pv-${newest[$n|$pv]}"
     rm --force --verbose "$f" "$f.sig"
     drops=$((drops + 1))
@@ -170,9 +170,9 @@ latest_archives() {
     [ -f "$f" ] || continue
     n=$(pkgfile_name "$f")
     v=$(pkgfile_ver "$f")
-    if [ -z "${pickver[$n]:-}" ] || [ "$(vercmp "$v" "${pickver[$n]}")" = "1" ]; then
-      pick[$n]="$f"
-      pickver[$n]="$v"
+    if [ -z "${pickver["$n"]:-}" ] || [ "$(vercmp "$v" "${pickver["$n"]}")" = "1" ]; then
+      pick["$n"]="$f"
+      pickver["$n"]="$v"
     fi
   done
   printf '%s\n' "${pick[@]}"
