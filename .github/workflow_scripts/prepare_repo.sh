@@ -64,6 +64,53 @@ prune_orphans() {
   echo "pruned $removed orphaned archive(s)"
 }
 
+prune_pkgrels() {
+  local f n v pv rel total=0 drops=0
+  local -A newest=() names=()
+  for f in x86_64/*.pkg.tar.zst; do
+    [ -f "$f" ] || continue
+    total=$((total + 1))
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    pv="${v%-*}"
+    rel="${v##*-}"
+    names["$n"]=1
+    if [ -z "${newest["$n|$pv"]:-}" ] || [ "$(vercmp "$rel" "${newest["$n|$pv"]}")" = "1" ]; then
+      newest["$n|$pv"]="$rel"
+    fi
+  done
+  if [ "${#names[@]}" -lt 5 ]; then
+    echo "prune-pkgrel: refusing, only ${#names[@]} package(s) found"
+    return 0
+  fi
+  for f in x86_64/*.pkg.tar.zst; do
+    [ -f "$f" ] || continue
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    pv="${v%-*}"
+    rel="${v##*-}"
+    [ "$rel" = "${newest["$n|$pv"]}" ] || drops=$((drops + 1))
+  done
+  if [ $((drops * 2)) -gt "$total" ]; then
+    echo "prune-pkgrel: refusing, $drops of $total archive(s) look superseded"
+    return 0
+  fi
+  [ "$drops" -gt 0 ] || { echo "prune-pkgrel: nothing superseded"; return 0; }
+  drops=0
+  for f in x86_64/*.pkg.tar.zst; do
+    [ -f "$f" ] || continue
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    pv="${v%-*}"
+    rel="${v##*-}"
+    [ "$rel" = "${newest["$n|$pv"]}" ] && continue
+    echo "prune-pkgrel: $n $pv-$rel superseded by $pv-${newest[$n|$pv]}"
+    rm --force --verbose "$f" "$f.sig"
+    drops=$((drops + 1))
+  done
+  echo "pruned $drops pkgrel-superseded archive(s)"
+}
+
 commit_push() {
   git diff --cached --quiet && { echo "No changes to commit on $2."; return; }
   git commit --message="$1"
@@ -73,7 +120,7 @@ commit_push() {
 publish_pages() {
   rm --force "x86_64/${repo}".db* "x86_64/${repo}".files*
   repo-add --sign --key "$keyid" "x86_64/${repo}.db.tar.zst" \
-    $(printf '%s\n' x86_64/*.pkg.tar.zst | sort --version-sort)
+    $(latest_archives x86_64/*.pkg.tar.zst)
   gpg --batch --armor --export "$keyid" > key.asc
   git add --all
   commit_push "Update repository [skip ci]" gh-pages
@@ -89,13 +136,14 @@ pkgrel_of_file() {
 
 sync_pkgbuilds() {
   local p n dir cur new
+  [ -d artifacts ] || return 0
   while IFS= read -r p; do
     n=$(pkgname_of "$(dirname "$p")")
     dir=$(find_pkg_dir "$n") || { echo "skip: no local dir for $n" >&2; continue; }
     cur="$(pkgver_of_file "$dir/PKGBUILD")-$(pkgrel_of_file "$dir/PKGBUILD")"
     new="$(pkgver_of_file "$p")-$(pkgrel_of_file "$p")"
     [ "$cur" = "$new" ] && continue
-    if [ "$new" != "$(printf '%s\n%s\n' "$cur" "$new" | sort --version-sort | tail -1)" ]; then
+    if [ "$(vercmp "$new" "$cur")" = "-1" ]; then
       echo "skip: built $n ($new) is older than local ($cur)" >&2
       continue
     fi
@@ -108,6 +156,26 @@ sync_pkgbuilds() {
 
 pkgfile_name() {
   basename "$1" | sed --regexp-extended 's/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.zst$//'
+}
+
+pkgfile_ver() {
+  basename "$1" | sed --regexp-extended --quiet 's/\.pkg\.tar\.zst$//p' \
+    | sed --regexp-extended "s/^$(pkgfile_name "$1")-//; s/-(x86_64|any)\$//"
+}
+
+latest_archives() {
+  local f n v
+  local -A pick=() pickver=()
+  for f in "$@"; do
+    [ -f "$f" ] || continue
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    if [ -z "${pickver["$n"]:-}" ] || [ "$(vercmp "$v" "${pickver["$n"]}")" = "1" ]; then
+      pick["$n"]="$f"
+      pickver["$n"]="$v"
+    fi
+  done
+  printf '%s\n' "${pick[@]}"
 }
 
 emit_installed() {
@@ -123,15 +191,9 @@ emit_installed() {
 
 gen_installed_files() {
   : > installed_files.txt
-  local pkg n latest f
-  for pkg in gh-pages/x86_64/*.pkg.tar.zst; do
-    [ -f "$pkg" ] || continue
+  local pkg n
+  for pkg in $(latest_archives gh-pages/x86_64/*.pkg.tar.zst | sort); do
     n=$(pkgfile_name "$pkg")
-    latest=$(for f in gh-pages/x86_64/*.pkg.tar.zst; do
-      [ -f "$f" ] || continue
-      [ "$(pkgfile_name "$f")" = "$n" ] && echo "$f"
-    done | sort --version-sort | tail --lines=1)
-    [ "$latest" = "$pkg" ] || continue
     emit_installed "$n" "$pkg"
   done
 }
@@ -150,6 +212,7 @@ prepare_repo() {
   step clone_pages
   step sync_pkgs
   step prune_orphans
+  step prune_pkgrels
   step publish_pages
   cd "$ws"
   step sync_pkgbuilds

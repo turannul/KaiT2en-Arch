@@ -10,7 +10,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 9 * * *'
+    - cron: '0 9,21 * * *'
   workflow_dispatch:
     inputs:
       target:
@@ -38,37 +38,37 @@ on:
           - kait2en-wireless-runtime-pm-t2
           - netmuxd-git
           - react-drm
-          - sunshine-t2-sidecar
           - t2-airshare
           - t2-ave
-          - t2bce_audio-alsa-ucm-conf
-          - t2bce_audio-dsp
-          - t2bce-dkms
-          - t2bdrm-dkms
           - t2-debug
           - t2-dgpu-control
           - t2-drop
           - t2-fan-control
           - t2-force-click
-          - t2gmux-dkms
           - t2-hybrid-gpu-control
           - t2-journal
-          - t2mfi_fastcharge-dkms
+          - t2-kbd-backlight
           - t2-power-explorer
           - t2-power-tune
-          - t2_precision_trackpad-dkms
-          - t2sbs-dkms
-          - t2sep-dkms
           - t2-services
           - t2-smc-control
+          - t2-touchbar
+          - t2-touchid
+          - t2-zone-power
+          - t2_precision_trackpad-dkms
+          - t2_trackpad_actuator-dkms
+          - t2bce-dkms
+          - t2bce_audio-alsa-ucm-conf
+          - t2bce_audio-dsp
+          - t2bdrm-dkms
+          - t2gmux-dkms
+          - t2mfi_fastcharge-dkms
+          - t2sbs-dkms
+          - t2sep-dkms
           - t2smc-dkms
           - t2smp-dkms
           - t2thunderbolt-dkms
-          - t2-touchbar
           - t2touchbar-dkms
-          - t2-touchid
-          - t2_trackpad_actuator-dkms
-          - t2-zone-power
 
 concurrency:
   group: pipeline-${{ github.ref }}
@@ -88,6 +88,7 @@ jobs:
     container: archlinux:base
     outputs:
       packages: ${{ steps.target-matrix.outputs.packages || steps.set-matrix.outputs.packages }}
+      removed: ${{ steps.target-matrix.outputs.removed || steps.set-matrix.outputs.removed }}
     steps:
       - name: Setup
         run: pacman --sync --refresh --noconfirm --needed git
@@ -147,7 +148,7 @@ jobs:
 
   prepare_repo:
     needs: [detect, build]
-    if: "!cancelled() && needs.detect.outputs.packages != '[]' && github.event_name != 'pull_request'"
+    if: "!cancelled() && !failure() && (needs.detect.outputs.packages != '[]' || needs.detect.outputs.removed != '[]') && github.event_name != 'pull_request'"
     runs-on: ubuntu-26.04
     container: archlinux:base
     permissions:
@@ -165,6 +166,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download
+        if: needs.detect.outputs.packages != '[]'
         uses: actions/download-artifact@v7
         with:
           path: artifacts

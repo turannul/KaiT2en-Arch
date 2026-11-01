@@ -44,5 +44,6 @@ package() {
     install -D -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/t2-drop.service" "$pkgdir/usr/lib/systemd/system/t2-drop.service"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/dbus/org.t2drop.conf" "$pkgdir/usr/share/dbus-1/system.d/org.t2drop.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/dbus/org.t2drop.service" "$pkgdir/usr/share/dbus-1/system-services/org.t2drop.service"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/networkmanager/90-t2-drop-awdl.conf" "$pkgdir/etc/NetworkManager/conf.d/90-t2-drop-awdl.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

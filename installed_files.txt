@@ -82,13 +82,13 @@ usr/lib/modules/7.2.11-arch1-1/updates/hci_uart.ko.zst
 usr/share/licenses/kait2en-wireless-runtime-pm/LICENSE
 
 # kait2en-wireless-runtime-pm-cachy
-usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac-bca.ko.zst
-usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac-cyw.ko.zst
-usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac-wcc.ko.zst
-usr/lib/modules/7.3.0-4-cachyos/updates/brcmfmac.ko.zst
-usr/lib/modules/7.3.0-4-cachyos/updates/btbcm.ko.zst
-usr/lib/modules/7.3.0-4-cachyos/updates/hci_bcm4377.ko.zst
-usr/lib/modules/7.3.0-4-cachyos/updates/hci_uart.ko.zst
+usr/lib/modules/7.3.1-1-cachyos/updates/brcmfmac-bca.ko.zst
+usr/lib/modules/7.3.1-1-cachyos/updates/brcmfmac-cyw.ko.zst
+usr/lib/modules/7.3.1-1-cachyos/updates/brcmfmac-wcc.ko.zst
+usr/lib/modules/7.3.1-1-cachyos/updates/brcmfmac.ko.zst
+usr/lib/modules/7.3.1-1-cachyos/updates/btbcm.ko.zst
+usr/lib/modules/7.3.1-1-cachyos/updates/hci_bcm4377.ko.zst
+usr/lib/modules/7.3.1-1-cachyos/updates/hci_uart.ko.zst
 usr/share/licenses/kait2en-wireless-runtime-pm-cachy/LICENSE
 
 # kait2en-wireless-runtime-pm-t2
@@ -2702,9 +2702,13 @@ usr/share/sunshine/web/sunshine-esm-stats.json
 # t2-airshare
 usr/bin/t2-airshare
 usr/bin/t2airshare
+usr/lib/systemd/system/t2-quickshare-hotspot.service
 usr/lib/systemd/user/t2-airshare.service
+usr/libexec/t2-quickshare-hotspot
 usr/share/applications/org.t2airshare.gtk.desktop
 usr/share/applications/org.t2airshare.send.desktop
+usr/share/dbus-1/system-services/org.t2airshare.QuickShareHotspot.service
+usr/share/dbus-1/system.d/org.t2airshare.QuickShareHotspot.conf
 usr/share/icons/hicolor/scalable/apps/org.t2airshare.gtk.svg
 usr/share/kio/servicemenus/t2-airshare-send.desktop
 usr/share/licenses/t2-airshare/LICENSE
@@ -2754,6 +2758,7 @@ usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.policy
 usr/share/polkit-1/actions/org.t2dgpucontrol.gtk.status.policy
 
 # t2-drop
+etc/NetworkManager/conf.d/90-t2-drop-awdl.conf
 usr/bin/t2drop
 usr/lib/systemd/system/t2-drop.service
 usr/share/dbus-1/system-services/org.t2drop.service
@@ -2820,6 +2825,7 @@ usr/share/licenses/t2-services/LICENSE
 
 # t2-smc-control
 usr/bin/t2-smc-control
+usr/lib/systemd/system/t2-smc-gaugingd.service
 usr/share/applications/org.t2smccontrol.gtk.desktop
 usr/share/icons/hicolor/scalable/apps/org.t2smccontrol.gtk.svg
 usr/share/licenses/t2-smc-control/LICENSE
