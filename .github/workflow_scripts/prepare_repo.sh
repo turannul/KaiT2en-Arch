@@ -64,6 +64,53 @@ prune_orphans() {
   echo "pruned $removed orphaned archive(s)"
 }
 
+prune_pkgrels() {
+  local f n v pv rel total=0 drops=0
+  local -A newest=() names=()
+  for f in x86_64/*.pkg.tar.zst; do
+    [ -f "$f" ] || continue
+    total=$((total + 1))
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    pv="${v%-*}"
+    rel="${v##*-}"
+    names[$n]=1
+    if [ -z "${newest[$n|$pv]:-}" ] || [ "$(vercmp "$rel" "${newest[$n|$pv]}")" = "1" ]; then
+      newest[$n|$pv]="$rel"
+    fi
+  done
+  if [ "${#names[@]}" -lt 5 ]; then
+    echo "prune-pkgrel: refusing, only ${#names[@]} package(s) found"
+    return 0
+  fi
+  for f in x86_64/*.pkg.tar.zst; do
+    [ -f "$f" ] || continue
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    pv="${v%-*}"
+    rel="${v##*-}"
+    [ "$rel" = "${newest[$n|$pv]}" ] || drops=$((drops + 1))
+  done
+  if [ $((drops * 2)) -gt "$total" ]; then
+    echo "prune-pkgrel: refusing, $drops of $total archive(s) look superseded"
+    return 0
+  fi
+  [ "$drops" -gt 0 ] || { echo "prune-pkgrel: nothing superseded"; return 0; }
+  drops=0
+  for f in x86_64/*.pkg.tar.zst; do
+    [ -f "$f" ] || continue
+    n=$(pkgfile_name "$f")
+    v=$(pkgfile_ver "$f")
+    pv="${v%-*}"
+    rel="${v##*-}"
+    [ "$rel" = "${newest[$n|$pv]}" ] && continue
+    echo "prune-pkgrel: $n $pv-$rel superseded by $pv-${newest[$n|$pv]}"
+    rm --force --verbose "$f" "$f.sig"
+    drops=$((drops + 1))
+  done
+  echo "pruned $drops pkgrel-superseded archive(s)"
+}
+
 commit_push() {
   git diff --cached --quiet && { echo "No changes to commit on $2."; return; }
   git commit --message="$1"
@@ -89,6 +136,7 @@ pkgrel_of_file() {
 
 sync_pkgbuilds() {
   local p n dir cur new
+  [ -d artifacts ] || return 0
   while IFS= read -r p; do
     n=$(pkgname_of "$(dirname "$p")")
     dir=$(find_pkg_dir "$n") || { echo "skip: no local dir for $n" >&2; continue; }
@@ -164,6 +212,7 @@ prepare_repo() {
   step clone_pages
   step sync_pkgs
   step prune_orphans
+  step prune_pkgrels
   step publish_pages
   cd "$ws"
   step sync_pkgbuilds

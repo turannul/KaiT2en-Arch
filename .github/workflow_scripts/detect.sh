@@ -23,6 +23,12 @@ emit_matrix() {
   out "packages=[$(awk 'NF { if (n++) printf ","; a=$1; gsub("/", "-", a); printf "{\"dir\":\"%s\",\"artifact\":\"pkg-%s\"}", $1, a }' <<<"$1")]"
 }
 
+emit_removed() {
+  echo "Packages removed:"
+  echo "${1:-none}"
+  out "removed=[$(awk 'NF { if (n++) printf ","; printf "\"%s\"", $1 }' <<<"$1")]"
+}
+
 trim() {
   local s="$1"
   s="${s#"${s%%[![:space:]]*}"}"
@@ -156,6 +162,23 @@ changed_pkgs() {
   done | sort --unique
 }
 
+removed_pkgs() {
+  local ref="$1"
+  if [ -z "$ref" ] || [ "$ref" = "0000000000000000000000000000000000000000" ] || ! git rev-parse --verify --quiet "$ref" >/dev/null; then
+    if git rev-parse --verify --quiet HEAD~1 >/dev/null; then
+      ref="HEAD~1"
+    else
+      ref=$(git hash-object -t tree /dev/null)
+    fi
+  fi
+
+  echo "Comparing removals against ref: $ref" >&2
+  git diff --name-only --diff-filter=D "$ref" HEAD | while read -r f; do
+    [ -z "$f" ] && continue
+    [ "$(basename "$f")" = "PKGBUILD" ] && basename "$(dirname "$f")"
+  done | sort --unique
+}
+
 detect_changed() {
   trust_git_dirs
   local ref
@@ -169,16 +192,20 @@ detect_changed() {
     fi
   fi
   emit_matrix "$(changed_pkgs "$ref")"
+  emit_removed "$(removed_pkgs "$ref")"
 }
 
 detect_push() {
   trust_git_dirs
-  emit_matrix "$(changed_pkgs "${EVENT_BEFORE:-}")"
+  local ref="${EVENT_BEFORE:-}"
+  emit_matrix "$(changed_pkgs "$ref")"
+  emit_removed "$(removed_pkgs "$ref")"
 }
 
 detect_outdated() {
   step setup_upstream_cache
   emit_matrix "$(outdated_pkgs)"
+  emit_removed ""
 }
 
 detect_manual() {
@@ -195,6 +222,7 @@ detect_manual() {
 
   if [ "$t" = "all" ]; then
     emit_matrix "$(all_pkgs)"
+    emit_removed ""
     return
   fi
 
@@ -203,6 +231,7 @@ detect_manual() {
     [ -z "$p" ] && continue
     if [ "$p" = "all" ]; then
       emit_matrix "$(all_pkgs)"
+      emit_removed ""
       return
     fi
     if d=$(find_pkg_dir "$p"); then
@@ -218,9 +247,11 @@ detect_manual() {
   fi
   if [ -z "$valid" ]; then
     out "packages=[]"
+    emit_removed ""
     return
   fi
   emit_matrix "$(printf '%s\n' "$valid" | sort --unique)"
+  emit_removed ""
 }
 
 main() {
