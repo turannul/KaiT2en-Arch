@@ -135,21 +135,32 @@ pkgrel_of_file() {
 }
 
 sync_pkgbuilds() {
-  local p n dir cur new
+  local p n dir cur new art bver brel
   [ -d artifacts ] || return 0
   while IFS= read -r p; do
     n=$(pkgname_of "$(dirname "$p")")
     dir=$(find_pkg_dir "$n") || { echo "skip: no local dir for $n" >&2; continue; }
     cur="$(pkgver_of_file "$dir/PKGBUILD")-$(pkgrel_of_file "$dir/PKGBUILD")"
     new="$(pkgver_of_file "$p")-$(pkgrel_of_file "$p")"
-    [ "$cur" = "$new" ] && continue
-    if [ "$(vercmp "$new" "$cur")" = "-1" ]; then
-      echo "skip: built $n ($new) is older than local ($cur)" >&2
-      continue
+    if [ "$cur" != "$new" ]; then
+      if [ "$(vercmp "$new" "$cur")" = "-1" ]; then
+        echo "skip: built $n ($new) is older than local ($cur)" >&2
+        continue
+      fi
+      echo "chore: updated $dir/PKGBUILD..." >&2
+      cp --force "$p" "$dir/PKGBUILD"
+      updated_pkgs="${updated_pkgs:+$updated_pkgs }$n"
     fi
-    echo "chore: updated $dir/PKGBUILD..." >&2
-    cp --force "$p" "$dir/PKGBUILD"
-    updated_pkgs="${updated_pkgs:+$updated_pkgs }$n"
+    art=$(find artifacts -path "*${n}*" -name '*.pkg.tar.zst' | head -n 1)
+    if [ -n "$art" ] && [ -f "$art" ]; then
+      bver=$(tar --zstd -xOf "$art" .PKGINFO 2>/dev/null | sed -n 's/^pkgver = //p' | head -n 1)
+      if [ -n "$bver" ]; then
+        brel="${bver##*-}"
+        bver="${bver%-*}"
+        sed -i "s/^pkgver=.*/pkgver=$bver/" "$dir/PKGBUILD"
+        sed -i "s/^pkgrel=.*/pkgrel=$brel/" "$dir/PKGBUILD"
+      fi
+    fi
   done < <(find artifacts -name PKGBUILD)
   rm --recursive --force artifacts
 }
