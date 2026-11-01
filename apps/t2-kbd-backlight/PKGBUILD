@@ -33,8 +33,10 @@ build() {
 }
 
 package() {
-    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" install DESTDIR="$pkgdir" PREFIX=/usr
-    sed -i 's|/usr/local/bin|/usr/bin|g' \
-        "$pkgdir/usr/lib/systemd/system/t2-kbd-backlight.service"
+    install -d -m0755 "$pkgdir/usr/bin" "$pkgdir/usr/lib/systemd/system" "$pkgdir/etc/kait2en"
+    install -m0755 "$srcdir/KaiT2en-Fedora/apps/$pkgname/target/release/t2-kbd-backlight" "$pkgdir/usr/bin/t2-kbd-backlight"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/t2-kbd-backlight.service" "$pkgdir/usr/lib/systemd/system/t2-kbd-backlight.service"
+    [ -e "$pkgdir/etc/kait2en/kbd-backlight.toml" ] || install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/config/kbd-backlight.toml" "$pkgdir/etc/kait2en/kbd-backlight.toml"
+    sed -i 's|/usr/local/bin|/usr/bin|g' "$pkgdir/usr/lib/systemd/system/t2-kbd-backlight.service"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
