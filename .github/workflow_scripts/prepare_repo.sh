@@ -192,7 +192,7 @@ emit_installed() {
 gen_installed_files() {
   : > installed_files.txt
   local pkg n
-  for pkg in $(latest_archives gh-pages/x86_64/*.pkg.tar.zst); do
+  for pkg in $(latest_archives gh-pages/x86_64/*.pkg.tar.zst | sort); do
     n=$(pkgfile_name "$pkg")
     emit_installed "$n" "$pkg"
   done
