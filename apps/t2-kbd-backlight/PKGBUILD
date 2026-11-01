@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-kbd-backlight
-pkgver=0.1.0.r1.c2391f1
+pkgver=0.1.0.r1.fb187c0
 pkgrel=1
 pkgdesc="Keyboard backlight idle timeout for Apple T2 MacBooks"
 arch=('x86_64')
