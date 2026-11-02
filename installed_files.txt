@@ -51,7 +51,7 @@ usr/share/pixmaps/kait2en-gdm-logo.png
 
 # kait2en-gpu-runtime-pm
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
-usr/lib/modules/7.2.11-arch1-1/updates/amdgpu.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/amdgpu.ko.zst
 usr/share/licenses/kait2en-gpu-runtime-pm/LICENSE
 
 # kait2en-gpu-runtime-pm-t2
@@ -72,13 +72,13 @@ usr/share/plymouth/themes/kait2en/progress_bar.png
 usr/share/plymouth/themes/kait2en/progress_box.png
 
 # kait2en-wireless-runtime-pm
-usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac-bca.ko.zst
-usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac-cyw.ko.zst
-usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac-wcc.ko.zst
-usr/lib/modules/7.2.11-arch1-1/updates/brcmfmac.ko.zst
-usr/lib/modules/7.2.11-arch1-1/updates/btbcm.ko.zst
-usr/lib/modules/7.2.11-arch1-1/updates/hci_bcm4377.ko.zst
-usr/lib/modules/7.2.11-arch1-1/updates/hci_uart.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac-bca.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac-cyw.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac-wcc.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/btbcm.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/hci_bcm4377.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/hci_uart.ko.zst
 usr/share/licenses/kait2en-wireless-runtime-pm/LICENSE
 
 # kait2en-wireless-runtime-pm-cachy
