@@ -1,1 +1,0 @@
-Everything inside this directory copied from: https://gitlab.com/chaotic-aur/pkgbuilds/-/tree/main/networkmanager-iwd
