@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-drop
-pkgver=0.1.0.r6.dc43189
+pkgver=0.1.0.r7.3091b9d
 pkgrel=1
 pkgdesc="AirDrop to Apple devices over AWDL, the system service of T2 AirShare"
 arch=('x86_64')
