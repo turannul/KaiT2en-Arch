@@ -1,3 +1,17 @@
+_helper=/usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-helper
+_efi_image=/usr/lib/t2-hybrid-gpu-control/t2-gpu-preboot.efi
+_esp=/boot/efi
+_efi_target=$_esp/EFI/kait2en/t2-gpu-preboot.efi
+
+_install_preboot() {
+    [ -f "$_efi_image" ] || return 0
+    [ -d "$_esp" ] || return 0
+    mkdir -p "$_esp/EFI/kait2en" || return 0
+    # The ESP is vfat, it takes a plain copy and no permissions.
+    cp -f "$_efi_image" "$_efi_target" || return 0
+    [ -x "$_helper" ] && "$_helper" sync-preboot || true
+}
+
 post_install() {
     [ -d /run/systemd/system ] && systemctl stop kait2en-dgpu-off.service kait2en-dgpu-suspend.service kait2en-amdgpu-profile.service kait2en-amdgpu-profile-resume.service || true
     systemctl disable kait2en-dgpu-off.service kait2en-dgpu-suspend.service kait2en-amdgpu-profile.service kait2en-amdgpu-profile-resume.service || true
@@ -6,10 +20,15 @@ post_install() {
     if command -v flatpak >/dev/null 2>&1; then
         flatpak override --system --env=GSK_RENDERER=ngl
     fi
+    _install_preboot
 }
 
 post_upgrade() {
     post_install
+}
+
+pre_remove() {
+    [ -x "$_helper" ] && "$_helper" remove-preboot || true
 }
 
 post_remove() {
@@ -17,4 +36,3 @@ post_remove() {
         sed -i '/^GSK_RENDERER=ngl$/d' /var/lib/flatpak/overrides/global || true
     fi
 }
-

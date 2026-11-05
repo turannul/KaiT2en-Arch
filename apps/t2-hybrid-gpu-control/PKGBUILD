@@ -2,14 +2,14 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-hybrid-gpu-control
-pkgver=0.1.0.r18.c2391f1
-pkgrel=1
+pkgver=0.1.0.r19.873ac3d
+pkgrel=2
 pkgdesc="Configure hybrid graphics on MacBookPro15,1/16,1/16,4'"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')
-depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 'kait2en-gpu-runtime-pm')
-makedepends=('cargo' 'git')
+depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 'kait2en-gpu-runtime-pm' 'efibootmgr')
+makedepends=('cargo' 'git' 'rust-src')
 provides=("$pkgname-git")
 conflicts=('t2-dgpu-control' "$pkgname-git")
 replaces=("$pkgname-git")
@@ -31,11 +31,22 @@ prepare() {
         "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.policy" \
         "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.status.policy"
     sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/main.rs"
+    sed -i 's|const CHAINLOAD: \[&CStr16; 2\]|const CHAINLOAD: [\&CStr16; 3]|' \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/preboot/src/main.rs"
+    sed -i 's|cstr16!("\\\\EFI\\\\fedora\\\\shimx64.efi")|cstr16!("\\\\EFI\\\\grub\\\\grubx64.efi")|' \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/preboot/src/main.rs"
+    sed -i 's|cstr16!("\\\\EFI\\\\fedora\\\\grubx64.efi")|cstr16!("\\\\EFI\\\\arch\\\\grubx64.efi"),\n    cstr16!("\\\\EFI\\\\systemd\\\\systemd-bootx64.efi")|' \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/preboot/src/main.rs"
     cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+    cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/preboot/Cargo.toml"
 }
 
 build() {
-    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" build
+    local _app="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+    cargo build --release --locked --manifest-path "$_app/Cargo.toml" --target-dir "$_app/target"
+    RUSTC_BOOTSTRAP=1 cargo build --release --locked -Z build-std=core,alloc,compiler_builtins \
+        --manifest-path "$_app/preboot/Cargo.toml" --target x86_64-unknown-uefi \
+        --target-dir "$_app/preboot/target"
 }
 
 package() {
@@ -48,5 +59,6 @@ package() {
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.gtk.policy"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/org.t2hybridgpucontrol.status.policy" "$pkgdir/usr/share/polkit-1/actions/org.t2hybridgpucontrol.gtk.status.policy"
     install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/contrib/90-kait2en-gsk-renderer.conf" "$pkgdir/etc/environment.d/90-kait2en-gsk-renderer.conf"
+    install -m0644 "$srcdir/KaiT2en-Fedora/apps/$pkgname/preboot/target/x86_64-unknown-uefi/release/t2-gpu-preboot.efi" "$pkgdir/usr/lib/t2-hybrid-gpu-control/t2-gpu-preboot.efi"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
