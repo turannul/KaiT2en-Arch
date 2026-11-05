@@ -2690,6 +2690,7 @@ usr/share/licenses/t2-force-click/LICENSE
 # t2-hybrid-gpu-control
 etc/environment.d/90-kait2en-gsk-renderer.conf
 usr/bin/t2-hybrid-gpu-control
+usr/lib/t2-hybrid-gpu-control/t2-gpu-preboot.efi
 usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-helper
 usr/lib/t2-hybrid-gpu-control/t2-hybrid-gpu-control-status
 usr/share/applications/org.t2hybridgpucontrol.gtk.desktop
