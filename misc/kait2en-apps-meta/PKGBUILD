@@ -13,6 +13,7 @@ depends=('t2-ave' 't2-fan-control' 't2-power-tune' 't2-touchid')
 optdepends=(
     'react-drm: Touch Bar control center'
     't2-airshare: Share files with Android phones over Quick Share and with Apple devices over AirDrop'
+    't2-autobrightness: Automatic display brightness for T2 Intel Macs that follows the macOS behaviour'
     't2-cpu-control: CPU power limit and thermal telemetry controller'
     't2-debug: Live Apple T2 (bridgeOS) debugger over the Instruments dtservicehub'
     't2-dgpu-control: Discrete GPU power and boot-GPU selector for dual-GPU Macs'

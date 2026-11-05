@@ -39,6 +39,7 @@ on:
           - netmuxd-git
           - react-drm
           - t2-airshare
+          - t2-autobrightness
           - t2-ave
           - t2-debug
           - t2-dgpu-control
