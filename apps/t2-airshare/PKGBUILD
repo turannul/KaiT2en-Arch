@@ -3,7 +3,7 @@
 
 pkgname=t2-airshare
 pkgver=0.1.0.r7.901f1d7
-pkgrel=1
+pkgrel=2
 pkgdesc="Share files with Android phones over Quick Share and with Apple devices over AirDrop"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -41,6 +41,7 @@ prepare() {
         sed -i 's|/usr/local/bin|/usr/bin|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/$_f"
     done
     sed -i 's|/usr/local/share/kait2en|/usr/share/kait2en|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/bin/t2-airshare/main.rs"
+    sed -i 's|/usr/local/libexec|/usr/libexec|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/t2-quickshare-hotspot.service"
 }
 
 build() {
