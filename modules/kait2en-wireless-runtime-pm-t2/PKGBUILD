@@ -13,7 +13,7 @@ _kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit
 
 pkgname=kait2en-wireless-runtime-pm-t2
 pkgver=7.2.11_arch1_Watanare_T2_1_t2.r17.6bfd2e6
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For T2 Linux)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -51,7 +51,6 @@ prepare() {
 
     for _patch in $(cat "$_wdir/series"); do
         [[ "$_patch" = \#* || -z "$_patch" ]] && continue
-        [[ "$_patch" == "0006-wifi-brcmfmac-add-an-AWDL-interface-for-the-Apple-firmware.patch" ]] && continue
         apply_patch_if_needed "$srcdir/linux" "$_wdir/$_patch" || return 1
     done
 }
