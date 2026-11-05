@@ -2619,6 +2619,13 @@ usr/share/licenses/t2-airshare/THIRD-PARTY-NOTICES.md
 usr/share/nautilus-python/extensions/t2-airshare-send.py
 usr/share/nemo/actions/t2-airshare-send.nemo_action
 
+# t2-autobrightness
+usr/bin/t2-autobrightness
+usr/lib/systemd/user/kait2en-t2-autobrightness.service
+usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/extension.js
+usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/metadata.json
+usr/share/licenses/t2-autobrightness/LICENSE
+
 # t2-ave
 usr/bin/t2remote
 usr/lib/systemd/system/kait2en-t2-remote.service

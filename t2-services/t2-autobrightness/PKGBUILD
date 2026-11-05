@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-autobrightness
-pkgver=0
-pkgrel=0
+pkgver=0.1.0.r1.4b23e80
+pkgrel=1
 pkgdesc="Automatic display brightness for T2 Intel Macs that follows the macOS behaviour"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
