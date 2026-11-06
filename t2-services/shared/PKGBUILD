@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-services
-pkgver=0.1.0.r12.dd0b105
+pkgver=r8.804156b
 pkgrel=1
 pkgdesc="Shared network and suspend integration"
 arch=('any')
