@@ -3,7 +3,7 @@
 
 pkgname=t2-cpu-control
 pkgver=0.02.r1.1fb1080
-pkgrel=1
+pkgrel=2
 pkgdesc="CPU power limit and thermal telemetry controller (deprecated; use t2-zone-power)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -12,7 +12,7 @@ depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'polkit' 'msr-tools' 'kai
 optdepends=()
 makedepends=('git')
 provides=("$pkgname-git")
-conflicts=('t2-zone-power' "$pkgname-git")
+conflicts=('t2-zone-power' "$pkgname-git" 'tlp' 'tlp-git' 'tlp-pd' 'tlp-pd-git' 'tlp-rdw' 'tlp-rdw-git')
 replaces=("$pkgname-git")
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")

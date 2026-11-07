@@ -3,7 +3,7 @@
 
 pkgname=t2-smc-control
 pkgver=0.1.0.r34.626969d
-pkgrel=2
+pkgrel=3
 pkgdesc="Hardware monitor and Apple SMC sensor utility"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -11,7 +11,7 @@ license=('GPL-3.0-or-later')
 depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 't2smc-dkms')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")
-conflicts=("$pkgname-git")
+conflicts=("$pkgname-git" 'tlp' 'tlp-git' 'tlp-pd' 'tlp-pd-git' 'tlp-rdw' 'tlp-rdw-git')
 replaces=("$pkgname-git")
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
 sha256sums=('SKIP')

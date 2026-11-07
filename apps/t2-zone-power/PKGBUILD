@@ -3,7 +3,7 @@
 
 pkgname=t2-zone-power
 pkgver=0.1.0.r11.c2391f1
-pkgrel=1
+pkgrel=2
 pkgdesc="SMC power zone monitor and controller for T2 Macs"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -11,7 +11,7 @@ license=('GPL-3.0-or-later')
 depends=('gtk4' 'libadwaita' 'kait2en-assets' 't2smc-dkms')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")
-conflicts=('t2-cpu-control' "$pkgname-git")
+conflicts=('t2-cpu-control' "$pkgname-git" 'tlp' 'tlp-git' 'tlp-pd' 'tlp-pd-git' 'tlp-rdw' 'tlp-rdw-git')
 replaces=("$pkgname-git")
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")

@@ -3,7 +3,7 @@
 
 pkgname=t2-hybrid-gpu-control
 pkgver=0.1.0.r20.19adae8
-pkgrel=1
+pkgrel=2
 pkgdesc="Configure hybrid graphics on MacBookPro15,1/16,1/16,4'"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -11,7 +11,7 @@ license=('GPL-3.0-or-later')
 depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 'kait2en-gpu-runtime-pm' 'efibootmgr')
 makedepends=('cargo' 'git' 'rust-src')
 provides=("$pkgname-git")
-conflicts=('t2-dgpu-control' "$pkgname-git")
+conflicts=('t2-dgpu-control' "$pkgname-git" 'tlp' 'tlp-git' 'tlp-pd' 'tlp-pd-git' 'tlp-rdw' 'tlp-rdw-git')
 replaces=("$pkgname-git")
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")

@@ -3,7 +3,7 @@
 
 pkgname=t2-power-tune
 pkgver=0.02.r10.bb7f9c6
-pkgrel=1
+pkgrel=2
 pkgdesc="PCIe ASPM and system power optimization utility"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -11,7 +11,7 @@ license=('GPL-3.0-or-later')
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'pciutils' 'polkit' 'systemd' 'kait2en-assets')
 makedepends=('git')
 provides=("$pkgname-git")
-conflicts=("$pkgname-git")
+conflicts=("$pkgname-git" 'tlp' 'tlp-git' 'tlp-pd' 'tlp-pd-git' 'tlp-rdw' 'tlp-rdw-git')
 replaces=("$pkgname-git")
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
