@@ -5,3 +5,9 @@ post_install() {
 post_upgrade() {
     post_install
 }
+
+post_remove() {
+    systemctl disable --now kait2en-power-tune.service
+    rm -f /etc/systemd/system/kait2en-power-tune.service /run/t2-power-tune/items.json
+    systemctl daemon-reload
+}
