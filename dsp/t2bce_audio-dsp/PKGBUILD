@@ -6,7 +6,7 @@ pkgver=r13.ec30bbb
 pkgrel=1
 pkgdesc="Model-specific host-side audio DSP"
 arch=('any')
-url="https://github.com/kaiT2en/KaiT2en-Fedora"
+url="https://kait2en.org/documentation.html#audio-dsp"
 license=('GPL-3.0-or-later')
 groups=('kait2en-audio')
 depends=('t2bce_audio' 't2bce_audio-alsa-ucm-conf' 'pipewire' 'pipewire-audio' 'pipewire-pulse' 'wireplumber>=0.5.8' 'lsp-plugins-lv2' 'python' 'bankstown')
