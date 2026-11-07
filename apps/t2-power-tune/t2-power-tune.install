@@ -1,4 +1,9 @@
+_warn() {
+    echo -e "\e[31mThis application may break functionality of your Mac. Use with caution!\e[0m"
+}
+
 post_install() {
+    _warn
     rm -f /usr/lib/t2-power-tune/t2-power-tune-cstates /usr/local/libexec/t2-power-tune-cstates
 }
 
