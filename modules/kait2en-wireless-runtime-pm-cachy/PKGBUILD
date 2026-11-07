@@ -12,7 +12,7 @@ _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3;
 [[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm-cachy
-pkgver=7.3.1_1_cachyos.r19.76bfd1f
+pkgver=7.3.1_1_cachyos.r20.bb78c3f
 pkgrel=1
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For linux-cachy)."
 arch=('x86_64')
