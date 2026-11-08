@@ -3027,6 +3027,7 @@ usr/src/t2thunderbolt-0.6/t2thunderbolt.c
 # t2touchbar-dkms
 etc/mkinitcpio.conf.d/00-kait2en-t2touchbar.conf
 usr/lib/modprobe.d/00-kait2en-t2touchbar.conf
+usr/lib/modprobe.d/10-function-keys-row.conf
 usr/share/licenses/t2touchbar-dkms/LICENSE
 usr/src/t2touchbar-0.1/.gitignore
 usr/src/t2touchbar-0.1/Makefile
