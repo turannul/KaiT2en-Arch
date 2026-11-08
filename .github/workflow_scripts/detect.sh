@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 install_tools() {
-    pacman --sync --noconfirm --needed git nodejs
+  pacman --sync --noconfirm --needed git nodejs
 }
 
 setup_environment() {
-    step setup_repos
-    step install_tools
-    set -e
-    step create_user
+  step setup_repos
+  step install_tools
+  set -e
+  step create_user
 }
 
 out() {
@@ -62,33 +61,26 @@ run_makepkg_nobuild() {
 check_pkgver() {
   local d="$1" local_ver upstream_ver local_rel upstream_rel repo_rel
   echo "== checking $d =="
-
   local_ver=$(pkgver_of "$d")
   local_rel=$(pkgrel_of "$d")
   run_makepkg_nobuild "$d" && upstream_ver=$(pkgver_of "$d") && upstream_rel=$(pkgrel_of "$d")
-
   local_pkgrel=$(pkgrel_from_pkgbuild "$d")
   local pkgname
   pkgname=$(pkgname_of "$d")
   repo_rel=$(repo_pkgrel "$pkgname")
-
   echo "   local: ${local_ver:-?}-${local_pkgrel:-?}"
   echo "   upstream: ${upstream_ver:-?}-${upstream_rel:-?}"
   [ -n "$repo_rel" ] && echo "   repo: ${repo_rel}"
-
   [ -n "$local_ver" ] && [ -n "$upstream_ver" ] || { echo "   -> error"; return 2; }
-
   # Outdated if: upstream pkgver changed OR local pkgrel > repo pkgrel
   if [ "$local_ver" != "$upstream_ver" ]; then
     echo "   -> outdated (pkgver)"
     return 0
   fi
-
   if [ -n "$repo_rel" ] && [ -n "$local_pkgrel" ] && [ "$local_pkgrel" -gt "$repo_rel" ]; then
     echo "   -> outdated (pkgrel)"
     return 0
   fi
-
   echo "   -> up to date"
   return 1
 }
@@ -116,27 +108,39 @@ vcs_pkgs() {
 }
 
 check_one() {
-  local d="$1" rc=0 log
+  local d="$1" rc=0 log start=$SECONDS
   log=$(check_pkgver "$d" 2>&1) || rc=$?
-  printf '%s\n    %ss\n' "$log" "$SECONDS" >&2
+  printf '%s\n    %ss\n' "$log" "$((SECONDS - start))" >&2
   echo "$rc" > "$RESULTS/${d//\//%}"
 }
 
 outdated_pkgs() {
-  local -a pkgs
+  local -a pkgs normal cachy t2
   local d rc start=$SECONDS
   mapfile -t pkgs < <(vcs_pkgs)
-
   for d in "${pkgs[@]}"; do
-    setup_repos_for_package "$d"
+    case "$(basename "$d")" in
+      *-t2) t2+=("$d") ;;
+      *-cachy) cachy+=("$d") ;;
+      *) normal+=("$d") ;;
+    esac
   done
-
   RESULTS=$(mktemp --directory)
   export RESULTS
   export -f check_one check_pkgver pkgver_of pkgrel_of pkgrel_from_pkgbuild repo_pkgrel pkgname_of run_makepkg_nobuild makepkg_as_user
-
-  printf '%s\n' "${pkgs[@]}" | xargs --no-run-if-empty -P "$(nproc)" -I{} bash -c 'check_one "$1"' _ {} || true
-
+  if ((${#normal[@]})); then
+    printf '%s\n' "${normal[@]}" | xargs --no-run-if-empty -P 4 -I{} bash -c 'check_one "$1"' _ {} || true
+  fi
+  if ((${#cachy[@]})); then
+    setup_cachy_repo
+    sync_pacman >&2
+    printf '%s\n' "${cachy[@]}" | xargs --no-run-if-empty -P 4 -I{} bash -c 'check_one "$1"' _ {} || true
+  fi
+  if ((${#t2[@]})); then
+    setup_t2_repo
+    sync_pacman >&2
+    printf '%s\n' "${t2[@]}" | xargs --no-run-if-empty -P 4 -I{} bash -c 'check_one "$1"' _ {} || true
+  fi
   for d in "${pkgs[@]}"; do
     rc=$(cat "$RESULTS/${d//\//%}" 2>/dev/null || echo 2)
     case $rc in
@@ -157,7 +161,6 @@ changed_pkgs() {
       ref=$(git hash-object -t tree /dev/null)
     fi
   fi
-
   echo "Comparing changes against ref: $ref" >&2
   git diff --name-only "$ref" HEAD | while read -r f; do
     [ -z "$f" ] && continue
@@ -176,7 +179,6 @@ removed_pkgs() {
       ref=$(git hash-object -t tree /dev/null)
     fi
   fi
-
   echo "Comparing removals against ref: $ref" >&2
   git diff --name-only --diff-filter=D "$ref" HEAD | while read -r f; do
     [ -z "$f" ] && continue
@@ -217,20 +219,17 @@ detect_manual() {
   local t p d valid="" inv=""
   t=$(trim "${TARGET:-${1:-}}")
   [ "$t" = "autodetect" ] && t=""
-
   if [ -z "$t" ]; then
     setup_environment
     echo "No target given, checking all packages for outdated versions..."
     detect_outdated
     return
   fi
-
   if [ "$t" = "all" ]; then
     emit_matrix "$(all_pkgs)"
     emit_removed ""
     return
   fi
-
   for p in ${t//,/ }; do
     p=$(trim "$p")
     [ -z "$p" ] && continue
@@ -261,7 +260,6 @@ detect_manual() {
 
 main() {
   local mode="${1:-${EVENT_NAME:-${GITHUB_EVENT_NAME:-push}}}"
-
   case "$mode" in
     workflow_dispatch|manual)
       detect_manual "${TARGET:-${2:-}}"

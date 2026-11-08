@@ -63,7 +63,7 @@ setup_repos() {
 
 setup_repos_for_package() {
   local pkg refresh=0
-  pkg=$(pkgname_of "$1")
+  pkg=$(basename "$1")
 
   if [[ "$pkg" == *-t2 ]]; then
     setup_t2_repo
