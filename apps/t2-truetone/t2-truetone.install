@@ -1,0 +1,13 @@
+post_install() {
+    [ -d /run/udev ] && udevadm control --reload && udevadm trigger -c add -s hidraw
+    echo "==> [t2-truetone] The background service stays off until you turn it on."
+    echo "==> [t2-truetone] Open 'T2 TrueTone' and enable True Tone, evening mode or auto brightness."
+}
+
+post_upgrade() {
+    [ -d /run/udev ] && udevadm control --reload && udevadm trigger -c add -s hidraw
+}
+
+pre_remove() {
+    [ -d /run/udev ] && udevadm control --reload
+}

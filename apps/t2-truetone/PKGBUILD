@@ -1,0 +1,54 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+pkgname=t2-truetone
+pkgver=0
+pkgrel=0
+pkgdesc="Ambient white point adaptation, evening mode and automatic brightness for T2 MacBooks under GNOME"
+arch=('x86_64')
+url="https://kait2en.org/documentation.html#t2-truetone"
+license=('GPL-3.0-or-later')
+depends=('gtk4' 'libadwaita' 'gnome-shell')
+makedepends=('cargo' 'git')
+provides=("$pkgname-git")
+conflicts=("$pkgname-git" 't2-autobrightness')
+replaces=("$pkgname-git" 't2-autobrightness')
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  local _version _revision _commit _p="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+  _version=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_p/Cargo.toml")
+  _revision=$(git -C "$_p" rev-list --count HEAD -- .)
+  _commit=$(git -C "$_p" log -1 --format="%h" -- .)
+  printf '%s.r%s.%s' "${_version:?}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+    sed -i 's|/usr/local/bin|/usr/bin|g' \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/org.t2truetone.gtk.desktop" \
+        "$srcdir/KaiT2en-Fedora/apps/$pkgname/systemd/t2-truetone.service"
+}
+
+build() {
+    make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" build
+}
+
+check() {
+    cargo test --release --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
+}
+
+package() {
+    local _p="$srcdir/KaiT2en-Fedora/apps/$pkgname"
+    install -D -m0755 "$_p/target/release/t2-truetone" "$pkgdir/usr/bin/t2-truetone"
+    install -D -m0755 "$_p/target/release/t2truetone" "$pkgdir/usr/bin/t2truetone"
+    install -D -m0644 "$_p/org.t2truetone.gtk.desktop" "$pkgdir/usr/share/applications/org.t2truetone.gtk.desktop"
+    install -D -m0644 "$_p/assets/icons/hicolor/scalable/apps/org.t2truetone.gtk.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/org.t2truetone.gtk.svg"
+    install -D -m0644 "$_p/systemd/t2-truetone.service" "$pkgdir/usr/lib/systemd/user/t2-truetone.service"
+    install -D -m0644 "$_p/udev/70-t2-truetone.rules" "$pkgdir/usr/lib/udev/rules.d/70-t2-truetone.rules"
+    install -D -m0644 "$_p/integration/gnome-shell/kait2en-autobrightness@kait2en/extension.js" "$pkgdir/usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/extension.js"
+    install -D -m0644 "$_p/integration/gnome-shell/kait2en-autobrightness@kait2en/metadata.json" "$pkgdir/usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/metadata.json"
+    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

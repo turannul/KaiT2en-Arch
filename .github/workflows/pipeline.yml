@@ -31,6 +31,9 @@ on:
           - kait2en-gdm-theme
           - kait2en-gpu-runtime-pm
           - kait2en-gpu-runtime-pm-t2
+          - kait2en-i915-runtime-pm
+          - kait2en-i915-runtime-pm-cachy
+          - kait2en-i915-runtime-pm-t2
           - kait2en-modules-meta
           - kait2en-plymouth-theme
           - kait2en-wireless-runtime-pm
@@ -39,7 +42,6 @@ on:
           - netmuxd-git
           - react-drm
           - t2-airshare
-          - t2-autobrightness
           - t2-ave
           - t2-debug
           - t2-dgpu-control
@@ -54,6 +56,7 @@ on:
           - t2-services
           - t2-smc-control
           - t2-touchbar
+          - t2-truetone 
           - t2-touchid
           - t2-zone-power
           - t2_precision_trackpad-dkms
