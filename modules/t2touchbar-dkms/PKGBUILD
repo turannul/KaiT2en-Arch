@@ -3,15 +3,16 @@
 
 pkgname=t2touchbar-dkms
 pkgver=0.1.r17.e05e8dd
-pkgrel=1
-pkgdesc="KaiT2en TouchBar module"
+pkgrel=2
+pkgdesc="KaiT2en TouchBar & HID (keyboard) module[s]"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
-depends=('dkms')
+depends=('dkms' 't2bce' 't2smc')
 optdepends=(
-    'linux-t2-headers: build modules against the T2 kernel'
+    'linux-cachyos-headers: build modules against the Cachy kernel'
     'linux-headers: build modules against the Arch kernel'
+    'linux-t2-headers: build modules against the T2 kernel'
 )
 makedepends=('git')
 provides=('t2touchbar' 't2hid' 't2touchbar_bl' 't2touchbar_kbd')
@@ -39,6 +40,7 @@ package() {
     cp -a "$srcdir/t2touchbar/." "$pkgdir/usr/src/t2touchbar-$_module_version/"
     sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$_module_version\"/" "$pkgdir/usr/src/t2touchbar-$_module_version/dkms.conf"
     install -D -m0644 "$startdir/modprobe.d/00-kait2en-t2touchbar.conf" "$pkgdir/usr/lib/modprobe.d/00-kait2en-t2touchbar.conf"
+    install -D -m0644 "$startdir/modprobe.d/10-function-keys-row.conf" "$pkgdir/usr/lib/modprobe.d/10-function-keys-row.conf"
     install -D -m0644 "$startdir/mkinitcpio.conf.d/00-kait2en-t2touchbar.conf" "$pkgdir/etc/mkinitcpio.conf.d/00-kait2en-t2touchbar.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
