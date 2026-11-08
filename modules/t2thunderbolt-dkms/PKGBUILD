@@ -10,8 +10,9 @@ url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
 depends=('dkms')
 optdepends=(
-    'linux-t2-headers: build modules against the T2 kernel'
+    'linux-cachyos-headers: build modules against the Cachy kernel'
     'linux-headers: build modules against the Arch kernel'
+    'linux-t2-headers: build modules against the T2 kernel'
 )
 makedepends=('git')
 provides=('t2thunderbolt')
