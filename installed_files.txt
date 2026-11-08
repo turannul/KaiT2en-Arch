@@ -2619,13 +2619,6 @@ usr/share/licenses/t2-airshare/THIRD-PARTY-NOTICES.md
 usr/share/nautilus-python/extensions/t2-airshare-send.py
 usr/share/nemo/actions/t2-airshare-send.nemo_action
 
-# t2-autobrightness
-usr/bin/t2-autobrightness
-usr/lib/systemd/user/kait2en-t2-autobrightness.service
-usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/extension.js
-usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/metadata.json
-usr/share/licenses/t2-autobrightness/LICENSE
-
 # t2-ave
 usr/bin/t2remote
 usr/lib/systemd/system/kait2en-t2-remote.service
@@ -2765,6 +2758,17 @@ usr/share/dbus-1/system.d/org.kait2en.TouchId.conf
 usr/share/libalpm/hooks/t2-touchid-pam.hook
 usr/share/libalpm/scripts/t2-touchid-pam
 usr/share/licenses/t2-touchid/LICENSE
+
+# t2-truetone
+usr/bin/t2-truetone
+usr/bin/t2truetone
+usr/lib/systemd/user/t2-truetone.service
+usr/lib/udev/rules.d/70-t2-truetone.rules
+usr/share/applications/org.t2truetone.gtk.desktop
+usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/extension.js
+usr/share/gnome-shell/extensions/kait2en-autobrightness@kait2en/metadata.json
+usr/share/icons/hicolor/scalable/apps/org.t2truetone.gtk.svg
+usr/share/licenses/t2-truetone/LICENSE
 
 # t2-zone-power
 usr/bin/t2-zonepower-gtk

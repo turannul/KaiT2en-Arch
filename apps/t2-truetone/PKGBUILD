@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-truetone
-pkgver=0
-pkgrel=0
+pkgver=0.1.0.r1.8de9546
+pkgrel=1
 pkgdesc="Ambient white point adaptation, evening mode and automatic brightness for T2 MacBooks under GNOME"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-truetone"
