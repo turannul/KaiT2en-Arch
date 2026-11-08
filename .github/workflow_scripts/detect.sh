@@ -126,6 +126,11 @@ outdated_pkgs() {
   local -a pkgs
   local d rc start=$SECONDS
   mapfile -t pkgs < <(vcs_pkgs)
+
+  for d in "${pkgs[@]}"; do
+    setup_repos_for_package "$d"
+  done
+
   RESULTS=$(mktemp --directory)
   export RESULTS
   export -f check_one check_pkgver pkgver_of pkgrel_of pkgrel_from_pkgbuild repo_pkgrel pkgname_of run_makepkg_nobuild makepkg_as_user

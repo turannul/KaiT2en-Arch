@@ -20,6 +20,7 @@ grant_pacman() {
 }
 
 run_makepkg() {
+  setup_repos_for_package "$1"
   makepkg_as_user "$1" --key "$keyid" --syncdeps --noconfirm --clean --cleanbuild --force --sign
 }
 

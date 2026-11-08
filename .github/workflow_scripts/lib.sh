@@ -8,12 +8,39 @@ step() {
 }
 
 add_repo() {
+  grep --quiet --fixed-strings "[$1]" /etc/pacman.conf && return
   printf '\n[%s]\nServer = %s\nSigLevel = Never\n' "$1" "$2" >> /etc/pacman.conf
+}
+
+add_repo_before_arch() {
+  local name="$1"
+  local server="$2"
+  local tmp
+  grep --quiet --fixed-strings "[$name]" /etc/pacman.conf && return
+
+  tmp=$(mktemp)
+
+  awk -v name="$name" -v server="$server" '
+    /^\[core\]$/ && !added {
+      print "[" name "]"
+      print "Server = " server
+      print "SigLevel = Never"
+      print ""
+      added=1
+    }
+    { print }
+  ' /etc/pacman.conf > "$tmp"
+
+  cat "$tmp" > /etc/pacman.conf
+  rm --force "$tmp"
 }
 
 setup_cachy_repo() {
   sed --in-place 's/^Architecture = .*/Architecture = x86_64 x86_64_v3/' /etc/pacman.conf
-  add_repo cachyos-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/
+  add_repo_before_arch cachyos-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/
+  add_repo_before_arch cachyos-core-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-core-v3/
+  add_repo_before_arch cachyos-extra-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-extra-v3/
+  add_repo_before_arch cachyos https://mirror.cachyos.org/repo/x86_64/cachyos/
 }
 
 setup_t2_repo() {
@@ -30,10 +57,27 @@ sync_pacman() {
 }
 
 setup_repos() {
-  setup_t2_repo
-  setup_cachy_repo
   setup_my_repo
   sync_pacman
+}
+
+setup_repos_for_package() {
+  local pkg refresh=0
+  pkg=$(pkgname_of "$1")
+
+  if [[ "$pkg" == *-t2 ]]; then
+    setup_t2_repo
+    refresh=1
+  fi
+
+  if [[ "$pkg" == *-cachy ]]; then
+    setup_cachy_repo
+    refresh=1
+  fi
+
+  if (( refresh )); then
+    sync_pacman
+  fi
 }
 
 all_pkgs() {
@@ -41,9 +85,7 @@ all_pkgs() {
 }
 
 all_pkgnames() {
-  find . -name PKGBUILD -not -path './.git/*' -not -path './gh-pages/*' -not -path './artifacts/*' -print0 \
-    | xargs --null sed --quiet 's/^[[:space:]]*pkgname=//p' | tr --delete "'\"" | tr '(), ' '\n\n\n\n\n' \
-    | sed '/^[[:space:]]*$/d' | sort --unique
+  find . -name PKGBUILD -not -path './.git/*' -not -path './gh-pages/*' -not -path './artifacts/*' -print0 | xargs --null sed --quiet 's/^[[:space:]]*pkgname=//p' | tr --delete "'\"" | tr '(), ' '\n\n\n\n\n' | sed '/^[[:space:]]*$/d' | sort --unique
 }
 
 pkgname_of() {
@@ -59,7 +101,10 @@ pkgname_of() {
 find_pkg_dir() {
   local want="$1" d
   for d in $(all_pkgs); do
-    [ "$(pkgname_of "$d")" = "$want" ] && { printf '%s' "$d"; return; }
+    if [ "$(pkgname_of "$d")" = "$want" ]; then
+      printf '%s' "$d"
+      return
+    fi
   done
   return 1
 }
@@ -88,7 +133,15 @@ import_key() {
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   case "${1:-}" in
-    setup_repos) step setup_repos ;;
-    *) echo "usage: bash lib.sh setup_repos" >&2; exit 1 ;;
+    setup_repos)
+      step setup_repos
+      ;;
+    setup_repos_for_package)
+      step setup_repos_for_package "${2:?package directory required}"
+      ;;
+    *)
+      echo "usage: bash lib.sh {setup_repos|setup_repos_for_package <package-dir>}" >&2
+      exit 1
+      ;;
   esac
 fi
