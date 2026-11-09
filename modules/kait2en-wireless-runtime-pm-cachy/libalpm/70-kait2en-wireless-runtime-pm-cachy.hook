@@ -1,0 +1,18 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = usr/lib/modules/*/updates/brcmfmac.ko.zst
+Target = usr/lib/modules/*/updates/brcmfmac-wcc.ko.zst
+Target = usr/lib/modules/*/updates/brcmfmac-cyw.ko.zst
+Target = usr/lib/modules/*/updates/brcmfmac-bca.ko.zst
+Target = usr/lib/modules/*/updates/btbcm.ko.zst
+Target = usr/lib/modules/*/updates/hci_uart.ko.zst
+Target = usr/lib/modules/*/updates/hci_bcm4377.ko.zst
+
+[Action]
+Description = Updating module dependencies for the patched wireless modules...
+When = PostTransaction
+NeedsTargets
+Exec = /usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-cachy

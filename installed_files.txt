@@ -52,12 +52,40 @@ usr/share/pixmaps/kait2en-gdm-logo.png
 # kait2en-gpu-runtime-pm
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
 usr/lib/modules/7.2.14-arch1-1/updates/amdgpu.ko.zst
+usr/share/libalpm/hooks/70-kait2en-gpu-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-gpu-runtime-pm
 usr/share/licenses/kait2en-gpu-runtime-pm/LICENSE
 
 # kait2en-gpu-runtime-pm-t2
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/amdgpu.ko.zst
+usr/share/libalpm/hooks/70-kait2en-gpu-runtime-pm-t2.hook
+usr/share/libalpm/scripts/kait2en-gpu-runtime-pm-t2
 usr/share/licenses/kait2en-gpu-runtime-pm-t2/LICENSE
+
+# kait2en-i915-runtime-pm
+usr/lib/modprobe.d/kait2en-i915-runtime-pm.conf
+usr/lib/modules/7.2.14-arch1-1/updates/drm_display_helper.ko.zst
+usr/lib/modules/7.2.14-arch1-1/updates/i915.ko.zst
+usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-i915-runtime-pm
+usr/share/licenses/kait2en-i915-runtime-pm/LICENSE
+
+# kait2en-i915-runtime-pm-cachy
+usr/lib/modprobe.d/kait2en-i915-runtime-pm.conf
+usr/lib/modules/7.3.3-1-cachyos/updates/drm_display_helper.ko.zst
+usr/lib/modules/7.3.3-1-cachyos/updates/i915.ko.zst
+usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-i915-runtime-pm
+usr/share/licenses/kait2en-i915-runtime-pm-cachy/LICENSE
+
+# kait2en-i915-runtime-pm-t2
+usr/lib/modprobe.d/kait2en-i915-runtime-pm.conf
+usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/drm_display_helper.ko.zst
+usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/i915.ko.zst
+usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-i915-runtime-pm
+usr/share/licenses/kait2en-i915-runtime-pm-t2/LICENSE
 
 # kait2en-plymouth-theme
 usr/share/licenses/kait2en-plymouth-theme/LICENSE
@@ -79,6 +107,8 @@ usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac.ko.zst
 usr/lib/modules/7.2.14-arch1-1/updates/btbcm.ko.zst
 usr/lib/modules/7.2.14-arch1-1/updates/hci_bcm4377.ko.zst
 usr/lib/modules/7.2.14-arch1-1/updates/hci_uart.ko.zst
+usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-wireless-runtime-pm
 usr/share/licenses/kait2en-wireless-runtime-pm/LICENSE
 
 # kait2en-wireless-runtime-pm-cachy
@@ -89,6 +119,8 @@ usr/lib/modules/7.3.3-1-cachyos/updates/brcmfmac.ko.zst
 usr/lib/modules/7.3.3-1-cachyos/updates/btbcm.ko.zst
 usr/lib/modules/7.3.3-1-cachyos/updates/hci_bcm4377.ko.zst
 usr/lib/modules/7.3.3-1-cachyos/updates/hci_uart.ko.zst
+usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm-cachy.hook
+usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-cachy
 usr/share/licenses/kait2en-wireless-runtime-pm-cachy/LICENSE
 
 # kait2en-wireless-runtime-pm-t2
@@ -99,6 +131,8 @@ usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/brcmfmac.ko.zst
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/btbcm.ko.zst
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/hci_bcm4377.ko.zst
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/hci_uart.ko.zst
+usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm-t2.hook
+usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-t2
 usr/share/licenses/kait2en-wireless-runtime-pm-t2/LICENSE
 
 # netmuxd-git

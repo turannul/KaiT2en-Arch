@@ -47,6 +47,10 @@ setup_t2_repo() {
   add_repo arch-mact2 https://mirror.funami.tech/arch-mact2/os/x86_64/
 }
 
+setup_chaotic_repo() {
+  add_repo chaotic-aur https://cdn-mirror.chaotic.cx/chaotic-aur/x86_64/
+}
+
 setup_my_repo() {
   add_repo turann-s-place https://turannul.github.io/KaiT2en-Arch/x86_64
 }

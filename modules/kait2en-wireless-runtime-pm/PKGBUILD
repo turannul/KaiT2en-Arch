@@ -21,7 +21,7 @@ license=('GPL-2.0-only')
 depends=("linux=$_kver")
 makedepends=('git' 'linux-headers')
 provides=('kait2en-wireless-runtime-pm')
-conflicts=('kait2en-wireless-runtime-pm-t2' 'kait2en-wireless-runtime-pm-cachy')
+conflicts=('kait2en-wireless-runtime-pm-t2' 'kait2en-wireless-runtime-pm-cachy' 'kait2en-wireless-runtime-pm-mainline')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
@@ -101,8 +101,10 @@ package() {
     for _m in "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/brcmfmac.ko.zst \
               "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/{wcc,cyw,bca}/*.ko.zst \
               "$srcdir/linux/drivers/bluetooth"/{btbcm,hci_uart,hci_bcm4377}.ko.zst; do
-        [[ -f "$_m" ]] || continue
+        [[ -f "$_m" ]] || { error "${_m##*/} was not built"; return 1; }
         install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
     done
+    install -D -m0644 "$startdir/libalpm/70-kait2en-wireless-runtime-pm.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm.hook"
+    install -D -m0755 "$startdir/libalpm/kait2en-wireless-runtime-pm" "$pkgdir/usr/share/libalpm/scripts/kait2en-wireless-runtime-pm"
     install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

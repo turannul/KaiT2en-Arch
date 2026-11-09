@@ -1,0 +1,23 @@
+#!/bin/bash
+declare -a kernels=()
+while IFS= read -r line; do
+    case "$line" in
+        usr/lib/modules/*/updates/brcmfmac.ko.zst | \
+        usr/lib/modules/*/updates/brcmfmac-wcc.ko.zst | \
+        usr/lib/modules/*/updates/brcmfmac-cyw.ko.zst | \
+        usr/lib/modules/*/updates/brcmfmac-bca.ko.zst | \
+        usr/lib/modules/*/updates/btbcm.ko.zst | \
+        usr/lib/modules/*/updates/hci_uart.ko.zst | \
+        usr/lib/modules/*/updates/hci_bcm4377.ko.zst)
+            k=${line#usr/lib/modules/}
+            k=${k%%/updates/*}
+            [[ -d "/usr/lib/modules/$k" ]] || continue
+            kernels+=("$k")
+            ;;
+    esac
+done
+((${#kernels[@]} > 0)) || exit 0
+mapfile -t kernels < <(printf '%s\n' "${kernels[@]}" | sort -u)
+for k in "${kernels[@]}"; do
+    depmod "$k"
+done

@@ -1,5 +1,5 @@
 .build/
-*.pkg.tar.zst
+*.pkg.tar.*
 src/
 pkg/
 KaiT2en-Fedora/
@@ -12,3 +12,4 @@ public/
 /bankstown-git/bankstown
 /bankstown/bankstown
 /fruitjuice/fruitjuice
+linux-*.tar.xz

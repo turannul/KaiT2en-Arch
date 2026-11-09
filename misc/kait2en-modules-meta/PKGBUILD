@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=kait2en-modules-meta
-pkgver=0.3.2
-pkgrel=1
+pkgver=0.3.3
+pkgrel=2
 pkgdesc="KaiT2en modules metapackage."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -14,6 +14,9 @@ optdepends=(
     'kait2en-gpu-runtime-pm: Patched AMDGPU with Apple GMUX runtime PM support'
     'kait2en-gpu-runtime-pm-t2: Patched AMDGPU with Apple GMUX runtime PM support built for linux-t2'
     'kait2en-gpu-runtime-pm-cachy: Patched AMDGPU with Apple GMUX runtime PM support built for linux-cachy'
+    'kait2en-i915-runtime-pm: Patched i915 with Apple eDP PSR and GMUX brightness restore'
+    'kait2en-i915-runtime-pm-t2: Patched i915 module with Apple eDP PSR support and GMUX brightness restore built for linux-t2'
+    'kait2en-i915-runtime-pm-cachy: Patched i915 module with Apple eDP PSR support and GMUX brightness restore built for linux-cachy'
     'kait2en-wireless-runtime-pm: Patched Broadcom wireless modules with Apple coexistence fixes'
     'kait2en-wireless-runtime-pm-t2: Patched Broadcom wireless modules with Apple coexistence fixes built for linux-t2'
     'kait2en-wireless-runtime-pm-cachy: Patched Broadcom wireless modules with Apple coexistence fixes built for linux-cachy'

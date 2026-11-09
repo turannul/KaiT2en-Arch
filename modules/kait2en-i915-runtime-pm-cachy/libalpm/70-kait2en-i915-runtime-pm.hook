@@ -1,0 +1,13 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = usr/lib/modules/*/updates/i915.ko.zst
+Target = usr/lib/modules/*/updates/drm_display_helper.ko.zst
+
+[Action]
+Description = Updating module dependencies and initramfs for the patched i915...
+When = PostTransaction
+NeedsTargets
+Exec = /usr/share/libalpm/scripts/kait2en-i915-runtime-pm

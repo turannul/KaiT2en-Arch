@@ -1,0 +1,113 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+_kfile=$(pacman -Ql linux-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -z $_kfile ]] && _kfile=$(pacman -Fl linux-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -n ${_kfile:?linux-headers not found (install it, or run 'pacman -Fy' for the sync file list).} ]]
+_krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
+_upstream=${_krelease%%-*}
+[[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
+_major=${_upstream%%.*}
+_kver=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${_kver:?Cannot find linux-headers version.} ]]
+
+pkgname=kait2en-i915-runtime-pm
+pkgver=7.2.14_arch1_1.r2.1d586ca
+pkgrel=1
+pkgdesc="Patched i915 module with Apple eDP PSR support and GMUX brightness restore"
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+depends=('t2gmux' "linux=$_kver")
+makedepends=('git' 'linux-headers')
+provides=('kait2en-i915-runtime-pm')
+conflicts=('kait2en-i915-runtime-pm-t2' 'kait2en-i915-runtime-pm-cachy' 'kait2en-i915-runtime-pm-mainline')
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
+noextract=("linux-$_upstream.tar.xz")
+sha256sums=('SKIP' 'SKIP')
+
+pkgver() {
+  local _revision _commit
+  _revision=$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- patches/runtime/i915)
+  _commit=$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- patches/runtime/i915)
+  printf '%s.r%s.%s' "${_krelease//-/_}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    rm -rf "$srcdir/linux"
+    mkdir -p "$srcdir/linux"
+    tar -xf "$srcdir/linux-$_upstream.tar.xz" -C "$srcdir/linux" --strip-components=1
+
+    local _fedora="$srcdir/KaiT2en-Fedora/scripts/fedora"
+    local _wdir="$srcdir/KaiT2en-Fedora/patches/runtime/i915"
+    local _i915="$srcdir/linux/drivers/gpu/drm/i915"
+
+    source "$_fedora/lib.sh"
+    set +u
+    trap - ERR EXIT
+    REPO_ROOT="$_wdir"
+    KVER="$_upstream"
+
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+
+    for _patch in $(cat "$_wdir/series"); do
+        [[ "$_patch" = \#* || -z "$_patch" ]] && continue
+        apply_patch_if_needed "$srcdir/linux" "$_wdir/$_patch" || return 1
+    done
+
+    awk '/^rewrite_trace_path\(\) \{/,/^}/' "$_fedora/install-i915.sh" > "$srcdir/.upstream-rtp.sh"
+    source "$srcdir/.upstream-rtp.sh"
+    rm -f "$srcdir/.upstream-rtp.sh"
+
+    rewrite_trace_path "$_i915/i915_trace.h" \
+        ../../drivers/gpu/drm/i915 . || return 1
+    rewrite_trace_path "$_i915/intel_uncore_trace.h" \
+        ../../drivers/gpu/drm/i915 . || return 1
+    rewrite_trace_path "$_i915/display/intel_display_trace.h" \
+        ../../drivers/gpu/drm/i915/display display || return 1
+    rewrite_trace_path "$_i915/gvt/trace.h" \
+        ../../drivers/gpu/drm/i915/gvt gvt || return 1
+}
+
+build() {
+    local _kdir _cfg _i915 _display _m
+    _kdir=$(pacman -Ql linux-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-headers KDIR not found} ]]
+    _cfg="$_kdir/.config"
+    _i915="$srcdir/linux/drivers/gpu/drm/i915"
+    _display="$srcdir/linux/drivers/gpu/drm/display"
+
+    case $(sed -n 's/^CONFIG_DRM_I915=//p' "$_cfg") in
+        m) ;;
+        *) error "the kernel does not build i915 as a module (CONFIG_DRM_I915=m is required)"; return 1 ;;
+    esac
+
+    msg2 "Building drm_display_helper"
+    make -j"$(nproc)" -C "$_kdir" M="$_display" modules
+
+    msg2 "Building i915"
+    make -j"$(nproc)" -C "$_kdir" M="$_i915" modules
+
+    for _m in "$_display/drm_display_helper.ko" "$_i915/i915.ko"; do
+        [[ -f "$_m" ]] || continue
+        strip --strip-debug "$_m"
+        zstd -T0 -q -f "$_m" -o "$_m.zst"
+    done
+}
+
+package() {
+    local _kdir _k _m
+    _kdir=$(pacman -Ql linux-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-headers KDIR not found} ]]
+    _k=$(basename "$(dirname "$_kdir")")
+    for _m in "$srcdir/linux/drivers/gpu/drm/display/drm_display_helper.ko.zst" \
+              "$srcdir/linux/drivers/gpu/drm/i915/i915.ko.zst"; do
+        [[ -f "$_m" ]] || { error "${_m##*/} was not built"; return 1; }
+        install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
+    done
+    install -D -m0644 "$startdir/modprobe.d/kait2en-i915-runtime-pm.conf" "$pkgdir/usr/lib/modprobe.d/kait2en-i915-runtime-pm.conf"
+    install -D -m0644 "$startdir/libalpm/70-kait2en-i915-runtime-pm.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm.hook"
+    install -D -m0755 "$startdir/libalpm/kait2en-i915-runtime-pm" "$pkgdir/usr/share/libalpm/scripts/kait2en-i915-runtime-pm"
+    install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

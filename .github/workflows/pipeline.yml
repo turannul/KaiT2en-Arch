@@ -56,7 +56,7 @@ on:
           - t2-services
           - t2-smc-control
           - t2-touchbar
-          - t2-truetone 
+          - t2-truetone
           - t2-touchid
           - t2-zone-power
           - t2_precision_trackpad-dkms

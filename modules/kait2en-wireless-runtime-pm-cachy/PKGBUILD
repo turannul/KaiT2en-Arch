@@ -13,15 +13,15 @@ _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3;
 
 pkgname=kait2en-wireless-runtime-pm-cachy
 pkgver=7.3.3_1_cachyos.r21.1d586ca
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For linux-cachy)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
-depends=('t2gmux' "linux-cachyos=$_kver")
+depends=("linux-cachyos=$_kver")
 makedepends=('git' 'linux-cachyos-headers')
 provides=('kait2en-wireless-runtime-pm')
-conflicts=('kait2en-wireless-runtime-pm' 'kait2en-wireless-runtime-pm-t2')
+conflicts=('kait2en-wireless-runtime-pm' 'kait2en-wireless-runtime-pm-t2' 'kait2en-wireless-runtime-pm-mainline')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
@@ -101,8 +101,10 @@ package() {
     for _m in "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/brcmfmac.ko.zst \
               "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/{wcc,cyw,bca}/*.ko.zst \
               "$srcdir/linux/drivers/bluetooth"/{btbcm,hci_uart,hci_bcm4377}.ko.zst; do
-        [[ -f "$_m" ]] || continue
+        [[ -f "$_m" ]] || { error "${_m##*/} was not built"; return 1; }
         install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
     done
+    install -D -m0644 "$startdir/libalpm/70-kait2en-wireless-runtime-pm-cachy.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm-cachy.hook"
+    install -D -m0755 "$startdir/libalpm/kait2en-wireless-runtime-pm-cachy" "$pkgdir/usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-cachy"
     install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

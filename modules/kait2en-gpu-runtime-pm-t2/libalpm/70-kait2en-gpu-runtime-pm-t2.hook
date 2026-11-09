@@ -1,0 +1,12 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = usr/lib/modules/*/updates/amdgpu.ko.zst
+
+[Action]
+Description = Updating module dependencies and initramfs for the patched AMDGPU modules...
+When = PostTransaction
+NeedsTargets
+Exec = /usr/share/libalpm/scripts/kait2en-gpu-runtime-pm-t2
