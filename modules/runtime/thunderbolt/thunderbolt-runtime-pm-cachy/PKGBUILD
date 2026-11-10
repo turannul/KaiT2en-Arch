@@ -12,8 +12,8 @@ _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3;
 [[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-thunderbolt-runtime-pm-cachy
-pkgver=0
-pkgrel=0
+pkgver=7.3.3_1_cachyos.r1.a9a42a7
+pkgrel=1
 pkgdesc="Patched thunderbolt module with Titan Ridge RTD3 (For linux-cachy)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-smc-control
-pkgver=0.1.0.r34.626969d
-pkgrel=3
+pkgver=0.1.0.r35.48855df
+pkgrel=1
 pkgdesc="Hardware monitor and Apple SMC sensor utility"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-smc-control"

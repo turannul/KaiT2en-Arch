@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-ave
-pkgver=0.1.0.r12.0fb1b0a
+pkgver=0.1.0.r13.48855df
 pkgrel=1
 pkgdesc="T2 AVE encoder"
 arch=('x86_64')

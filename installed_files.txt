@@ -102,6 +102,24 @@ usr/share/plymouth/themes/kait2en/keymap-render.png
 usr/share/plymouth/themes/kait2en/lock.png
 usr/share/plymouth/themes/kait2en/watermark.png
 
+# kait2en-thunderbolt-runtime-pm
+usr/lib/modules/7.2.14-arch1-1/updates/thunderbolt.ko.zst
+usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm
+usr/share/licenses/kait2en-thunderbolt-runtime-pm/LICENSE
+
+# kait2en-thunderbolt-runtime-pm-cachy
+usr/lib/modules/7.3.3-1-cachyos/updates/thunderbolt.ko.zst
+usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm
+usr/share/licenses/kait2en-thunderbolt-runtime-pm-cachy/LICENSE
+
+# kait2en-thunderbolt-runtime-pm-t2
+usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/thunderbolt.ko.zst
+usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm
+usr/share/licenses/kait2en-thunderbolt-runtime-pm-t2/LICENSE
+
 # kait2en-wireless-runtime-pm
 usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac-bca.ko.zst
 usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac-cyw.ko.zst
@@ -3008,10 +3026,10 @@ usr/src/t2bdrm-0.1/t2bdrm.c
 etc/mkinitcpio.conf.d/00-kait2en-t2gmux.conf
 usr/lib/modprobe.d/00-kait2en-t2gmux.conf
 usr/share/licenses/t2gmux-dkms/LICENSE
-usr/src/t2gmux-0.8/Makefile
-usr/src/t2gmux-0.8/README.md
-usr/src/t2gmux-0.8/dkms.conf
-usr/src/t2gmux-0.8/t2gmux.c
+usr/src/t2gmux-0.9/Makefile
+usr/src/t2gmux-0.9/README.md
+usr/src/t2gmux-0.9/dkms.conf
+usr/src/t2gmux-0.9/t2gmux.c
 
 # t2mfi_fastcharge-dkms
 usr/lib/modprobe.d/00-kait2en-t2mfi-fastcharge.conf
@@ -3056,14 +3074,6 @@ usr/share/licenses/t2smp-dkms/LICENSE
 usr/src/t2smp-0.1/Makefile
 usr/src/t2smp-0.1/dkms.conf
 usr/src/t2smp-0.1/t2smp.c
-
-# t2thunderbolt-dkms
-usr/share/licenses/t2thunderbolt-dkms/LICENSE
-usr/src/t2thunderbolt-0.6/Makefile
-usr/src/t2thunderbolt-0.6/README.md
-usr/src/t2thunderbolt-0.6/dkms.conf
-usr/src/t2thunderbolt-0.6/mbp15-1-thunderbolt-baseline.md
-usr/src/t2thunderbolt-0.6/t2thunderbolt.c
 
 # t2touchbar-dkms
 etc/mkinitcpio.conf.d/00-kait2en-t2touchbar.conf

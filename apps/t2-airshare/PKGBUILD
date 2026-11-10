@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-airshare
-pkgver=0.1.0.r7.901f1d7
-pkgrel=2
+pkgver=0.1.0.r8.48855df
+pkgrel=1
 pkgdesc="Share files with Android phones over Quick Share and with Apple devices over AirDrop"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-airshare"

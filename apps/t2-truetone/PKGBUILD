@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-truetone
-pkgver=0.1.0.r1.8de9546
+pkgver=0.1.0.r2.48855df
 pkgrel=1
 pkgdesc="Ambient white point adaptation, evening mode and automatic brightness for T2 MacBooks under GNOME"
 arch=('x86_64')
