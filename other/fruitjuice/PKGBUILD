@@ -22,7 +22,10 @@ sha256sums=('SKIP')
 options=('!buildflags')
 
 pkgver() {
-  local _daemon _module _revision _commit _p="$srcdir/fruitjuice" _dp="$_p/daemon/Cargo.toml" _mp="$_p/module/dkms.conf"
+  local _daemon _module _revision _commit
+  local _p="$srcdir/fruitjuice"
+  local _dp="$_p/daemon/Cargo.toml"
+  local _mp="$_p/module/dkms.conf"
   _daemon=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_dp")
   _module=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$_mp")
   _revision=$(git -C "$_p" rev-list --count HEAD)
@@ -31,7 +34,7 @@ pkgver() {
 }
 
 prepare() {
-  cargo fetch --locked --manifest-path="$srcdir/fruitjuice/daemon/Cargo.toml"
+  cargo fetch --manifest-path="$srcdir/fruitjuice/daemon/Cargo.toml"
 }
 
 build() {
