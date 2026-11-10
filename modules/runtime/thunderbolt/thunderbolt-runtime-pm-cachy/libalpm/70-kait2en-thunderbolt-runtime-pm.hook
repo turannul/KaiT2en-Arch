@@ -1,0 +1,12 @@
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = usr/lib/modules/*/updates/thunderbolt.ko.zst
+
+[Action]
+Description = Updating module dependencies and initramfs for the patched thunderbolt...
+When = PostTransaction
+NeedsTargets
+Exec = /usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm

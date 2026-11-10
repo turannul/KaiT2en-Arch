@@ -1,0 +1,86 @@
+# Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
+# Packager: Turann_ (turannul) <turanull000@gmail.com>
+
+_kfile=$(pacman -Ql linux-t2-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -z $_kfile ]] && _kfile=$(pacman -Fl linux-t2-headers 2>/dev/null | awk '/\/build\/Makefile$/ {print $2; exit}')
+[[ -n ${_kfile:?linux-t2-headers not found (install it, or run 'pacman -Fy' for the sync file list).} ]]
+_krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
+_upstream=${_krelease%%-*}
+[[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
+_major=${_upstream%%.*}
+_kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${_kver:?Cannot find linux-t2-headers version.} ]]
+
+pkgname=kait2en-thunderbolt-runtime-pm-t2
+pkgver=0
+pkgrel=0
+pkgdesc="Patched thunderbolt module with Titan Ridge RTD3 (For linux-t2)."
+arch=('x86_64')
+url="https://github.com/kaiT2en/KaiT2en-Fedora"
+license=('GPL-2.0-only')
+depends=("linux-t2=$_kver")
+makedepends=('git' 'linux-t2-headers')
+provides=('kait2en-thunderbolt-runtime-pm')
+conflicts=('kait2en-thunderbolt-runtime-pm' 'kait2en-thunderbolt-runtime-pm-cachy' 'kait2en-thunderbolt-runtime-pm-mainline' 't2thunderbolt-dkms')
+install="$pkgname.install"
+source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
+noextract=("linux-$_upstream.tar.xz")
+sha256sums=('SKIP' 'SKIP')
+
+pkgver() {
+  local _revision _commit
+  _revision=$(git -C "$srcdir/KaiT2en-Fedora" rev-list --count HEAD -- patches/runtime/thunderbolt)
+  _commit=$(git -C "$srcdir/KaiT2en-Fedora" log -1 --format="%h" -- patches/runtime/thunderbolt)
+  printf '%s.r%s.%s' "${_krelease//-/_}" "${_revision:?}" "${_commit:?}"
+}
+
+prepare() {
+    rm -rf "$srcdir/linux"
+    mkdir -p "$srcdir/linux"
+    tar -xf "$srcdir/linux-$_upstream.tar.xz" -C "$srcdir/linux" --strip-components=1
+
+    local _fedora="$srcdir/KaiT2en-Fedora/scripts/fedora"
+    local _wdir="$srcdir/KaiT2en-Fedora/patches/runtime/thunderbolt"
+
+    source "$_fedora/lib.sh"
+    set +u
+    trap - ERR EXIT
+    REPO_ROOT="$_wdir"
+
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+
+    for _patch in $(cat "$_wdir/series"); do
+        [[ "$_patch" = \#* || -z "$_patch" ]] && continue
+        apply_patch_if_needed "$srcdir/linux" "$_wdir/$_patch" || return 1
+    done
+}
+
+build() {
+    local _kdir _cfg _tb
+    _kdir=$(pacman -Ql linux-t2-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-t2-headers KDIR not found} ]]
+    _cfg="$_kdir/.config"
+    _tb="$srcdir/linux/drivers/thunderbolt"
+
+    case $(sed -n 's/^CONFIG_USB4=//p' "$_cfg") in
+        m) ;;
+        *) error "the kernel does not build the thunderbolt driver as a module (CONFIG_USB4=m is required)"; return 1 ;;
+    esac
+
+    msg2 "Building thunderbolt"
+    make -j"$(nproc)" -C "$_kdir" M="$_tb" modules
+
+    strip --strip-debug "$_tb/thunderbolt.ko"
+    zstd -T0 -q -f "$_tb/thunderbolt.ko" -o "$_tb/thunderbolt.ko.zst"
+}
+
+package() {
+    local _kdir _k
+    _kdir=$(pacman -Ql linux-t2-headers | awk '/\/build\/Makefile$/ {print $2}' | xargs dirname)
+    [[ -n ${_kdir:?linux-t2-headers KDIR not found} ]]
+    _k=$(basename "$(dirname "$_kdir")")
+    install -Dpm 0644 "$srcdir/linux/drivers/thunderbolt/thunderbolt.ko.zst" "$pkgdir/usr/lib/modules/$_k/updates/thunderbolt.ko.zst"
+    install -D -m0644 "$startdir/libalpm/70-kait2en-thunderbolt-runtime-pm.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm.hook"
+    install -D -m0755 "$startdir/libalpm/kait2en-thunderbolt-runtime-pm" "$pkgdir/usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm"
+    install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

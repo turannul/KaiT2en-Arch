@@ -1,0 +1,22 @@
+#!/bin/bash
+declare -a kernels=()
+while IFS= read -r line; do
+    case "$line" in
+        usr/lib/modules/*/updates/thunderbolt.ko.zst)
+            k=${line#usr/lib/modules/}
+            k=${k%%/updates/*}
+            [[ -d "/usr/lib/modules/$k" ]] || continue
+            kernels+=("$k")
+            ;;
+    esac
+done
+((${#kernels[@]} > 0)) || exit 0
+mapfile -t kernels < <(printf '%s\n' "${kernels[@]}" | sort -u)
+for k in "${kernels[@]}"; do
+    depmod "$k"
+done
+if [[ -x /usr/share/libalpm/scripts/limine-mkinitcpio-install ]]; then
+    printf 'usr/lib/modules/%s/pkgbase\n' "${kernels[@]}" | /usr/share/libalpm/scripts/limine-mkinitcpio-install
+else
+    printf 'usr/lib/modules/%s/vmlinuz\n' "${kernels[@]}" | /usr/share/libalpm/scripts/mkinitcpio install
+fi

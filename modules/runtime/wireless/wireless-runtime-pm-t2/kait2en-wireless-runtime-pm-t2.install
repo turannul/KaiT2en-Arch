@@ -1,0 +1,14 @@
+_check_kernel() {
+    local _kernel_release=$(uname -r)
+
+    case $_kernel_release in
+        *-t2-*) ;;
+        *) echo "==> [kait2en] WARNING: This package is for T2 kernel (linux-t2)."
+           echo "==> [kait2en] Running kernel: ${_kernel_release}"
+           echo "==> [kait2en] Install the correct variant for your kernel." ;;
+    esac
+}
+
+post_install()  { _check_kernel; }
+post_upgrade() { _check_kernel; }
+post_remove()  { _check_kernel; }
