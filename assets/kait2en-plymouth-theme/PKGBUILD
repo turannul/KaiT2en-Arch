@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=kait2en-plymouth-theme
-pkgver=r6.c2391f1
+pkgver=r7.6dee853
 pkgrel=1
 pkgdesc="KaiT2en Plymouth boot splash theme"
 arch=('any')

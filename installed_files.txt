@@ -16,9 +16,9 @@ usr/bin/fruitjuiced
 usr/lib/modules-load.d/fruitjuice.conf
 usr/lib/systemd/user/fruitjuiced.service
 usr/share/licenses/fruitjuice/LICENSE
-usr/src/fruitjuice-2.1.0_2.0.r30.ge1367e5/Makefile
-usr/src/fruitjuice-2.1.0_2.0.r30.ge1367e5/dkms.conf
-usr/src/fruitjuice-2.1.0_2.0.r30.ge1367e5/fruitjuice.c
+usr/src/fruitjuice-2.1.1_2.0.1.r31.g3ee50ba/Makefile
+usr/src/fruitjuice-2.1.1_2.0.1.r31.g3ee50ba/dkms.conf
+usr/src/fruitjuice-2.1.1_2.0.1.r31.g3ee50ba/fruitjuice.c
 
 # hid_t2magicmouse-dkms
 etc/mkinitcpio.conf.d/00-kait2en-hid-t2magicmouse.conf
@@ -88,16 +88,19 @@ usr/share/libalpm/scripts/kait2en-i915-runtime-pm
 usr/share/licenses/kait2en-i915-runtime-pm-t2/LICENSE
 
 # kait2en-plymouth-theme
+etc/mkinitcpio.conf.d/00-kait2en-plymouth.conf
+usr/share/doc/kait2en-plymouth-theme/CREDITS.md
+usr/share/doc/kait2en-plymouth-theme/README.md
 usr/share/licenses/kait2en-plymouth-theme/LICENSE
-usr/share/plymouth/themes/kait2en/boot.png
-usr/share/plymouth/themes/kait2en/box.png
+usr/share/plymouth/themes/kait2en/animation-0001.png
 usr/share/plymouth/themes/kait2en/bullet.png
+usr/share/plymouth/themes/kait2en/capslock.png
 usr/share/plymouth/themes/kait2en/entry.png
 usr/share/plymouth/themes/kait2en/kait2en.plymouth
-usr/share/plymouth/themes/kait2en/kait2en.script
+usr/share/plymouth/themes/kait2en/keyboard.png
+usr/share/plymouth/themes/kait2en/keymap-render.png
 usr/share/plymouth/themes/kait2en/lock.png
-usr/share/plymouth/themes/kait2en/progress_bar.png
-usr/share/plymouth/themes/kait2en/progress_box.png
+usr/share/plymouth/themes/kait2en/watermark.png
 
 # kait2en-wireless-runtime-pm
 usr/lib/modules/7.2.14-arch1-1/updates/brcmfmac-bca.ko.zst
