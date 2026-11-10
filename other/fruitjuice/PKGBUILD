@@ -9,7 +9,11 @@ arch=('x86_64')
 url="https://github.com/turannul/fruitjuice"
 license=('GPL-2.0-only')
 depends=('dkms' 'netmuxd')
-optdepends=('linux-headers: build the driver module against the Arch kernel')
+optdepends=(
+    'linux-cachyos-headers: build modules against the Cachy kernel'
+    'linux-headers: build modules against the Arch kernel'
+    'linux-t2-headers: build modules against the T2 kernel'
+)
 makedepends=('cargo' 'git')
 provides=("$pkgname-dkms" "$pkgname-git")
 conflicts=("$pkgname-git")
@@ -18,10 +22,7 @@ sha256sums=('SKIP')
 options=('!buildflags')
 
 pkgver() {
-  local _daemon _module _revision _commit
-  local _p="$srcdir/fruitjuice"
-  local _dp="$_p/src/daemon/Cargo.toml"
-  local _mp="$_p/src/module/dkms.conf"
+  local _daemon _module _revision _commit _p="$srcdir/fruitjuice" _dp="$_p/daemon/Cargo.toml" _mp="$_p/module/dkms.conf"
   _daemon=$(awk -F'"' '/^\[package\]/{p=1} p && /^version *=/{print $2; exit}' "$_dp")
   _module=$(sed -n 's/^[[:space:]]*PACKAGE_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$_mp")
   _revision=$(git -C "$_p" rev-list --count HEAD)
@@ -30,19 +31,19 @@ pkgver() {
 }
 
 prepare() {
-  cargo fetch --locked --manifest-path="$srcdir/fruitjuice/src/daemon/Cargo.toml"
+  cargo fetch --locked --manifest-path="$srcdir/fruitjuice/daemon/Cargo.toml"
 }
 
 build() {
-  cargo build --release --frozen --locked --manifest-path="$srcdir/fruitjuice/src/daemon/Cargo.toml" --target-dir="$srcdir/target"
+  cargo build --release --frozen --locked --manifest-path="$srcdir/fruitjuice/daemon/Cargo.toml" --target-dir="$srcdir/target"
 }
 
 package() {
   install -d -m0755 "$pkgdir/usr/src/fruitjuice-$pkgver"
-  cp -a "$srcdir/fruitjuice/src/module/." "$pkgdir/usr/src/fruitjuice-$pkgver/"
+  cp -a "$srcdir/fruitjuice/module/." "$pkgdir/usr/src/fruitjuice-$pkgver/"
   sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$pkgver\"/" "$pkgdir/usr/src/fruitjuice-$pkgver/dkms.conf"
   install -Dm755 "$srcdir/target/release/fruitjuiced" "$pkgdir/usr/bin/fruitjuiced"
-  install -Dm644 "$srcdir/fruitjuice/src/daemon/fruitjuiced.service" "$pkgdir/usr/lib/systemd/user/fruitjuiced.service"
+  install -Dm644 "$srcdir/fruitjuice/daemon/fruitjuiced.service" "$pkgdir/usr/lib/systemd/user/fruitjuiced.service"
   install -D -m0644 "$srcdir/fruitjuice/modules-load.d/fruitjuice.conf" "$pkgdir/usr/lib/modules-load.d/fruitjuice.conf"
   install -D -m0644 "$srcdir/fruitjuice/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
