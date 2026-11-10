@@ -31,6 +31,9 @@ prepare() {
 
 package() {
     install -d -m0755 "$pkgdir/usr/share/plymouth/themes/kait2en"
-    install -m0644 "$srcdir/assets/plymouth/kait2en"/*.png "$srcdir/assets/plymouth/kait2en"/*.plymouth "$srcdir/assets/plymouth/kait2en"/*.script "$pkgdir/usr/share/plymouth/themes/kait2en/"
+    install -m0644 "$srcdir/assets/plymouth/kait2en"/*.png "$srcdir/assets/plymouth/kait2en"/*.plymouth "$pkgdir/usr/share/plymouth/themes/kait2en/"
+    install -D -m0644 "$srcdir/assets/plymouth/kait2en/CREDITS.md" "$pkgdir/usr/share/doc/$pkgname/CREDITS.md"
+    install -D -m0644 "$srcdir/assets/plymouth/kait2en/README.md" "$pkgdir/usr/share/doc/$pkgname/README.md"
+    install -D -m0644 "$startdir/mkinitcpio.conf.d/00-kait2en-plymouth.conf" "$pkgdir/etc/mkinitcpio.conf.d/00-kait2en-plymouth.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
