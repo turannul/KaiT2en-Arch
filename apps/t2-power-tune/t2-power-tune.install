@@ -12,7 +12,8 @@ post_upgrade() {
 }
 
 post_remove() {
-    systemctl disable --now kait2en-power-tune.service
-    rm -f /etc/systemd/system/kait2en-power-tune.service /run/t2-power-tune/items.json
+    systemctl disable --now kait2en-power-tune-resume.service kait2en-power-tune.service
+    rm -f /etc/systemd/system/kait2en-power-tune-resume.service /etc/systemd/system/kait2en-power-tune.service /run/t2-power-tune/items.json
     systemctl daemon-reload
+    echo -e "\e[33mPower-Tune is uninstalled - reboot when convenient.\e[0m"
 }
