@@ -65,8 +65,8 @@ usr/share/licenses/kait2en-gpu-runtime-pm-t2/LICENSE
 
 # kait2en-i915-runtime-pm
 usr/lib/modprobe.d/kait2en-i915-runtime-pm.conf
-usr/lib/modules/7.2.14-arch1-1/updates/drm_display_helper.ko.zst
-usr/lib/modules/7.2.14-arch1-1/updates/i915.ko.zst
+usr/lib/modules/7.2.15-arch1-1/updates/drm_display_helper.ko.zst
+usr/lib/modules/7.2.15-arch1-1/updates/i915.ko.zst
 usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm.hook
 usr/share/libalpm/scripts/kait2en-i915-runtime-pm
 usr/share/licenses/kait2en-i915-runtime-pm/LICENSE
