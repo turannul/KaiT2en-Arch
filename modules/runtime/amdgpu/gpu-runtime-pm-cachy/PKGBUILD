@@ -22,7 +22,6 @@ depends=('t2gmux' "linux-cachyos=$_kver")
 makedepends=('git' 'linux-cachyos-headers')
 provides=('kait2en-gpu-runtime-pm')
 conflicts=('kait2en-gpu-runtime-pm' 'kait2en-gpu-runtime-pm-t2')
-replaces=('kait2en-gpu-runtime-pm' 'kait2en-gpu-runtime-pm-t2')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
