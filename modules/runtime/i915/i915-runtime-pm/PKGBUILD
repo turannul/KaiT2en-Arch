@@ -18,9 +18,10 @@ pkgdesc="Patched i915 module with Apple eDP PSR support and GMUX brightness rest
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
+groups=('kait2en-runtime-patches' 'kait2en-igpu-patch')
 depends=('t2gmux' "linux=$_kver")
 makedepends=('git' 'linux-headers')
-provides=('kait2en-i915-runtime-pm')
+provides=('i915-pm-patch')
 conflicts=('kait2en-i915-runtime-pm-t2' 'kait2en-i915-runtime-pm-cachy')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")

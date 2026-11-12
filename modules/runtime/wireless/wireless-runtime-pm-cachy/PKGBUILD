@@ -18,10 +18,11 @@ pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes (For lin
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
+groups=('kait2en-runtime-patches' 'kait2en-wireless-patch')
 depends=("linux-cachyos=$_kver")
 makedepends=('git' 'linux-cachyos-headers')
-provides=('kait2en-wireless-runtime-pm')
-conflicts=('kait2en-wireless-runtime-pm' 'kait2en-wireless-runtime-pm-t2' 'kait2en-wireless-runtime-pm-mainline')
+provides=('wireless-pm-patch')
+conflicts=('kait2en-wireless-runtime-pm' 'kait2en-wireless-runtime-pm-t2')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")

@@ -18,9 +18,10 @@ pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management (For Mac
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
+groups=('kait2en-runtime-patches' 'kait2en-amdgpu-patch')
 depends=('t2gmux' "linux-cachyos=$_kver")
 makedepends=('git' 'linux-cachyos-headers')
-provides=('kait2en-gpu-runtime-pm')
+provides=('amdgpu-gmux-pm-patch')
 conflicts=('kait2en-gpu-runtime-pm' 'kait2en-gpu-runtime-pm-t2')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
