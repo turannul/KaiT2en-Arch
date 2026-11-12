@@ -3,7 +3,7 @@
 
 pkgname=t2gmux-dkms
 pkgver=0.9.r35.29ff1e1
-pkgrel=1
+pkgrel=2
 pkgdesc="KaiT2en GMUX module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -40,6 +40,5 @@ package() {
     cp -a "$srcdir/t2gmux/." "$pkgdir/usr/src/t2gmux-$_module_version/"
     sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$_module_version\"/" "$pkgdir/usr/src/t2gmux-$_module_version/dkms.conf"
     install -D -m0644 "$startdir/modprobe.d/00-kait2en-t2gmux.conf" "$pkgdir/usr/lib/modprobe.d/00-kait2en-t2gmux.conf"
-    install -D -m0644 "$startdir/mkinitcpio.conf.d/00-kait2en-t2gmux.conf" "$pkgdir/etc/mkinitcpio.conf.d/00-kait2en-t2gmux.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

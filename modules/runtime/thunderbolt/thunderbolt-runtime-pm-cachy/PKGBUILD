@@ -12,7 +12,7 @@ _kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3;
 [[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-thunderbolt-runtime-pm-cachy
-pkgver=7.3.3_1_cachyos.r1.a9a42a7
+pkgver=7.3.3_1_cachyos.r4.4b29a99
 pkgrel=1
 pkgdesc="Patched thunderbolt module with Titan Ridge & Ice Lake RTD3 (For linux-cachy)."
 arch=('x86_64')

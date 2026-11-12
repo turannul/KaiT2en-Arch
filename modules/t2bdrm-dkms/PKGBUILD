@@ -3,7 +3,7 @@
 
 pkgname=t2bdrm-dkms
 pkgver=0.1.r8.b936d6b
-pkgrel=1
+pkgrel=2
 pkgdesc="KaiT2en TB-DRM module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -40,6 +40,5 @@ package() {
     cp -a "$srcdir/t2bdrm/." "$pkgdir/usr/src/t2bdrm-$_module_version/"
     sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=\"$_module_version\"/" "$pkgdir/usr/src/t2bdrm-$_module_version/dkms.conf"
     install -D -m0644 "$startdir/modprobe.d/00-kait2en-t2bdrm.conf" "$pkgdir/usr/lib/modprobe.d/00-kait2en-t2bdrm.conf"
-    install -D -m0644 "$startdir/mkinitcpio.conf.d/00-kait2en-t2bdrm.conf" "$pkgdir/etc/mkinitcpio.conf.d/00-kait2en-t2bdrm.conf"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

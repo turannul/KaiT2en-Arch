@@ -2,7 +2,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 install_tools() {
-  pacman --sync --noconfirm --needed git nodejs
+  pacman --sync --refresh --sysupgrade --noconfirm --needed git nodejs
 }
 
 setup_environment() {
@@ -54,7 +54,17 @@ repo_pkgrel() {
 }
 
 run_makepkg_nobuild() {
-  makepkg_as_user "$1" --nobuild --cleanbuild --nodeps --noprepare --skippgpcheck </dev/null >/dev/null 2>&1
+  local d="$1" out
+  out=$(mktemp)
+  if makepkg_as_user "$d" --nobuild --cleanbuild --nodeps --noprepare --skippgpcheck </dev/null >"$out" 2>&1; then
+    rm -f "$out"
+    return 0
+  fi
+  echo "   --- makepkg failed, output tail ---" >&2
+  tail -n 25 "$out" | sed 's/^/   | /' >&2
+  echo "   --- end makepkg output ---" >&2
+  rm -f "$out"
+  return 1
 }
 
 # return: 0 = outdated, 1 = up to date, 2 = error
@@ -71,7 +81,8 @@ check_pkgver() {
   echo "   local: ${local_ver:-?}-${local_pkgrel:-?}"
   echo "   upstream: ${upstream_ver:-?}-${upstream_rel:-?}"
   [ -n "$repo_rel" ] && echo "   repo: ${repo_rel}"
-  [ -n "$local_ver" ] && [ -n "$upstream_ver" ] || { echo "   -> error"; return 2; }
+  [ -n "$local_ver" ] || { echo "   -> error: could not read local pkgver"; return 2; }
+  [ -n "$upstream_ver" ] || { echo "   -> error: could not compute upstream pkgver"; return 2; }
   # Outdated if: upstream pkgver changed OR local pkgrel > repo pkgrel
   if [ "$local_ver" != "$upstream_ver" ]; then
     echo "   -> outdated (pkgver)"
@@ -101,10 +112,10 @@ setup_upstream_cache() {
 
 vcs_pkgs() {
   local d
-  for d in $(all_pkgs); do
+  while IFS= read -r d; do
     grep --quiet 'pkgver()' "$d/PKGBUILD" || continue
     echo "$d"
-  done
+  done < <(all_pkgs)
 }
 
 check_one() {

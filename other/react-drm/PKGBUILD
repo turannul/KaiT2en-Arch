@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=react-drm
-pkgver=0.1.0.r245.92f91c4
+pkgver=0.1.0.r256.b9b1cae
 pkgrel=1
 pkgdesc="Touch Bar control center"
 arch=('x86_64')

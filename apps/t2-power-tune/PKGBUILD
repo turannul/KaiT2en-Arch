@@ -3,7 +3,7 @@
 
 pkgname=t2-power-tune
 pkgver=0.02.r11.fed3805
-pkgrel=2
+pkgrel=3
 pkgdesc="PCIe ASPM and system power optimization utility (!! Use with Caution !!)"
 arch=('any')
 url="https://kait2en.org/documentation.html#t2-power-tune"

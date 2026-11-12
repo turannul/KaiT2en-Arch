@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=kait2en-audio-meta
-pkgver=0.1
+pkgver=0.5.0
 pkgrel=1
 pkgdesc="KaiT2en audio metapackage."
 arch=('x86_64')

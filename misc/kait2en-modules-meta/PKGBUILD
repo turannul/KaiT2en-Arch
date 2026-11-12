@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=kait2en-modules-meta
-pkgver=0.5
+pkgver=0.5.0
 pkgrel=1
 pkgdesc="KaiT2en modules metapackage."
 arch=('x86_64')

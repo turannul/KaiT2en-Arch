@@ -3,7 +3,7 @@
 
 pkgname=t2-cpu-control
 pkgver=0.02.r1.1fb1080
-pkgrel=2
+pkgrel=1
 pkgdesc="CPU power limit and thermal telemetry controller (deprecated; use t2-zone-power)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

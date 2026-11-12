@@ -10,6 +10,7 @@ ws="$GITHUB_WORKSPACE"
 repo="${REPO_NAME:-turann-s-place}"
 remote="https://actions-user:${tok}@github.com/turannul/KaiT2en-Arch.git"
 updated_pkgs=""
+synced_pkgs=()
 
 install_tools() {
   pacman --sync --refresh --noconfirm --needed git gnupg diffutils
@@ -23,40 +24,49 @@ setup_git() {
 
 clone_pages() {
   cd "$ws"
-  git clone --depth 1 --branch gh-pages "$remote" gh-pages || {
-    git init --initial-branch=gh-pages gh-pages
-    git -C gh-pages remote add origin "$remote"
-  }
+  local out
+  if out=$(git clone --depth 1 --branch gh-pages "$remote" gh-pages 2>&1); then
+    cd gh-pages
+    return 0
+  fi
+  if git ls-remote --exit-code --heads "$remote" gh-pages >/dev/null 2>&1; then
+    echo "clone_pages: gh-pages exists but clone failed:" >&2
+    echo "$out" >&2
+    return 1
+  fi
+  echo "clone_pages: no gh-pages branch yet, creating it" >&2
+  git init --initial-branch=gh-pages gh-pages
+  git -C gh-pages remote add origin "$remote"
   cd gh-pages
 }
 
 sync_pkgs() {
   mkdir --parents x86_64
   [ -d ../artifacts ] || return 0
-  find ../artifacts -name '*.pkg.tar.zst*' -exec cp --verbose --target-directory=x86_64 {} +
+  while IFS= read -r f; do
+    cp --verbose --target-directory=x86_64 "$f"
+    synced_pkgs+=("$(basename "$f")")
+  done < <(find ../artifacts -name '*.pkg.tar.zst*')
 }
 
 prune_orphans() {
-  local f n removed=0 total=0
-  local -a keep=() orphans=()
+  local f n d removed=0
+  local -a keep=() orphans=() dirs=()
+  mapfile -t dirs < <(cd "$ws" && all_pkgs)
   mapfile -t keep < <(cd "$ws" && all_pkgnames)
-  if [ "${#keep[@]}" -lt 5 ]; then
-    echo "prune: refusing, only ${#keep[@]} package name(s) found on main"
-    return 0
+  if [ "${#keep[@]}" -eq 0 ] && [ "${#dirs[@]}" -gt 0 ]; then
+    keep=("${dirs[@]##*/}")
   fi
   for f in x86_64/*.pkg.tar.zst; do
     [ -f "$f" ] || continue
-    total=$((total + 1))
     n=$(pkgfile_name "$f")
-    printf '%s\n' "${keep[@]}" | grep --quiet --line-regexp -- "$n" || orphans+=("$f")
+    printf '%s\n' "${keep[@]}" | grep --quiet --fixed-strings --line-regexp -- "$n" || orphans+=("$f")
   done
-  if [ $(( ${#orphans[@]} * 2 )) -gt "$total" ]; then
-    echo "prune: refusing, ${#orphans[@]} of $total archive(s) look orphaned"
-    return 0
-  fi
-  [ "${#orphans[@]}" -gt 0 ] || { echo "prune: no orphans"; return 0; }
   for f in "${orphans[@]}"; do
     n=$(pkgfile_name "$f")
+    case " ${synced_pkgs[*]} " in
+      *" $(basename "$f") "*) continue ;;
+    esac
     echo "prune: $n has no PKGBUILD, dropping archive"
     rm --force --verbose "$f" "$f.sig"
     removed=$((removed + 1))
@@ -65,37 +75,18 @@ prune_orphans() {
 }
 
 prune_pkgrels() {
-  local f n v pv rel total=0 drops=0
-  local -A newest=() names=()
+  local f n v pv rel drops=0
+  local -A newest=()
   for f in x86_64/*.pkg.tar.zst; do
     [ -f "$f" ] || continue
-    total=$((total + 1))
     n=$(pkgfile_name "$f")
     v=$(pkgfile_ver "$f")
     pv="${v%-*}"
     rel="${v##*-}"
-    names["$n"]=1
     if [ -z "${newest["$n|$pv"]:-}" ] || [ "$(vercmp "$rel" "${newest["$n|$pv"]}")" = "1" ]; then
       newest["$n|$pv"]="$rel"
     fi
   done
-  if [ "${#names[@]}" -lt 5 ]; then
-    echo "prune-pkgrel: refusing, only ${#names[@]} package(s) found"
-    return 0
-  fi
-  for f in x86_64/*.pkg.tar.zst; do
-    [ -f "$f" ] || continue
-    n=$(pkgfile_name "$f")
-    v=$(pkgfile_ver "$f")
-    pv="${v%-*}"
-    rel="${v##*-}"
-    [ "$rel" = "${newest["$n|$pv"]}" ] || drops=$((drops + 1))
-  done
-  if [ $((drops * 2)) -gt "$total" ]; then
-    echo "prune-pkgrel: refusing, $drops of $total archive(s) look superseded"
-    return 0
-  fi
-  [ "$drops" -gt 0 ] || { echo "prune-pkgrel: nothing superseded"; return 0; }
   drops=0
   for f in x86_64/*.pkg.tar.zst; do
     [ -f "$f" ] || continue
@@ -139,7 +130,7 @@ sync_pkgbuilds() {
   [ -d artifacts ] || return 0
   while IFS= read -r p; do
     n=$(pkgname_of "$(dirname "$p")")
-    dir=$(find_pkg_dir "$n") || { echo "skip: no local dir for $n" >&2; continue; }
+    dir=$(find_pkg_dir "$n") || { echo "sync_pkgbuilds: no local dir for $n" >&2; return 1; }
     cur="$(pkgver_of_file "$dir/PKGBUILD")-$(pkgrel_of_file "$dir/PKGBUILD")"
     new="$(pkgver_of_file "$p")-$(pkgrel_of_file "$p")"
     if [ "$cur" != "$new" ]; then
@@ -190,8 +181,9 @@ latest_archives() {
 }
 
 emit_installed() {
-  local files
-  files=$(tar --list --file="$2" | grep --invert-match --extended-regexp '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$' || true)
+  local files listing
+  listing=$(tar --list --file="$2") || { echo "emit_installed: cannot read $2" >&2; return 1; }
+  files=$(printf '%s\n' "$listing" | grep --invert-match --extended-regexp '^\.(PKGINFO|MTREE|BUILDINFO|INSTALL)$|/$' || true)
   [ -n "$files" ] || return 0
   {
     echo "# $1"
@@ -211,8 +203,10 @@ gen_installed_files() {
 
 commit_main() {
   local what="${updated_pkgs:+$updated_pkgs updated.}"
+  local -a pkgbuilds=()
+  mapfile -t pkgbuilds < <(all_pkgs | sed 's|$|/PKGBUILD|')
   git remote set-url origin "$remote"
-  git add installed_files.txt $(all_pkgs | sed 's|$|/PKGBUILD|')
+  git add installed_files.txt "${pkgbuilds[@]}"
   commit_push "chore: ${what:-update installed_files.txt} [skip ci]" main
 }
 
@@ -226,7 +220,6 @@ prepare_repo() {
   step prune_pkgrels
   step publish_pages
   cd "$ws"
-  step sync_menu
   step sync_pkgbuilds
   step gen_installed_files
   step commit_main

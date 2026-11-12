@@ -21,13 +21,15 @@ on:
         options:
           - autodetect
           - all
+          - apple-t2-alsa-ucm-conf
+          - apple-t2-bridge-dkms
           - bankstown
           - bankstown-git
-          - brcm-firmware-fetch
           - fruitjuice
           - hid_t2magicmouse-dkms
           - kait2en-apps-meta
           - kait2en-assets
+          - kait2en-audio-meta
           - kait2en-gdm-theme
           - kait2en-gpu-runtime-pm
           - kait2en-gpu-runtime-pm-cachy
@@ -47,13 +49,11 @@ on:
           - react-drm
           - t2-airshare
           - t2-ave
-          - t2bce_audio-alsa-ucm-conf
-          - t2bce_audio-dsp
-          - t2bce-dkms
           - t2bdrm-dkms
           - t2-debug
           - t2-dgpu-control
           - t2-drop
+          - t2-dsp
           - t2-fan-control
           - t2-force-click
           - t2gmux-dkms
@@ -155,7 +155,7 @@ jobs:
 
   prepare_repo:
     needs: [detect, build]
-    if: "!cancelled() && !failure() && (needs.detect.outputs.packages != '[]' || needs.detect.outputs.removed != '[]') && github.event_name != 'pull_request'"
+    if: "needs.detect.result == 'success' && needs.build.result != 'failure' && needs.build.result != 'cancelled' && (needs.detect.outputs.packages != '[]' || needs.detect.outputs.removed != '[]') && github.event_name != 'pull_request'"
     runs-on: ubuntu-26.04
     container: archlinux:base
     permissions:

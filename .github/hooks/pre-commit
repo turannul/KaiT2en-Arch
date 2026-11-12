@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+yml=.github/workflows/pipeline.yml
+[ -f "$yml" ] || exit 0
+
+source .github/workflow_scripts/lib.sh
+
+sync_menu
+git add "$yml"

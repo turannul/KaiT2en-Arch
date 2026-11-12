@@ -7,28 +7,6 @@ step() {
   echo "    $1 $((SECONDS - start))s"
 }
 
-sync_menu() {
-    local yml=.github/workflows/pipeline.yml n targets
-    sed --in-place '/^        options:/,$ { /^          - /d }' "$yml"
-    targets=$(for d in $(all_pkgs); do
-        case "$d" in *deprecated*) continue ;; esac
-        pkgname_of "$d"
-        echo
-    done | sort --reverse --unique)
-    targets=$(printf '%s\nall\nautodetect\n' "$targets")
-  while IFS= read -r n; do
-      sed --in-place "/^        options:/a\\\\          - $n" "$yml"
-  done <<<"$targets"
-
-    changed=$(git diff --name-only -- .github/workflows/pipeline.yml)
-    if [ -n "$changed" ]; then
-      echo "pipeline.yml updated."
-    else
-      echo "pipeline.yml already up to date"
-    fi
-}
-
-
 add_repo() {
   grep --quiet --fixed-strings "[$1]" /etc/pacman.conf && return
   printf '\n[%s]\nServer = %s\nSigLevel = Never\n' "$1" "$2" >> /etc/pacman.conf
@@ -115,24 +93,38 @@ all_pkgnames() {
 }
 
 pkgname_of() {
-  local d="$1" n
-  n=$(sed --quiet 's/^[[:space:]]*pkgname=//p' "$d/PKGBUILD" | head --lines=1)
-  n=${n#(}
-  n=${n%)}
-  n=${n%%[[:space:]]*}
-  n=$(printf '%s' "$n" | tr --delete "'\"")
-  printf '%s' "$n"
+  local name
+  name=$(sed --quiet 's/^[[:space:]]*pkgname=//p' "$1/PKGBUILD" | head --lines=1 | tr --delete "()'\"")
+  printf '%s\n' "${name%%[[:space:]]*}"
 }
 
 find_pkg_dir() {
-  local want="$1" d
-  for d in $(all_pkgs); do
-    if [ "$(pkgname_of "$d")" = "$want" ]; then
-      printf '%s' "$d"
-      return
-    fi
-  done
+  local want="$1" dir
+  while IFS= read -r dir; do
+    [ "$(pkgname_of "$dir")" = "$want" ] || continue
+    printf '%s' "$dir"
+    return
+  done < <(all_pkgs)
   return 1
+}
+
+sync_menu() {
+  local yml=.github/workflows/pipeline.yml
+  local dir targets option
+  sed --in-place '/^        options:/,$ { /^          - /d }' "$yml"
+  targets=$(while IFS= read -r dir; do
+    case "$dir" in *deprecated*) continue ;; esac
+    pkgname_of "$dir"
+  done < <(all_pkgs) | sed '/^$/d' | sort --reverse --unique)
+  targets=$(printf '%s\nall\nautodetect\n' "$targets")
+
+  while IFS= read -r option; do
+    [ -n "$option" ] || continue
+    sed --in-place "/^        options:/a\\\\          - $option" "$yml"
+  done <<<"$targets"
+
+  git diff --quiet -- "$yml" && return
+  echo "pipeline.yml updated."
 }
 
 trust_git_dirs() {
@@ -157,6 +149,11 @@ import_key() {
   gpg --batch --import <<<"${GPG_PRIVATE_KEY:?GPG_PRIVATE_KEY required}"
 }
 
+install_hooks() {
+  git config core.hooksPath .github/hooks
+  echo "hooks path set to .github/hooks"
+}
+
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   case "${1:-}" in
     setup_repos)
@@ -165,8 +162,11 @@ if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
     setup_repos_for_package)
       step setup_repos_for_package "${2:?package directory required}"
       ;;
+    install_hooks)
+      step install_hooks
+      ;;
     *)
-      echo "usage: bash lib.sh {setup_repos|setup_repos_for_package <package-dir>}" >&2
+      echo "usage: bash lib.sh {setup_repos|setup_repos_for_package <package-dir>|install_hooks}" >&2
       exit 1
       ;;
   esac
