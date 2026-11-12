@@ -30,15 +30,16 @@ on:
           - kait2en-assets
           - kait2en-gdm-theme
           - kait2en-gpu-runtime-pm
+          - kait2en-gpu-runtime-pm-cachy
           - kait2en-gpu-runtime-pm-t2
           - kait2en-i915-runtime-pm
           - kait2en-i915-runtime-pm-cachy
           - kait2en-i915-runtime-pm-t2
+          - kait2en-modules-meta
+          - kait2en-plymouth-theme
           - kait2en-thunderbolt-runtime-pm
           - kait2en-thunderbolt-runtime-pm-cachy
           - kait2en-thunderbolt-runtime-pm-t2
-          - kait2en-modules-meta
-          - kait2en-plymouth-theme
           - kait2en-wireless-runtime-pm
           - kait2en-wireless-runtime-pm-cachy
           - kait2en-wireless-runtime-pm-t2
@@ -46,35 +47,35 @@ on:
           - react-drm
           - t2-airshare
           - t2-ave
+          - t2bce_audio-alsa-ucm-conf
+          - t2bce_audio-dsp
+          - t2bce-dkms
+          - t2bdrm-dkms
           - t2-debug
           - t2-dgpu-control
           - t2-drop
           - t2-fan-control
           - t2-force-click
+          - t2gmux-dkms
           - t2-hybrid-gpu-control
           - t2-journal
           - t2-kbd-backlight
+          - t2mfi_fastcharge-dkms
           - t2-power-explorer
           - t2-power-tune
-          - t2-services
-          - t2-smc-control
-          - t2-touchbar
-          - t2-truetone
-          - t2-touchid
-          - t2-zone-power
           - t2_precision_trackpad-dkms
-          - t2_trackpad_actuator-dkms
-          - t2bce-dkms
-          - t2bce_audio-alsa-ucm-conf
-          - t2bce_audio-dsp
-          - t2bdrm-dkms
-          - t2gmux-dkms
-          - t2mfi_fastcharge-dkms
           - t2sbs-dkms
           - t2sep-dkms
+          - t2-services
+          - t2-smc-control
           - t2smc-dkms
           - t2smp-dkms
+          - t2-touchbar
           - t2touchbar-dkms
+          - t2-touchid
+          - t2_trackpad_actuator-dkms
+          - t2-truetone
+          - t2-zone-power
 
 concurrency:
   group: pipeline-${{ github.ref }}
