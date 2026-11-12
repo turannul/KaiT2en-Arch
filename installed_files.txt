@@ -56,6 +56,13 @@ usr/share/libalpm/hooks/70-kait2en-gpu-runtime-pm.hook
 usr/share/libalpm/scripts/kait2en-gpu-runtime-pm
 usr/share/licenses/kait2en-gpu-runtime-pm/LICENSE
 
+# kait2en-gpu-runtime-pm-cachy
+usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
+usr/lib/modules/7.3.3-1-cachyos/updates/amdgpu.ko.zst
+usr/share/libalpm/hooks/70-kait2en-gpu-runtime-pm.hook
+usr/share/libalpm/scripts/kait2en-gpu-runtime-pm
+usr/share/licenses/kait2en-gpu-runtime-pm-cachy/LICENSE
+
 # kait2en-gpu-runtime-pm-t2
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
 usr/lib/modules/7.2.11-arch1-Watanare-T2-1-t2/updates/amdgpu.ko.zst
