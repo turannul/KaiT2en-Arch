@@ -22,7 +22,7 @@ gen_target_menu
 python3 -c 'import yaml; yaml.safe_load(open(".github/workflows/pipeline.yml"))'
 changed=$(git diff --name-only -- .github/workflows/pipeline.yml)
 if [ -n "$changed" ]; then
-  echo "pipeline.yml updated - commit and push it with your own credentials"
+  echo "pipeline.yml updated."
 else
   echo "pipeline.yml already up to date"
 fi
