@@ -2,33 +2,33 @@
 # Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
-pkgname=t2bce_audio-alsa-ucm-conf
-pkgver=0.5.r7.8f859a0
+pkgname=apple-t2-alsa-ucm-conf
+pkgver=0.5.r1.6ddacd9
 pkgrel=1
-pkgdesc="ALSA UCM configuration for the t2bce_audio"
+pkgdesc="ALSA UCM configuration for the snd-apple-t2 driver"
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 arch=('x86_64')
 license=('GPL-2.0-only')
 groups=('kait2en-audio')
-depends=('t2bce_audio')
+depends=('apple-t2-bridge-dkms')
 optdepends=('pipewire' 'pulseaudio')
 provides=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
-conflicts=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
-replaces=('apple-t2-audio-config' 'apple-t2-audio-config-alt')
+conflicts=('apple-t2-audio-config' 'apple-t2-audio-config-alt' 't2bce_audio-alsa-ucm-conf')
+replaces=('apple-t2-audio-config' 'apple-t2-audio-config-alt' 't2bce_audio-alsa-ucm-conf')
 install="$pkgname.install"
 makedepends=('git')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
 sha256sums=('SKIP')
 
 pkgver() {
-  local _revision _commit _p="$srcdir/KaiT2en-Fedora"
-  _revision=$(git -C "$_p" rev-list --count HEAD -- "modules/$pkgname")
-  _commit=$(git -C "$_p" log -1 --format="%h" -- "modules/$pkgname")
+  local _revision _commit _p="$srcdir/KaiT2en-Fedora" _path="modules/apple-t2-alsa-ucm-conf"
+  _revision=$(git -C "$_p" rev-list --count HEAD -- "$_path")
+  _commit=$(git -C "$_p" log -1 --format="%h" -- "$_path")
   printf '0.5.r%s.%s' "${_revision:?}" "${_commit:?}"
 }
 
 package() {
-  cd "$srcdir/KaiT2en-Fedora/modules/$pkgname"
+  cd "$srcdir/KaiT2en-Fedora/modules/apple-t2-alsa-ucm-conf"
   for profile in HiFi-x2 HiFi-x4 HiFi-x6; do
     [[ -r "ucm2/AppleT2/$profile.conf" ]] || return 1
   done

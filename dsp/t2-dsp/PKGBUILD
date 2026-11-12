@@ -1,19 +1,19 @@
 # Maintainer: André Eikmeyer (deqrocks) <dev@deq.rocks>
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
-pkgname=t2bce_audio-dsp
-pkgver=r14.402a353
+pkgname=t2-dsp
+pkgver=r15.6ddacd9
 pkgrel=1
 pkgdesc="Model-specific host-side audio DSP"
 arch=('any')
 url="https://kait2en.org/documentation.html#audio-dsp"
 license=('GPL-3.0-or-later')
 groups=('kait2en-audio')
-depends=('t2bce_audio' 't2bce_audio-alsa-ucm-conf' 'pipewire' 'pipewire-audio' 'pipewire-pulse' 'wireplumber>=0.5.8' 'lsp-plugins-lv2' 'python' 'bankstown')
+depends=('apple-t2-bridge-dkms' 'apple-t2-alsa-ucm-conf' 'pipewire' 'pipewire-audio' 'pipewire-pulse' 'wireplumber>=0.5.8' 'lsp-plugins-lv2' 'python' 'bankstown')
 makedepends=('git' 'python' 'make')
-provides=('t2-dsp' "$pkgname-git")
-conflicts=('t2-dsp' "$pkgname-git")
-replaces=("$pkgname-git")
+provides=("$pkgname-git")
+conflicts=("$pkgname-git" 't2bce_audio-dsp')
+replaces=("$pkgname-git" 't2bce_audio-dsp')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
 sha256sums=('SKIP')
@@ -35,9 +35,4 @@ check() {
 
 package() {
     make -C "$srcdir/KaiT2en-Fedora/dsp" install PREFIX=/usr LIBEXECDIR=/usr/lib DESTDIR="$pkgdir"
-    install -d -m0755 "$pkgdir/usr/share/licenses/$pkgname"
-    if [[ -d "$pkgdir/usr/share/licenses/t2-dsp" ]]; then
-        mv "$pkgdir/usr/share/licenses/t2-dsp"/* "$pkgdir/usr/share/licenses/$pkgname/"
-        rmdir "$pkgdir/usr/share/licenses/t2-dsp"
-    fi
 }

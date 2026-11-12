@@ -226,6 +226,7 @@ prepare_repo() {
   step prune_pkgrels
   step publish_pages
   cd "$ws"
+  step sync_menu
   step sync_pkgbuilds
   step gen_installed_files
   step commit_main
