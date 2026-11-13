@@ -12,7 +12,7 @@ _kver=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${_kver:?Cannot find linux-headers version.} ]]
 
 pkgname=kait2en-i915-runtime-pm
-pkgver=7.2.15_arch1_1.r2.1d586ca
+pkgver=7.3.4_arch1_1.r2.1d586ca
 pkgrel=1
 pkgdesc="Patched i915 module with Apple eDP PSR support and GMUX brightness restore"
 arch=('x86_64')
