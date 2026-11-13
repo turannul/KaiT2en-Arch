@@ -12,7 +12,7 @@ _kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit
 [[ -n ${_kver:?Cannot find linux-t2-headers version.} ]]
 
 pkgname=kait2en-thunderbolt-runtime-pm-t2
-pkgver=7.2.11_arch1_Watanare_T2_1_t2.r4.4b29a99
+pkgver=7.3.4_arch1_Watanare_T2_1_t2.r4.4b29a99
 pkgrel=1
 pkgdesc="Patched thunderbolt module with Titan Ridge & Ice Lake RTD3 (For linux-t2)."
 arch=('x86_64')
