@@ -8,6 +8,7 @@ pkgdesc="Ambient white point adaptation, evening mode and automatic brightness f
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-truetone"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('gtk4' 'libadwaita' 'gnome-shell')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")

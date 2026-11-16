@@ -8,6 +8,7 @@ pkgdesc="AirDrop to Apple devices over AWDL, the system service of T2 AirShare"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-airshare"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('bluez' 'dbus' 'systemd')
 optdepends=(
     'kait2en-wireless-runtime-pm: Patched brcmfmac with AWDL for stock Arch kernel (linux)'

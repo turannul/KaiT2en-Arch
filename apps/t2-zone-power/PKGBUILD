@@ -8,6 +8,7 @@ pkgdesc="SMC power zone monitor and controller for T2 Macs"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-zone-power"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('gtk4' 'libadwaita' 'kait2en-assets' 't2smc-dkms')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")

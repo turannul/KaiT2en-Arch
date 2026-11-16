@@ -8,6 +8,7 @@ pkgdesc="PCIe ASPM and system power optimization utility (!! Use with Caution !!
 arch=('any')
 url="https://kait2en.org/documentation.html#t2-power-tune"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'pciutils' 'polkit' 'systemd' 'kait2en-assets')
 makedepends=('git')
 provides=("$pkgname-git")

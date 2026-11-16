@@ -8,6 +8,7 @@ pkgdesc="Keyboard backlight idle timeout for Apple T2 MacBooks"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-keyboard-backlight"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('upower')
 makedepends=('cargo' 'git' 'libinput')
 provides=("$pkgname-git")

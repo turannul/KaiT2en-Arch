@@ -8,6 +8,7 @@ pkgdesc="Share files with Android phones over Quick Share and with Apple devices
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-airshare"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('bluez' 'gtk4' 'libadwaita' 'kait2en-assets' 't2-drop')
 optdepends=(
     't2-drop: AirDrop extension for t2-airshare'

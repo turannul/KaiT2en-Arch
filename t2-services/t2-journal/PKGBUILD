@@ -3,11 +3,12 @@
 
 pkgname=t2-journal
 pkgver=0.1.0.r22.48855df
-pkgrel=1
+pkgrel=2
 pkgdesc="Utility for Apple T2 bridgeOS logs"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-journal"
 license=('GPL-3.0-or-later')
+groups=('kait2en-tools')
 depends=('t2-services')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")
@@ -38,6 +39,5 @@ check() {
 
 package() {
     make -C "$srcdir/KaiT2en-Fedora/t2-services/$pkgname" install PREFIX=/usr DESTDIR="$pkgdir" TARGET_DIR="$srcdir/KaiT2en-Fedora/t2-services/$pkgname/target"
-    ln -sf t2journal "$pkgdir/usr/bin/t2-journal"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

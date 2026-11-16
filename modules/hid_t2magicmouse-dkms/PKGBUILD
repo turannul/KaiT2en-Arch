@@ -8,6 +8,7 @@ pkgdesc="KaiT2en Apple HID module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
+groups=('kait2en-modules')
 depends=('dkms')
 optdepends=(
     'linux-cachyos-headers: build modules against the Cachy kernel'

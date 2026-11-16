@@ -8,6 +8,7 @@ pkgdesc="Live Apple T2 (bridgeOS) debugger over the Instruments dtservicehub"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-debug"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('gtk4' 'libadwaita' 'kait2en-assets' 't2-services')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")

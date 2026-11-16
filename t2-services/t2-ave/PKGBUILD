@@ -8,6 +8,7 @@ pkgdesc="T2 AVE encoder"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')
+groups=('kait2en-frameworks')
 depends=('t2-services' 'apple-t2-bridge-dkms')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")

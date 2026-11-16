@@ -8,6 +8,7 @@ pkgdesc="Device topology and runtime power state explorer"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-power-explorer"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets')
 makedepends=('cargo' 'git')
 provides=("$pkgname-git")

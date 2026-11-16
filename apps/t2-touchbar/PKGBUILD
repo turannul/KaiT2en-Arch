@@ -8,6 +8,7 @@ pkgdesc="Touch Bar replacement with dark-first display, media and F-key rows"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-touch-bar"
 license=('GPL-3.0-or-later')
+groups=('kait2en-apps')
 depends=('t2bdrm-dkms' 't2touchbar-dkms' 't2_trackpad_actuator-dkms' 'adwaita-fonts' 'libinput')
 optdepends=(
     'cantarell-fonts: Humanist sans serif font'

@@ -8,6 +8,7 @@ pkgdesc="KaiT2en Plymouth boot splash theme"
 arch=('any')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-3.0-or-later')
+groups=('kait2en-themes')
 depends=('plymouth')
 makedepends=('git')
 provides=("$pkgname-git")
