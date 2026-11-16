@@ -7,8 +7,6 @@ react-drm-src/
 bankstown-*.tar.gz
 .cargo-cache/
 .npm-cache/
-deps/
-public/
 /bankstown-git/bankstown
 /bankstown/bankstown
 /fruitjuice/fruitjuice

@@ -21,7 +21,6 @@ on:
         options:
           - autodetect
           - all
-          - ${pkgbase}
           - apple-t2-alsa-ucm-conf
           - apple-t2-bridge-dkms
           - bankstown
