@@ -8,22 +8,21 @@ _krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
 _upstream=${_krelease%%-*}
 [[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
 _major=${_upstream%%.*}
-_kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
-[[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
+KVER=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${KVER:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-thunderbolt-runtime-pm-cachy
 pkgver=7.3.4_1_cachyos.r4.4b29a99
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched thunderbolt module with Titan Ridge & Ice Lake RTD3 (For linux-cachy)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
 groups=('kait2en-runtime-patches' 'kait2en-thunderbolt-patch')
-depends=("linux-cachyos=$_kver")
+depends=("linux-cachyos=$KVER")
 makedepends=('git' 'linux-cachyos-headers')
 provides=('thunderbolt-pm-patch')
-conflicts=('kait2en-thunderbolt-runtime-pm' 'kait2en-thunderbolt-runtime-pm-t2' 't2thunderbolt-dkms')
-install="$pkgname.install"
+conflicts=('t2thunderbolt-dkms')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
 sha256sums=('SKIP' 'SKIP')
@@ -81,7 +80,7 @@ package() {
     [[ -n ${_kdir:?linux-cachyos-headers KDIR not found} ]]
     _k=$(basename "$(dirname "$_kdir")")
     install -Dpm 0644 "$srcdir/linux/drivers/thunderbolt/thunderbolt.ko.zst" "$pkgdir/usr/lib/modules/$_k/updates/thunderbolt.ko.zst"
-    install -D -m0644 "$startdir/libalpm/70-kait2en-thunderbolt-runtime-pm.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm.hook"
-    install -D -m0755 "$startdir/libalpm/kait2en-thunderbolt-runtime-pm" "$pkgdir/usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm"
+    install -D -m0644 "$startdir/libalpm/70-kait2en-thunderbolt-runtime-pm-cachy.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm-cachy.hook"
+    install -D -m0755 "$startdir/libalpm/kait2en-thunderbolt-runtime-pm-cachy" "$pkgdir/usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm-cachy"
     install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

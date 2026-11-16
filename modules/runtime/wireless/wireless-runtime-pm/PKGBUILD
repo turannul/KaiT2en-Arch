@@ -8,22 +8,20 @@ _krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
 _upstream=${_krelease%%-*}
 [[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
 _major=${_upstream%%.*}
-_kver=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
-[[ -n ${_kver:?Cannot find linux-headers version.} ]]
+KVER=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${KVER:?Cannot find linux-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm
 pkgver=7.3.4_arch1_2.r25.7e9903c
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
 groups=('kait2en-runtime-patches' 'kait2en-wireless-patch')
-depends=("linux=$_kver")
+depends=("linux=$KVER")
 makedepends=('git' 'linux-headers')
 provides=('wireless-pm-patch')
-conflicts=('kait2en-wireless-runtime-pm-t2' 'kait2en-wireless-runtime-pm-cachy')
-install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
 sha256sums=('SKIP' 'SKIP')

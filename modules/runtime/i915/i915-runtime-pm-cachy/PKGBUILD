@@ -8,22 +8,20 @@ _krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
 _upstream=${_krelease%%-*}
 [[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
 _major=${_upstream%%.*}
-_kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
-[[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
+KVER=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+[[ -n ${KVER:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-i915-runtime-pm-cachy
 pkgver=7.3.4_1_cachyos.r2.1d586ca
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched i915 module with Apple eDP PSR support and GMUX brightness restore (For linux-cachy)."
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
 groups=('kait2en-runtime-patches' 'kait2en-igpu-patch')
-depends=('t2gmux' "linux-cachyos=$_kver")
+depends=('t2gmux' "linux-cachyos=$KVER")
 makedepends=('git' 'linux-cachyos-headers')
 provides=('i915-pm-patch')
-conflicts=('kait2en-i915-runtime-pm' 'kait2en-i915-runtime-pm-t2')
-install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
 noextract=("linux-$_upstream.tar.xz")
 sha256sums=('SKIP' 'SKIP')
@@ -48,7 +46,6 @@ prepare() {
     set +u
     trap - ERR EXIT
     REPO_ROOT="$_wdir"
-    KVER="$_upstream"
 
     fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
 
@@ -61,14 +58,10 @@ prepare() {
     source "$srcdir/.upstream-rtp.sh"
     rm -f "$srcdir/.upstream-rtp.sh"
 
-    rewrite_trace_path "$_i915/i915_trace.h" \
-        ../../drivers/gpu/drm/i915 . || return 1
-    rewrite_trace_path "$_i915/intel_uncore_trace.h" \
-        ../../drivers/gpu/drm/i915 . || return 1
-    rewrite_trace_path "$_i915/display/intel_display_trace.h" \
-        ../../drivers/gpu/drm/i915/display display || return 1
-    rewrite_trace_path "$_i915/gvt/trace.h" \
-        ../../drivers/gpu/drm/i915/gvt gvt || return 1
+    rewrite_trace_path "$_i915/i915_trace.h" ../../drivers/gpu/drm/i915 . || return 1
+    rewrite_trace_path "$_i915/intel_uncore_trace.h" ../../drivers/gpu/drm/i915 . || return 1
+    rewrite_trace_path "$_i915/display/intel_display_trace.h" ../../drivers/gpu/drm/i915/display display || return 1
+    rewrite_trace_path "$_i915/gvt/trace.h" ../../drivers/gpu/drm/i915/gvt gvt || return 1
 }
 
 build() {
@@ -107,8 +100,8 @@ package() {
         [[ -f "$_m" ]] || { error "${_m##*/} was not built"; return 1; }
         install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
     done
-    install -D -m0644 "$startdir/modprobe.d/kait2en-i915-runtime-pm.conf" "$pkgdir/usr/lib/modprobe.d/kait2en-i915-runtime-pm.conf"
-    install -D -m0644 "$startdir/libalpm/70-kait2en-i915-runtime-pm.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm.hook"
-    install -D -m0755 "$startdir/libalpm/kait2en-i915-runtime-pm" "$pkgdir/usr/share/libalpm/scripts/kait2en-i915-runtime-pm"
+    install -D -m0644 "$startdir/modprobe.d/kait2en-i915-runtime-pm-cachy.conf" "$pkgdir/usr/lib/modprobe.d/kait2en-i915-runtime-pm-cachy.conf"
+    install -D -m0644 "$startdir/libalpm/70-kait2en-i915-runtime-pm-cachy.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm-cachy.hook"
+    install -D -m0755 "$startdir/libalpm/kait2en-i915-runtime-pm-cachy" "$pkgdir/usr/share/libalpm/scripts/kait2en-i915-runtime-pm-cachy"
     install -Dpm 0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

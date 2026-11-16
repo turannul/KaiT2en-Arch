@@ -10,4 +10,4 @@ Target = usr/lib/modules/*/updates/drm_display_helper.ko.zst
 Description = Updating module dependencies and initramfs for the patched i915...
 When = PostTransaction
 NeedsTargets
-Exec = /usr/share/libalpm/scripts/kait2en-i915-runtime-pm
+Exec = /usr/share/libalpm/scripts/kait2en-i915-runtime-pm-cachy
