@@ -227,6 +227,25 @@ usr/share/licenses/kait2en-wireless-runtime-pm-t2/LICENSE
 usr/bin/netmuxd
 usr/share/licenses/netmuxd-git/LICENSE
 
+# nirimation
+usr/bin/nirimation
+usr/share/licenses/nirimation/LICENSE
+usr/share/nirimation/bloom.kdl
+usr/share/nirimation/burn-ashes.kdl
+usr/share/nirimation/burn-multicolor.kdl
+usr/share/nirimation/burn.kdl
+usr/share/nirimation/explode.kdl
+usr/share/nirimation/fold-window.kdl
+usr/share/nirimation/glitch-cyberpunk.kdl
+usr/share/nirimation/glitch.kdl
+usr/share/nirimation/halftone.kdl
+usr/share/nirimation/pixelate.kdl
+usr/share/nirimation/pop-drop.kdl
+usr/share/nirimation/ribbons.kdl
+usr/share/nirimation/roll-drop.kdl
+usr/share/nirimation/swipe-window.kdl
+usr/share/nirimation/unravel.kdl
+
 # react-drm
 opt/react-drm/.env.example.kait2en
 opt/react-drm/.env.example.t2linux
