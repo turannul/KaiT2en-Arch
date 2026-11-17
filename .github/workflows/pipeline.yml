@@ -94,8 +94,8 @@ jobs:
     runs-on: ubuntu-26.04
     container: archlinux:base
     outputs:
-      packages: ${{ steps.target-matrix.outputs.packages || steps.set-matrix.outputs.packages }}
-      removed: ${{ steps.target-matrix.outputs.removed || steps.set-matrix.outputs.removed }}
+      packages: ${{ steps.select.outputs.packages }}
+      removed: ${{ steps.select.outputs.removed }}
     steps:
       - name: Setup
         run: pacman --sync --refresh --noconfirm --needed git
@@ -109,17 +109,10 @@ jobs:
         run: bash .github/workflow_scripts/lib.sh setup_repos
 
       - name: Select
-        id: target-matrix
-        if: github.event_name == 'workflow_dispatch' && inputs.target != ''
-        env:
-          TARGET: ${{ inputs.target }}
-        run: bash .github/workflow_scripts/detect.sh manual
-
-      - name: Detect
-        id: set-matrix
-        if: github.event_name != 'workflow_dispatch' || inputs.target == ''
+        id: select
         env:
           EVENT_NAME: ${{ github.event_name }}
+          TARGET: ${{ inputs.target }}
           BASE_REF: ${{ github.base_ref }}
           EVENT_BEFORE: ${{ github.event.before }}
         run: bash .github/workflow_scripts/detect.sh
