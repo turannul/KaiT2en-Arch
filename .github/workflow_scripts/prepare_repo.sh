@@ -142,8 +142,12 @@ sync_pkgbuilds() {
       cp --force "$p" "$dir/PKGBUILD"
       updated_pkgs="${updated_pkgs:+$updated_pkgs }$n"
     fi
-    art=$(find artifacts -path "*${n}*" -name '*.pkg.tar.zst' | head -n 1)
+    art=$(find "$(dirname "$p")" -maxdepth 1 -type f -name '*.pkg.tar.zst' | head -n 1)
     if [ -n "$art" ] && [ -f "$art" ]; then
+      if [ "$(pkgfile_name "$art")" != "$n" ]; then
+        echo "sync_pkgbuilds: archive $(basename "$art") does not belong to $n" >&2
+        continue
+      fi
       bver=$(tar --zstd -xOf "$art" .PKGINFO 2>/dev/null | sed -n 's/^pkgver = //p' | head -n 1)
       if [ -n "$bver" ]; then
         brel="${bver##*-}"
@@ -165,6 +169,39 @@ pkgfile_ver() {
     | sed --regexp-extended "s/^$(pkgfile_name "$1")-//; s/-(x86_64|any)\$//"
 }
 
+version_cmp() {
+  local a="$1" b="$2" arel brel arev brev
+  arel=${a##*-}; brel=${b##*-}
+  a=${a%-*}; b=${b%-*}
+  if [[ $a == *".r"* ]]; then
+    arev=${a##*.r}; a=${a%.r*}
+  else
+    arev=""
+  fi
+  if [[ $b == *".r"* ]]; then
+    brev=${b##*.r}; b=${b%.r*}
+  else
+    brev=""
+  fi
+  if [ -n "$arev" ] && [ -n "$brev" ]; then
+    local an=${arev%%.*} bn=${brev%%.*}
+    if [ "$an" != "$bn" ]; then
+      case "$an$bn" in
+        *[!0-9]*|"") ;;
+        *) [ "$an" -gt "$bn" ] && { echo 1; return; }
+           [ "$an" -lt "$bn" ] && { echo -1; return; };;
+      esac
+    fi
+  elif [ -n "$arev" ] || [ -n "$brev" ]; then
+    [ -n "$arev" ] && { echo 1; return; }
+    echo -1; return
+  fi
+  [ "$arel" -gt "$brel" ] && { echo 1; return; }
+  [ "$arel" -lt "$brel" ] && { echo -1; return; }
+  [ "$a" != "$b" ] && { vercmp "$a" "$b"; return; }
+  echo 0
+}
+
 latest_archives() {
   local f n v
   local -A pick=() pickver=()
@@ -172,7 +209,7 @@ latest_archives() {
     [ -f "$f" ] || continue
     n=$(pkgfile_name "$f")
     v=$(pkgfile_ver "$f")
-    if [ -z "${pickver["$n"]:-}" ] || [ "$(vercmp "$v" "${pickver["$n"]}")" = "1" ]; then
+    if [ -z "${pickver["$n"]:-}" ] || [ "$(version_cmp "$v" "${pickver["$n"]}")" = "1" ]; then
       pick["$n"]="$f"
       pickver["$n"]="$v"
     fi

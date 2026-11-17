@@ -39,18 +39,17 @@ pkgver_of() {
   makepkg_as_user "$1" --printsrcinfo </dev/null | awk --field-separator=' = ' '/^[[:space:]]*pkgver = /{print $2}'
 }
 
-pkgrel_of() {
-  makepkg_as_user "$1" --printsrcinfo </dev/null | awk --field-separator=' = ' '/^[[:space:]]*pkgrel = /{print $2}'
-}
-
 pkgrel_from_pkgbuild() {
-  sed --quiet 's/^[[:space:]]*pkgrel=//p' "$1/PKGBUILD" | head --lines=1 | tr -d "'\""
+  sed --quiet 's/^[[:space:]]*pkgrel=//p' "$1/PKGBUILD" | head --lines=1 | tr -d "'\"" | sed --regexp-extended 's/[[:space:]]+$//'
 }
 
-repo_pkgrel() {
+repo_version() {
   local pkgname="$1" dbfile="/var/lib/pacman/sync/turann-s-place.db"
   [ -f "$dbfile" ] || return 1
-  tar -tf "$dbfile" 2>/dev/null | sed -nE "s/^$pkgname-.*-([0-9]+)\/desc\$/\\1/p" | head -1
+  tar -xf "$dbfile" -O --wildcards '*/desc' 2>/dev/null | awk -v want="$pkgname" '
+    $0 == "%NAME%" { getline; name = $0; next }
+    $0 == "%VERSION%" { getline; ver = $0; if (name == want) { print ver; exit } }
+  '
 }
 
 run_makepkg_nobuild() {
@@ -69,26 +68,26 @@ run_makepkg_nobuild() {
 
 # return: 0 = outdated, 1 = up to date, 2 = error
 check_pkgver() {
-  local d="$1" local_ver upstream_ver local_rel upstream_rel repo_rel
+  local d="$1" upstream_ver repo_ver repo_pkgver repo_rel local_pkgrel
   echo "== checking $d =="
-  local_ver=$(pkgver_of "$d")
-  local_rel=$(pkgrel_of "$d")
-  run_makepkg_nobuild "$d" && upstream_ver=$(pkgver_of "$d") && upstream_rel=$(pkgrel_of "$d")
   local_pkgrel=$(pkgrel_from_pkgbuild "$d")
+  run_makepkg_nobuild "$d" && upstream_ver=$(pkgver_of "$d")
   local pkgname
   pkgname=$(pkgname_of "$d")
-  repo_rel=$(repo_pkgrel "$pkgname")
-  echo "   local: ${local_ver:-?}-${local_pkgrel:-?}"
-  echo "   upstream: ${upstream_ver:-?}-${upstream_rel:-?}"
-  [ -n "$repo_rel" ] && echo "   repo: ${repo_rel}"
-  [ -n "$local_ver" ] || { echo "   -> error: could not read local pkgver"; return 2; }
+  repo_ver=$(repo_version "$pkgname")
+  [ -n "$repo_ver" ] && { repo_pkgver=${repo_ver%-*}; repo_rel=${repo_ver##*-}; }
+  echo "   local:    ${upstream_ver:-?}-${local_pkgrel:-?}"
+  echo "   repo:     ${repo_ver:-not published}"
   [ -n "$upstream_ver" ] || { echo "   -> error: could not compute upstream pkgver"; return 2; }
-  # Outdated if: upstream pkgver changed OR local pkgrel > repo pkgrel
-  if [ "$local_ver" != "$upstream_ver" ]; then
+  if [ -z "$repo_ver" ]; then
+    echo "   -> outdated (not published)"
+    return 0
+  fi
+  if [ "$repo_pkgver" != "$upstream_ver" ]; then
     echo "   -> outdated (pkgver)"
     return 0
   fi
-  if [ -n "$repo_rel" ] && [ -n "$local_pkgrel" ] && [ "$local_pkgrel" -gt "$repo_rel" ]; then
+  if [ -n "$repo_rel" ] && [ -n "$local_pkgrel" ] && [ "$repo_rel" -lt "$local_pkgrel" ]; then
     echo "   -> outdated (pkgrel)"
     return 0
   fi
@@ -138,7 +137,7 @@ outdated_pkgs() {
   done
   RESULTS=$(mktemp --directory)
   export RESULTS
-  export -f check_one check_pkgver pkgver_of pkgrel_of pkgrel_from_pkgbuild repo_pkgrel pkgname_of run_makepkg_nobuild makepkg_as_user
+  export -f check_one check_pkgver pkgver_of pkgrel_from_pkgbuild repo_version pkgname_of run_makepkg_nobuild makepkg_as_user
   if ((${#normal[@]})); then
     printf '%s\n' "${normal[@]}" | xargs --no-run-if-empty -P 4 -I{} bash -c 'check_one "$1"' _ {} || true
   fi
