@@ -12,8 +12,8 @@ KVER=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${KVER:?Cannot find linux-headers version.} ]]
 
 pkgname=kait2en-gpu-runtime-pm
-pkgver=7.3.4_arch1_Watanare_DHH_Is_A_Fascist_T2_2_t2.r47.18ad2b0
-pkgrel=2
+pkgver=7.3.4_arch1_2.r47.18ad2b0
+pkgrel=1
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management. built for arch kernel (linux) - (Supported; MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

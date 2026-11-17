@@ -12,8 +12,8 @@ KVER=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${KVER:?Cannot find linux-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm
-pkgver=7.3.4_arch1_Watanare_DHH_Is_A_Fascist_T2_2_t2.r25.7e9903c
-pkgrel=2
+pkgver=7.3.4_arch1_2.r25.7e9903c
+pkgrel=1
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes. built for arch kernel (linux)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
