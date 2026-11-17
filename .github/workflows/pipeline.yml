@@ -46,6 +46,7 @@ on:
           - kait2en-wireless-runtime-pm-cachy
           - kait2en-wireless-runtime-pm-t2
           - netmuxd-git
+          - nirimation
           - react-drm
           - t2-airshare
           - t2-ave
