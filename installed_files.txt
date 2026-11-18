@@ -212,13 +212,13 @@ usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-cachy
 usr/share/licenses/kait2en-wireless-runtime-pm-cachy/LICENSE
 
 # kait2en-wireless-runtime-pm-t2
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/brcmfmac-bca.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/brcmfmac-cyw.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/brcmfmac-wcc.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/brcmfmac.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/btbcm.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/hci_bcm4377.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/hci_uart.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac-bca.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac-cyw.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac-wcc.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/btbcm.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/hci_bcm4377.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/hci_uart.ko.zst
 usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm-t2.hook
 usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-t2
 usr/share/licenses/kait2en-wireless-runtime-pm-t2/LICENSE
@@ -3008,8 +3008,11 @@ usr/share/licenses/t2-smc-control/LICENSE
 
 # t2-touchbar
 etc/kait2en/touchbar.toml
+etc/polkit-1/rules.d/50-kait2en-touchbar.rules
 usr/bin/kait2en-touchbar
 usr/lib/systemd/system/kait2en-touchbar-attach.service
+usr/lib/systemd/system/kait2en-touchbar-session@.service
+usr/lib/systemd/user/kait2en-touchbar-panel.service
 usr/lib/systemd/user/kait2en-touchbar.service
 usr/lib/sysusers.d/t2-touchbar.conf
 usr/lib/tmpfiles.d/t2-touchbar.conf
