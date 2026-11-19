@@ -3,7 +3,7 @@
 
 pkgname=t2-touchbar
 pkgver=0.1.0.r40.b0acfa7
-pkgrel=1
+pkgrel=2
 pkgdesc="Touch Bar replacement with dark-first display, media and F-key rows"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-touch-bar"
@@ -50,7 +50,12 @@ package() {
     make -C "$srcdir/KaiT2en-Fedora/apps/$pkgname" install DESTDIR="$pkgdir" PREFIX=/usr
     sed -i 's|/usr/local/bin|/usr/bin|g' \
         "$pkgdir/usr/lib/systemd/system/kait2en-touchbar-attach.service" \
+        "$pkgdir/usr/lib/systemd/system/kait2en-touchbar-session@.service" \
         "$pkgdir/usr/lib/systemd/user/kait2en-touchbar.service"
+    install -d -m0755 "$pkgdir/usr/share/polkit-1/rules.d"
+    install -m0644 "$pkgdir/etc/polkit-1/rules.d/50-kait2en-touchbar.rules" \
+        "$pkgdir/usr/share/polkit-1/rules.d/50-kait2en-touchbar.rules"
+    rm -rf "$pkgdir/etc/polkit-1"
     install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/kait2en-touchbar/LICENSE"
     install -d -m0755 "$pkgdir/usr/lib/sysusers.d"
     echo 'g kait2en-touchbar -' > "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
