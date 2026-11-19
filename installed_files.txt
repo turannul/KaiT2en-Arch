@@ -111,7 +111,7 @@ usr/share/pixmaps/kait2en-gdm-logo.png
 
 # kait2en-gpu-runtime-pm
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm.conf
-usr/lib/modules/7.3.4-arch1-2/updates/amdgpu.ko.zst
+usr/lib/modules/7.3.5-arch1-1/updates/amdgpu.ko.zst
 usr/share/libalpm/hooks/70-kait2en-gpu-runtime-pm.hook
 usr/share/libalpm/scripts/kait2en-gpu-runtime-pm
 usr/share/licenses/kait2en-gpu-runtime-pm/LICENSE
@@ -125,15 +125,15 @@ usr/share/licenses/kait2en-gpu-runtime-pm-cachy/LICENSE
 
 # kait2en-gpu-runtime-pm-t2
 usr/lib/modprobe.d/kait2en-gpu-runtime-pm-t2.conf
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/amdgpu.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/amdgpu.ko.zst
 usr/share/libalpm/hooks/70-kait2en-gpu-runtime-pm-t2.hook
 usr/share/libalpm/scripts/kait2en-gpu-runtime-pm-t2
 usr/share/licenses/kait2en-gpu-runtime-pm-t2/LICENSE
 
 # kait2en-i915-runtime-pm
 usr/lib/modprobe.d/kait2en-i915-runtime-pm.conf
-usr/lib/modules/7.3.4-arch1-2/updates/drm_display_helper.ko.zst
-usr/lib/modules/7.3.4-arch1-2/updates/i915.ko.zst
+usr/lib/modules/7.3.5-arch1-1/updates/drm_display_helper.ko.zst
+usr/lib/modules/7.3.5-arch1-1/updates/i915.ko.zst
 usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm.hook
 usr/share/libalpm/scripts/kait2en-i915-runtime-pm
 usr/share/licenses/kait2en-i915-runtime-pm/LICENSE
@@ -148,8 +148,8 @@ usr/share/licenses/kait2en-i915-runtime-pm-cachy/LICENSE
 
 # kait2en-i915-runtime-pm-t2
 usr/lib/modprobe.d/kait2en-i915-runtime-pm-t2.conf
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/drm_display_helper.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/i915.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/drm_display_helper.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/i915.ko.zst
 usr/share/libalpm/hooks/70-kait2en-i915-runtime-pm-t2.hook
 usr/share/libalpm/scripts/kait2en-i915-runtime-pm-t2
 usr/share/licenses/kait2en-i915-runtime-pm-t2/LICENSE
@@ -170,7 +170,7 @@ usr/share/plymouth/themes/kait2en/lock.png
 usr/share/plymouth/themes/kait2en/watermark.png
 
 # kait2en-thunderbolt-runtime-pm
-usr/lib/modules/7.3.4-arch1-2/updates/thunderbolt.ko.zst
+usr/lib/modules/7.3.5-arch1-1/updates/thunderbolt.ko.zst
 usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm.hook
 usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm
 usr/share/licenses/kait2en-thunderbolt-runtime-pm/LICENSE
@@ -182,7 +182,7 @@ usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm-cachy
 usr/share/licenses/kait2en-thunderbolt-runtime-pm-cachy/LICENSE
 
 # kait2en-thunderbolt-runtime-pm-t2
-usr/lib/modules/7.3.4-arch1-Watanare-DHH-Is-A-Fascist-T2-2-t2/updates/thunderbolt.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/thunderbolt.ko.zst
 usr/share/libalpm/hooks/70-kait2en-thunderbolt-runtime-pm-t2.hook
 usr/share/libalpm/scripts/kait2en-thunderbolt-runtime-pm-t2
 usr/share/licenses/kait2en-thunderbolt-runtime-pm-t2/LICENSE
@@ -212,13 +212,13 @@ usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-cachy
 usr/share/licenses/kait2en-wireless-runtime-pm-cachy/LICENSE
 
 # kait2en-wireless-runtime-pm-t2
-usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac-bca.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac-cyw.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac-wcc.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/brcmfmac.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/btbcm.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/hci_bcm4377.ko.zst
-usr/lib/modules/7.3.4-arch1-Watanare-Trans-Rights-T2-3-t2/updates/hci_uart.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/brcmfmac-bca.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/brcmfmac-cyw.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/brcmfmac-wcc.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/brcmfmac.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/btbcm.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/hci_bcm4377.ko.zst
+usr/lib/modules/7.3.4-arch1-Watanare-Omarchy-Is-Not-Arch-T2-4-t2/updates/hci_uart.ko.zst
 usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm-t2.hook
 usr/share/libalpm/scripts/kait2en-wireless-runtime-pm-t2
 usr/share/licenses/kait2en-wireless-runtime-pm-t2/LICENSE
