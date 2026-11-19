@@ -13,7 +13,7 @@ KVER=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit}
 
 pkgname=kait2en-wireless-runtime-pm-t2
 pkgver=7.3.4_arch1_Watanare_Omarchy_Is_Not_Arch_T2_4_t2.r26.fd6e0cf
-pkgrel=1
+pkgrel=2
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes. built for T2 kernel (linux-t2)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -24,7 +24,6 @@ optdepends=('kernel-modules-hook: Keeps your system fully functional after a ker
 makedepends=('git' 'linux-t2-headers')
 provides=('wireless-pm-patch')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
-noextract=("linux-$_upstream.tar.xz")
 sha256sums=('SKIP' 'SKIP')
 
 pkgver() {

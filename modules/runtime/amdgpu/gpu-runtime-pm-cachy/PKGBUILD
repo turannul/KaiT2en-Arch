@@ -13,7 +13,7 @@ KVER=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; 
 
 pkgname=kait2en-gpu-runtime-pm-cachy
 pkgver=7.3.4_1_cachyos.r47.18ad2b0
-pkgrel=2
+pkgrel=3
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management. built for cachy kernel (linux-cachy) - (Supported; MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
@@ -24,7 +24,6 @@ optdepends=('kernel-modules-hook: Keeps your system fully functional after a ker
 makedepends=('git' 'linux-cachyos-headers')
 provides=('amdgpu-gmux-pm-patch')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
-noextract=("linux-$_upstream.tar.xz")
 sha256sums=('SKIP' 'SKIP')
 
 pkgver() {
