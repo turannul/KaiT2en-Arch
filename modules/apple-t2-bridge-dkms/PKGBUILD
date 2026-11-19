@@ -16,7 +16,6 @@ optdepends=(
     'linux-t2-headers: build modules against the T2 kernel'
     'apple-t2-alsa-ucm-conf: ALSA UCM audio profiles'
     't2-dsp: Model-specific host-side audio DSP'
-    'kernel-modules-hook: Keeps your system fully functional after a kernel upgrade'
 )
 makedepends=('git')
 conflicts=('t2bce' 't2bce_core' 't2bce_audio' 't2bce_ave' 't2bce_dma' 't2bce_vhci' 't2bce_sidecar' 't2bce-dkms')
