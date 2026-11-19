@@ -23,4 +23,5 @@ optdepends=(
     'kait2en-wireless-runtime-pm: Patched Broadcom wireless modules with Apple coexistence fixes. built for arch kernel (linux)'
     'kait2en-wireless-runtime-pm-cachy: Patched Broadcom wireless modules with Apple coexistence fixes. built for cachy kernel (linux-cachy)'
     'kait2en-wireless-runtime-pm-t2: Patched Broadcom wireless modules with Apple coexistence fixes. built for T2 kernel (linux-t2)'
+    'kernel-modules-hook: Keeps your system fully functional after a kernel upgrade'
 )

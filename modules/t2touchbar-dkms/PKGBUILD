@@ -14,6 +14,7 @@ optdepends=(
     'linux-cachyos-headers: build modules against the Cachy kernel'
     'linux-headers: build modules against the Arch kernel'
     'linux-t2-headers: build modules against the T2 kernel'
+    'kernel-modules-hook: Keeps your system fully functional after a kernel upgrade'
 )
 makedepends=('git')
 provides=('t2touchbar' 't2hid' 't2touchbar_bl' 't2touchbar_kbd')
