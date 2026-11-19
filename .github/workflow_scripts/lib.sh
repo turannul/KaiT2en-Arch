@@ -14,16 +14,21 @@ add_repo() {
 
 add_repo_before_arch() {
   local name="$1"
-  local server="$2"
-  local tmp
+  local entry="$2"
+  local tmp repo_line
   grep --quiet --fixed-strings "[$name]" /etc/pacman.conf && return
 
-  tmp=$(mktemp)
+  if [[ "$entry" == Include* ]]; then
+    repo_line="$entry"
+  else
+    repo_line="Server = $entry"
+  fi
 
-  awk -v name="$name" -v server="$server" '
+  tmp=$(mktemp)
+  awk -v name="$name" -v repo_line="$repo_line" '
     /^\[core\]$/ && !added {
       print "[" name "]"
-      print "Server = " server
+      print repo_line
       print "SigLevel = Never"
       print ""
       added=1
@@ -36,11 +41,18 @@ add_repo_before_arch() {
 }
 
 setup_cachy_repo() {
+  local nosig
+  nosig=$(mktemp)
+  printf '[options]\nSigLevel = Never\n' > "$nosig"
   sed --in-place 's/^Architecture = .*/Architecture = x86_64 x86_64_v3/' /etc/pacman.conf
-  add_repo_before_arch cachyos-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-v3/
-  add_repo_before_arch cachyos-core-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-core-v3/
-  add_repo_before_arch cachyos-extra-v3 https://mirror.cachyos.org/repo/x86_64_v3/cachyos-extra-v3/
-  add_repo_before_arch cachyos https://mirror.cachyos.org/repo/x86_64/cachyos/
+  pacman --upgrade --noconfirm --noprogressbar --config "$nosig" \
+    'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-mirrorlist-27-1-any.pkg.tar.zst' \
+    'https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-v3-mirrorlist-27-1-any.pkg.tar.zst'
+  rm --force "$nosig"
+  add_repo_before_arch cachyos-v3 'Include = /etc/pacman.d/cachyos-v3-mirrorlist'
+  add_repo_before_arch cachyos-core-v3 'Include = /etc/pacman.d/cachyos-v3-mirrorlist'
+  add_repo_before_arch cachyos-extra-v3 'Include = /etc/pacman.d/cachyos-v3-mirrorlist'
+  add_repo_before_arch cachyos 'Include = /etc/pacman.d/cachyos-mirrorlist'
 }
 
 setup_t2_repo() {
