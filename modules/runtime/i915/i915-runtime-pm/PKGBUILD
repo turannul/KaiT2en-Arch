@@ -12,8 +12,8 @@ KVER=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${KVER:?Cannot find linux-headers version.} ]]
 
 pkgname=kait2en-i915-runtime-pm
-pkgver=7.3.4_arch1_2.r2.1d586ca
-pkgrel=2
+pkgver=7.3.5_arch1_1.r2.1d586ca
+pkgrel=1
 pkgdesc="Patched i915 module with Apple eDP PSR support and GMUX brightness restore. built for arch kernel (linux)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
