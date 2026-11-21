@@ -12,8 +12,8 @@ KVER=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; 
 [[ -n ${KVER:?Cannot find linux-cachyos-headers version.} ]]
 
 pkgname=kait2en-i915-runtime-pm-cachy
-pkgver=7.3.4_1_cachyos.r2.1d586ca
-pkgrel=3
+pkgver=7.3.5_2_cachyos.r2.1d586ca
+pkgrel=1
 pkgdesc="Patched i915 module with Apple eDP PSR support and GMUX brightness restore. built for cachy kernel (linux-cachy)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
