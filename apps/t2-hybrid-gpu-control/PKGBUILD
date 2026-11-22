@@ -3,13 +3,14 @@
 
 pkgname=t2-hybrid-gpu-control
 pkgver=0.1.0.r23.0ffb582
-pkgrel=1
+pkgrel=2
 pkgdesc="Configure hybrid graphics on MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-hybrid-gpu-control"
 license=('GPL-3.0-or-later')
 groups=('kait2en-apps')
-depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 'kait2en-gpu-runtime-pm' 'efibootmgr')
+depends=('gtk4' 'libadwaita' 'polkit' 'kait2en-assets' 'amdgpu-gmux-pm-patch' 'efibootmgr')
+optdepends=('i915-pm-patch: Patched i915 module with Apple eDP PSR support and GMUX brightness restore.')
 makedepends=('cargo' 'git' 'rust-src')
 provides=("$pkgname-git")
 conflicts=('t2-dgpu-control' "$pkgname-git" 'tlp' 'tlp-git' 'tlp-pd' 'tlp-pd-git' 'tlp-rdw' 'tlp-rdw-git')
