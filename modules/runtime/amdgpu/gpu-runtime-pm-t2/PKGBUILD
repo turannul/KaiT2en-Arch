@@ -12,7 +12,7 @@ KVER=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit}
 [[ -n ${KVER:?Cannot find linux-t2-headers version.} ]]
 
 pkgname=kait2en-gpu-runtime-pm-t2
-pkgver=7.3.5_arch1_Watanare_Immigrants_Welcome_T2_1_t2.r47.18ad2b0
+pkgver=7.3.5_arch1_Watanare_Protect_Trans_Kids_T2_2_t2.r47.18ad2b0
 pkgrel=1
 pkgdesc="Patched AMDGPU module with Apple GMUX runtime Power Management. built for T2 kernel (linux-t2) - (Supported; MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2)"
 arch=('x86_64')
