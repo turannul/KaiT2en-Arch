@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-cpu-control
-pkgver=0.02.r1.1fb1080
+pkgver=0.02.r2.6915384
 pkgrel=1
 pkgdesc="CPU power limit and thermal telemetry controller (deprecated; use t2-zone-power)"
 arch=('x86_64')

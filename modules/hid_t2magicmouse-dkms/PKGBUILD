@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=hid_t2magicmouse-dkms
-pkgver=0.1.r6.f43a396
-pkgrel=2
+pkgver=0.1.r7.6915384
+pkgrel=1
 pkgdesc="KaiT2en Apple HID module"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"

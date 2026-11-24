@@ -2,8 +2,8 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=t2-hybrid-gpu-control
-pkgver=0.1.0.r23.0ffb582
-pkgrel=2
+pkgver=0.1.0.r24.6915384
+pkgrel=1
 pkgdesc="Configure hybrid graphics on MacBook Pro 15,1/16,1/16,4 - iMac20,1/20,2"
 arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-hybrid-gpu-control"
