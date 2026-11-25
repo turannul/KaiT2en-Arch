@@ -2930,10 +2930,8 @@ usr/share/t2-dsp/profiles/9_1/graph.json
 usr/share/t2-dsp/profiles/9_1/mic.json
 usr/share/t2-dsp/profiles/imac20_1/README.md
 usr/share/t2-dsp/profiles/imac20_1/graph.json
-usr/share/t2-dsp/profiles/imac20_1/mic.json
 usr/share/t2-dsp/profiles/imacpro1_1/README.md
 usr/share/t2-dsp/profiles/imacpro1_1/graph.json
-usr/share/t2-dsp/profiles/imacpro1_1/mic.json
 usr/share/wireplumber/scripts/t2-default-output.lua
 usr/share/wireplumber/wireplumber.conf.d/51-t2-dsp.conf
 

@@ -12,8 +12,8 @@ KVER=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${KVER:?Cannot find linux-headers version.} ]]
 
 pkgname=kait2en-thunderbolt-runtime-pm
-pkgver=7.3.6_arch1_1.r4.4b29a99
-pkgrel=1
+pkgver=7.3.5_arch1_1.r4.4b29a99
+pkgrel=2
 pkgdesc="Patched thunderbolt module with Titan Ridge & Ice Lake RTD3. built for arch kernel (linux)"
 arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
