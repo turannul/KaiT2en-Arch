@@ -13,7 +13,7 @@ depends=('bluez' 'gtk4' 'libadwaita' 'kait2en-assets' 't2-drop' 'wireless-pm-pat
 optdepends=(
     't2-drop: AirDrop extension for t2-airshare'
     'kait2en-wireless-runtime-pm: Patched Broadcom wireless modules with Apple coexistence fixes. built for arch kernel (linux)'
-    'kait2en-wireless-runtime-pm-cachy: Patched Broadcom wireless modules with Apple coexistence fixes. built for cachy kernel (linux-cachy)'
+    'kait2en-wireless-runtime-pm-cachy: Patched Broadcom wireless modules with Apple coexistence fixes. built for cachy kernel (linux-cachyos)'
     'kait2en-wireless-runtime-pm-t2: Patched Broadcom wireless modules with Apple coexistence fixes. built for T2 kernel (linux-t2)'
     'nautilus-python: Send entry for GNOME Files'
     'nemo: Send entry for Cinnamon'
