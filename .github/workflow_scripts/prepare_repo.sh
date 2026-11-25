@@ -134,7 +134,7 @@ sync_pkgbuilds() {
     cur="$(pkgver_of_file "$dir/PKGBUILD")-$(pkgrel_of_file "$dir/PKGBUILD")"
     new="$(pkgver_of_file "$p")-$(pkgrel_of_file "$p")"
     if [ "$cur" != "$new" ]; then
-      if [ "$(vercmp "$new" "$cur")" = "-1" ]; then
+      if [ "$(version_cmp "$new" "$cur")" = "-1" ]; then
         echo "skip: built $n ($new) is older than local ($cur)" >&2
         continue
       fi
@@ -170,36 +170,13 @@ pkgfile_ver() {
 }
 
 version_cmp() {
-  local a="$1" b="$2" arel brel arev brev
-  arel=${a##*-}; brel=${b##*-}
-  a=${a%-*}; b=${b%-*}
-  if [[ $a == *".r"* ]]; then
-    arev=${a##*.r}; a=${a%.r*}
-  else
-    arev=""
-  fi
-  if [[ $b == *".r"* ]]; then
-    brev=${b##*.r}; b=${b%.r*}
-  else
-    brev=""
-  fi
-  if [ -n "$arev" ] && [ -n "$brev" ]; then
-    local an=${arev%%.*} bn=${brev%%.*}
-    if [ "$an" != "$bn" ]; then
-      case "$an$bn" in
-        *[!0-9]*|"") ;;
-        *) [ "$an" -gt "$bn" ] && { echo 1; return; }
-           [ "$an" -lt "$bn" ] && { echo -1; return; };;
-      esac
-    fi
-  elif [ -n "$arev" ] || [ -n "$brev" ]; then
-    [ -n "$arev" ] && { echo 1; return; }
-    echo -1; return
-  fi
-  [ "$arel" -gt "$brel" ] && { echo 1; return; }
-  [ "$arel" -lt "$brel" ] && { echo -1; return; }
-  [ "$a" != "$b" ] && { vercmp "$a" "$b"; return; }
-  echo 0
+  local a="$1" b="$2" apv arel bpv brel
+  apv=${a%-*}; arel=${a##*-}
+  bpv=${b%-*}; brel=${b##*-}
+  local r
+  r=$(vercmp "$apv" "$bpv")
+  [ "$r" != "0" ] && { echo "$r"; return; }
+  vercmp "$arel" "$brel"
 }
 
 latest_archives() {
