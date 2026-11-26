@@ -2,7 +2,7 @@
 # Packager: Turann_ (turannul) <turanull000@gmail.com>
 
 pkgname=apple-t2-bridge-dkms
-pkgver=0.1.r9.6915384
+pkgver=0.1.r10.7d25ff0
 pkgrel=1
 pkgdesc="Apple T2 bridge stack (bridge core, USB VHCI, audio, AVE, Sidecar)"
 arch=('x86_64')

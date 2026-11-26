@@ -12,7 +12,7 @@ KVER=$(pacman -Si linux-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
 [[ -n ${KVER:?Cannot find linux-headers version.} ]]
 
 pkgname=kait2en-wireless-runtime-pm
-pkgver=7.3.6_arch1_1.r26.fd6e0cf
+pkgver=7.3.6_arch1_1.r28.97958ff
 pkgrel=1
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes. built for arch kernel (linux)"
 arch=('x86_64')
