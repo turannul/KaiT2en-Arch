@@ -10,6 +10,7 @@ url='https://github.com/chadmed/bankstown'
 license=('MIT')
 groups=('kait2en-audio')
 depends=('lv2')
+conflicts=('bankstown-git')
 makedepends=('cargo' 'git')
 source=("git+https://github.com/chadmed/bankstown.git")
 sha256sums=('SKIP')

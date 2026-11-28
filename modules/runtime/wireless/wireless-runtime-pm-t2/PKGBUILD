@@ -8,8 +8,10 @@ _krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
 _upstream=${_krelease%%-*}
 [[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
 _major=${_upstream%%.*}
-KVER=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
-[[ -n ${KVER:?Cannot find linux-t2-headers version.} ]]
+_kver=$(pacman -Si linux-t2-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+_hash=$(curl -fsSL "https://cdn.kernel.org/pub/linux/kernel/v${_upstream%%.*}.x/sha256sums.asc" | awk -v f="linux-${_upstream}.tar.xz" '$2==f {print $1}')
+[[ -n ${_kver:?Cannot find linux-t2-headers version.} ]]
+[[ -n ${_hash:?Cannot find Hashes for kernel ${_kver}.} ]]
 
 pkgname=kait2en-wireless-runtime-pm-t2
 pkgver=7.3.5_arch1_Watanare_Uninstall_Omarchy_T2_4_t2.r28.97958ff
@@ -19,12 +21,12 @@ arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
 groups=('kait2en-runtime-patches' 'kait2en-wireless-patch')
-depends=("linux-t2=$KVER")
+depends=("linux-t2=$_kver")
 optdepends=('kernel-modules-hook: Keeps your system fully functional after a kernel upgrade')
-makedepends=('git' 'linux-t2-headers')
+makedepends=('git' 'linux-t2-headers' 'curl')
 provides=('wireless-pm-patch')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
-sha256sums=('SKIP' 'SKIP')
+sha256sums=('SKIP' "$_hash")
 
 pkgver() {
   local _revision _commit
@@ -45,8 +47,9 @@ prepare() {
     set +u
     trap - ERR EXIT
     REPO_ROOT="$_wdir"
+    KVER="$_kver"
 
-    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; exit 1; }
 
     for _patch in $(cat "$_wdir/series"); do
         [[ "$_patch" = \#* || -z "$_patch" ]] && continue
@@ -65,7 +68,7 @@ build() {
 
     if [[ $(sed -n 's/^CONFIG_BRCMFMAC=//p' "$_cfg") == m ]]; then
         [[ $(sed -n 's/^CONFIG_BRCMDBG=//p' "$_cfg") == y ]] && _flags=(KCFLAGS=-DDEBUG)
-        msg2 "Building brcmfmac"
+        printf '[kait2en] Building brcmfmac\n'
         make -j"$(nproc)" -C "$_kdir" M="$_brcm" "${_flags[@]}" modules
         for _m in brcmfmac.ko wcc/brcmfmac-wcc.ko cyw/brcmfmac-cyw.ko bca/brcmfmac-bca.ko; do
             strip --strip-debug "$_brcm/$_m"
@@ -77,10 +80,10 @@ build() {
           $(sed -n 's/^CONFIG_BT_HCIBCM4377=//p' "$_cfg") == m ]]; then
         case $(sed -n 's/^CONFIG_BT_BCM=//p' "$_cfg") in
             m) ;;
-            y) error "btbcm is built into the kernel, the patched Bluetooth drivers cannot link to it"; return 1 ;;
+            y) fail "btbcm is built into the kernel, the patched Bluetooth drivers cannot link to it"; return 1 ;;
             *) _args=(CONFIG_BT_BCM=m KCPPFLAGS=-DCONFIG_BT_BCM_MODULE=1) ;;
         esac
-        msg2 "Building the Bluetooth drivers"
+        printf '[kait2en] Building the Bluetooth drivers\n'
         make -j"$(nproc)" -C "$_kdir" M="$_bt" "${_args[@]}" modules
         _mods=(btbcm.ko)
         [[ $(sed -n 's/^CONFIG_BT_HCIUART=//p' "$_cfg") == m ]] && _mods+=(hci_uart.ko)
@@ -100,7 +103,7 @@ package() {
     for _m in "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/brcmfmac.ko.zst \
               "$srcdir/linux/drivers/net/wireless/broadcom/brcm80211/brcmfmac"/{wcc,cyw,bca}/*.ko.zst \
               "$srcdir/linux/drivers/bluetooth"/{btbcm,hci_uart,hci_bcm4377}.ko.zst; do
-        [[ -f "$_m" ]] || { error "${_m##*/} was not built"; return 1; }
+        [[ -f "$_m" ]] || { fail "${_m##*/} was not built"; return 1; }
         install -Dpm 0644 "$_m" "$pkgdir/usr/lib/modules/$_k/updates/${_m##*/}"
     done
     install -D -m0644 "$startdir/libalpm/70-kait2en-wireless-runtime-pm-t2.hook" "$pkgdir/usr/share/libalpm/hooks/70-kait2en-wireless-runtime-pm-t2.hook"

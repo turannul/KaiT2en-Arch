@@ -18,7 +18,6 @@ makedepends=('cargo' 'git')
 checkdepends=('adwaita-fonts')
 provides=("$pkgname-git")
 conflicts=("$pkgname-git" "react-drm" "mac-touchbar-plus" "tiny-dfr")
-replaces=("$pkgname-git" "react-drm" "mac-touchbar-plus" "tiny-dfr")
 backup=('etc/kait2en/touchbar.toml')
 install="$pkgname.install"
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git")
@@ -36,6 +35,7 @@ prepare() {
     cargo fetch --locked --manifest-path "$srcdir/KaiT2en-Fedora/apps/$pkgname/Cargo.toml"
     sed -i 's|const FONT_PATHS: \[&str; 3\]|const FONT_PATHS: [\&str; 6]|' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/renderer.rs"
     sed -i '/^const FONT_PATHS/,/^];/s|^];|    "/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf",\n    "/usr/share/fonts/inter/InterVariable.ttf",\n    "/usr/share/fonts/cantarell/Cantarell-VF.otf",\n];|' "$srcdir/KaiT2en-Fedora/apps/$pkgname/src/renderer.rs"
+    sed -i 's|share/licenses/kait2en-touchbar|share/licenses/t2-touchbar|g' "$srcdir/KaiT2en-Fedora/apps/$pkgname/Makefile"
 }
 
 build() {
@@ -56,7 +56,6 @@ package() {
     install -m0644 "$pkgdir/etc/polkit-1/rules.d/50-kait2en-touchbar.rules" \
         "$pkgdir/usr/share/polkit-1/rules.d/50-kait2en-touchbar.rules"
     rm -rf "$pkgdir/etc/polkit-1"
-    install -D -m0644 "$srcdir/KaiT2en-Fedora/LICENSE" "$pkgdir/usr/share/licenses/kait2en-touchbar/LICENSE"
     install -d -m0755 "$pkgdir/usr/lib/sysusers.d"
     echo 'g kait2en-touchbar -' > "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
     install -d -m0755 "$pkgdir/usr/lib/tmpfiles.d"

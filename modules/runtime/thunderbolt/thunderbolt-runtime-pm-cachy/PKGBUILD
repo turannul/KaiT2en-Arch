@@ -8,8 +8,10 @@ _krelease=$(basename "$(dirname "$(dirname "$_kfile")")")
 _upstream=${_krelease%%-*}
 [[ $_upstream =~ ^[0-9]+\.[0-9]+\.0$ ]] && _upstream=${_upstream%.0}
 _major=${_upstream%%.*}
-KVER=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
-[[ -n ${KVER:?Cannot find linux-cachyos-headers version.} ]]
+_kver=$(pacman -Si linux-cachyos-headers 2>/dev/null | awk '/^Version/{print $3; exit}')
+_hash=$(curl -fsSL "https://cdn.kernel.org/pub/linux/kernel/v${_upstream%%.*}.x/sha256sums.asc" | awk -v f="linux-${_upstream}.tar.xz" '$2==f {print $1}')
+[[ -n ${_kver:?Cannot find linux-cachyos-headers version.} ]]
+[[ -n ${_hash:?Cannot find Hashes for kernel ${_kver}.} ]]
 
 pkgname=kait2en-thunderbolt-runtime-pm-cachy
 pkgver=7.3.6_1_cachyos.r4.4b29a99
@@ -19,13 +21,13 @@ arch=('x86_64')
 url="https://github.com/kaiT2en/KaiT2en-Fedora"
 license=('GPL-2.0-only')
 groups=('kait2en-runtime-patches' 'kait2en-thunderbolt-patch')
-depends=("linux-cachyos=$KVER")
+depends=("linux-cachyos=$_kver")
 optdepends=('kernel-modules-hook: Keeps your system fully functional after a kernel upgrade')
-makedepends=('git' 'linux-cachyos-headers')
+makedepends=('git' 'linux-cachyos-headers' 'curl')
 provides=('thunderbolt-pm-patch')
 conflicts=('t2thunderbolt-dkms')
 source=("git+https://github.com/kaiT2en/KaiT2en-Fedora.git" "https://cdn.kernel.org/pub/linux/kernel/v$_major.x/linux-$_upstream.tar.xz")
-sha256sums=('SKIP' 'SKIP')
+sha256sums=('SKIP' "$_hash")
 
 pkgver() {
   local _revision _commit
@@ -46,8 +48,9 @@ prepare() {
     set +u
     trap - ERR EXIT
     REPO_ROOT="$_wdir"
+    KVER="$_kver"
 
-    fail() { printf '[kait2en] error: %s\n' "$*" >&2; return 1; }
+    fail() { printf '[kait2en] error: %s\n' "$*" >&2; exit 1; }
 
     for _patch in $(cat "$_wdir/series"); do
         [[ "$_patch" = \#* || -z "$_patch" ]] && continue
@@ -64,10 +67,10 @@ build() {
 
     case $(sed -n 's/^CONFIG_USB4=//p' "$_cfg") in
         m) ;;
-        *) error "the kernel does not build the thunderbolt driver as a module (CONFIG_USB4=m is required)"; return 1 ;;
+        *) fail "the kernel does not build the thunderbolt driver as a module (CONFIG_USB4=m is required)"; return 1 ;;
     esac
 
-    msg2 "Building thunderbolt"
+    printf '[kait2en] Building thunderbolt\n'
     make -j"$(nproc)" -C "$_kdir" M="$_tb" LLVM=1 LD=ld.lld modules
 
     strip --strip-debug "$_tb/thunderbolt.ko"

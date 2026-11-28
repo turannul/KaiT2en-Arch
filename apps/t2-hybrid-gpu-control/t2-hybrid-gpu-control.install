@@ -19,6 +19,10 @@ post_install() {
     rm -rf /run/t2-dgpu-control /run/t2-hybrid-gpu-control
     if command -v flatpak >/dev/null 2>&1; then
         flatpak override --system --env=GSK_RENDERER=ngl
+    else
+        echo -e "\e[31mFlatpak is not installed on system.. - Skipped a step.\e[0m"
+        echo -e "\e[31mCommand is skipped; Remember; whenever you decide to use a flatpak app run this command.\e[0m"
+        echo "flatpak override --system --env=GSK_RENDERER=ngl"
     fi
     _install_preboot
 }

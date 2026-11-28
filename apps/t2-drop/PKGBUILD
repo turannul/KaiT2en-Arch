@@ -9,7 +9,7 @@ arch=('x86_64')
 url="https://kait2en.org/documentation.html#t2-airshare"
 license=('GPL-3.0-or-later')
 groups=('kait2en-apps')
-depends=('bluez' 'dbus' 'systemd')
+depends=('bluez' 'dbus' 'systemd' 'networkmanager')
 optdepends=(
     'kait2en-wireless-runtime-pm: Patched brcmfmac with AWDL for stock Arch kernel (linux)'
     'kait2en-wireless-runtime-pm-t2: Patched brcmfmac with AWDL for T2 kernel (linux-t2)'
