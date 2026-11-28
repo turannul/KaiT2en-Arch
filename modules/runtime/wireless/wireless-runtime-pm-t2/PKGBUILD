@@ -14,7 +14,7 @@ _hash=$(curl -fsSL "https://cdn.kernel.org/pub/linux/kernel/v${_upstream%%.*}.x/
 [[ -n ${_hash:?Cannot find Hashes for kernel ${_kver}.} ]]
 
 pkgname=kait2en-wireless-runtime-pm-t2
-pkgver=7.3.5_arch1_Watanare_Uninstall_Omarchy_T2_4_t2.r28.97958ff
+pkgver=7.3.5_arch1_Watanare_Uninstall_Omarchy_T2_4_t2.r30.a7cccd3
 pkgrel=1
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes. built for T2 kernel (linux-t2)"
 arch=('x86_64')

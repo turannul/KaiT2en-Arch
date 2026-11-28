@@ -14,7 +14,7 @@ _hash=$(curl -fsSL "https://cdn.kernel.org/pub/linux/kernel/v${_upstream%%.*}.x/
 [[ -n ${_hash:?Cannot find Hashes for kernel ${_kver}.} ]]
 
 pkgname=kait2en-wireless-runtime-pm
-pkgver=7.3.6_arch1_1.r28.97958ff
+pkgver=7.3.6_arch1_1.r30.a7cccd3
 pkgrel=1
 pkgdesc="Patched Broadcom wireless modules with Apple coexistence fixes. built for arch kernel (linux)"
 arch=('x86_64')

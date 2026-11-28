@@ -14,7 +14,7 @@ _hash=$(curl -fsSL "https://cdn.kernel.org/pub/linux/kernel/v${_upstream%%.*}.x/
 [[ -n ${_hash:?Cannot find Hashes for kernel ${_kver}.} ]]
 
 pkgname=kait2en-i915-runtime-pm-cachy
-pkgver=7.3.6_1_cachyos.r2.1d586ca
+pkgver=7.3.6_3_cachyos.r2.1d586ca
 pkgrel=1
 pkgdesc="Patched i915 module with Apple eDP PSR support and GMUX brightness restore. built for cachy kernel (linux-cachyos)"
 arch=('x86_64')

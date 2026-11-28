@@ -14,7 +14,7 @@ _hash=$(curl -fsSL "https://cdn.kernel.org/pub/linux/kernel/v${_upstream%%.*}.x/
 [[ -n ${_hash:?Cannot find Hashes for kernel ${_kver}.} ]]
 
 pkgname=kait2en-thunderbolt-runtime-pm-cachy
-pkgver=7.3.6_1_cachyos.r4.4b29a99
+pkgver=7.3.6_3_cachyos.r4.4b29a99
 pkgrel=1
 pkgdesc="Patched thunderbolt module with Titan Ridge & Ice Lake RTD3. built for cachy kernel (linux-cachyos)"
 arch=('x86_64')
